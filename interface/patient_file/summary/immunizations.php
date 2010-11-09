@@ -11,6 +11,7 @@ $fake_register_globals=false;
 include_once("../../globals.php");
 include_once("$srcdir/sql.inc");
 include_once("$srcdir/options.inc.php");
+require_once("$srcdir/classes/Prescription.class.php");
 
 if (isset($_GET['mode'])) {
     
@@ -25,6 +26,13 @@ if (isset($_GET['mode'])) {
                       administered_by = if(?,?,NULL),
                       education_date = if(?,?,NULL), 
                       vis_date = if(?,?,NULL), 
+                      product_name = ?,
+                      description_code = ?,
+                      vaccine_description = ?,
+                      negationreason_id = ?,
+                      source_id = ?,
+                      site_id = ?,
+                      route_id = ?,
                       note   = ?,
                       patient_id   = ?,
                       created_by = ?,
@@ -40,14 +48,21 @@ if (isset($_GET['mode'])) {
 		     trim($_GET['administered_by']), trim($_GET['administered_by']),
 		     trim($_GET['education_date']), trim($_GET['education_date']),
 		     trim($_GET['vis_date']), trim($_GET['vis_date']),
-		     trim($_GET['note']),
+		     trim($_GET['product_name']),
+		     trim($_GET['description_code']),
+		     trim($_GET['vaccine_description']),
+		     trim($_GET['negationreason_id']),
+		     trim($_GET['source_id']),
+		     trim($_GET['site_id']),
+		     trim($_GET['route_id']),
+         trim($_GET['note']),
 		     $pid,
 		     $_SESSION['authId'],
 		     $_SESSION['authId']
 		     );
         sqlStatement($sql,$sqlBindArray);
         $administered_date=$education_date=date('Y-m-d');
-        $immunization_id=$manufacturer=$lot_number=$administered_by_id=$note=$id="";
+        $immunization_id=$manufacturer=$lot_number=$administered_by_id=$note=$id=$product_name="";
         $administered_by=$vis_date="";
     }
     elseif ($_GET['mode'] == "delete" ) {
@@ -63,6 +78,13 @@ if (isset($_GET['mode'])) {
         while ($row = sqlFetchArray($results)) {
             $administered_date = $row['administered_date'];
             $immunization_id = $row['immunization_id'];
+            $product_name = $row['product_name'];
+            $description_code = $row['description_code'];
+            $vaccine_description = $row['vaccine_description'];
+            $negationreason_id = $row['negationreason_id'];
+            $source_id = $row['source_id'];
+            $site_id = $row['site_id'];
+            $route_id = $row['route_id'];
             $manufacturer = $row['manufacturer'];
             $lot_number = $row['lot_number'];
             $administered_by_id = ($row['administered_by_id'] ? $row['administered_by_id'] : 0);
@@ -107,6 +129,9 @@ if (!$administered_by && !$administered_by_id) {
 tr.selected {
   background-color: white;
 }	
+.negated {
+  color: red;
+}
 </style>
 		
 <!-- pop up calendar -->
@@ -169,6 +194,36 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
     id='img_administered_date' border='0' alt='[?]' style='cursor:pointer;cursor:hand'
     title='<?php echo htmlspecialchars( xl('Click here to choose a date'), ENT_QUOTES); ?>'>
 
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Product Name'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+            <input class='text' type='text' name="product_name" size="25" value="<?php echo htmlspecialchars( $product_name, ENT_QUOTES); ?>">
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Description Code'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+            <input class='text' type='text' name="description_code" size="25" value="<?php echo htmlspecialchars( $description_code, ENT_QUOTES); ?>">
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <span class=text>
+              <?php echo htmlspecialchars( xl('Vaccine Description'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td>
+            <input class='text' type='text' name="vaccine_description" size="25" value="<?php echo htmlspecialchars( $vaccine_description, ENT_QUOTES); ?>">
           </td>
         </tr>
         <tr>
@@ -252,6 +307,89 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
           </td>
         </tr>
         <tr>
+          <td align="right">
+            <span class='text'>
+              <?php echo htmlspecialchars( xl('Site'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td class='text'>
+            <select name="site_id" id='site_id'>
+              <?php
+                $a = load_snomed_codes();
+
+                foreach ($a as $k => $v) {
+                  echo '<OPTION VALUE=' . htmlspecialchars( $k, ENT_QUOTES);
+                  echo (isset($site_id) && $site_id == $k) ? ' selected>' : '>';
+                  echo htmlspecialchars( $v, ENT_NOQUOTES) . '</OPTION>';
+                }
+              ?>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <span class='text'>
+              <?php echo htmlspecialchars( xl('Route'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td class='text'>
+            <select name="route_id" id='route_id'>
+              <?php
+                $sql = "SELECT * FROM list_options WHERE list_id = 'drug_route' ORDER BY seq";
+
+                $result = sqlStatement($sql);
+                while($row = sqlFetchArray($result)){
+                  echo '<OPTION VALUE=' . htmlspecialchars( $row['option_id'], ENT_QUOTES);
+                  echo (isset($route_id) && $route_id == $row['option_id']) ? ' selected>' : '>';
+                  echo htmlspecialchars( $row['title'], ENT_NOQUOTES) . '</OPTION>';
+                }
+              ?>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <span class='text'>
+              <?php echo htmlspecialchars( xl('No Immunization Reason'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td class='text'>
+            <select name="negationreason_id" id='negationreason_id'>
+              <?php
+                $sql = "SELECT * FROM list_options WHERE list_id = 'immunizationnegationreason' ORDER BY seq";
+
+                $result = sqlStatement($sql);
+                while($row = sqlFetchArray($result)){
+                  echo '<OPTION VALUE=' . htmlspecialchars( $row['option_id'], ENT_QUOTES);
+                  echo (isset($negationreason_id) && $negationreason_id == $row['option_id']) ? ' selected>' : '>';
+                  echo htmlspecialchars( $row['title'], ENT_NOQUOTES) . '</OPTION>';
+                }
+              ?>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <span class='text'>
+              <?php echo htmlspecialchars( xl('Source'), ENT_NOQUOTES); ?>
+            </span>
+          </td>
+          <td class='text'>
+            <select name="source_id" id='source_id'>
+              <?php
+                $sql = "SELECT * FROM list_options WHERE list_id = 'immunizationsource' ORDER BY seq";
+
+                $result = sqlStatement($sql);
+                while($row = sqlFetchArray($result)){
+                  echo '<OPTION VALUE=' . htmlspecialchars( $row['option_id'], ENT_QUOTES);
+                  echo (isset($source_id) && $source_id == $row['option_id']) ? ' selected>' : '>';
+                  echo htmlspecialchars( $row['title'], ENT_NOQUOTES) . '</OPTION>';
+                }
+              ?>
+            </select>
+          </td>
+        </tr>
+        <tr>
           <td align="right" class='text'>
               <?php echo htmlspecialchars( xl('Notes'), ENT_NOQUOTES); ?>
           </td>
@@ -291,6 +429,7 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
         <span class='small' style='font-family:arial'><?php if ($sortby == 'date') { echo 'v'; } ?></span>
     </th>
     <th><?php echo htmlspecialchars( xl('Manufacturer'), ENT_NOQUOTES); ?></th>
+    <th><?php echo htmlspecialchars( xl('Product Name'), ENT_NOQUOTES); ?></th>
     <th><?php echo htmlspecialchars( xl('Lot Number'), ENT_NOQUOTES); ?></th>
     <th><?php echo htmlspecialchars( xl('Administered By'), ENT_NOQUOTES); ?></th>
     <th><?php echo htmlspecialchars( xl('Education Date'), ENT_NOQUOTES); ?></th>
@@ -300,7 +439,7 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
     
 <?php
         $sql = "select i1.id ,i1.immunization_id ,i1.administered_date ".
-                ",i1.manufacturer ,i1.lot_number ".
+                ",i1.manufacturer ,i1.lot_number, i1.product_name, i1.negationreason_id ".
                 ",ifnull(concat(u.lname,', ',u.fname),'Other') as administered_by ".
                 ",i1.education_date ,i1.note ".
                 " from immunizations i1 ".
@@ -315,6 +454,9 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
             if ($row["id"] == $id) {
                 echo "<tr class='immrow text selected' id='".htmlspecialchars( $row["id"], ENT_QUOTES)."'>";
             }
+            else if (!empty($row['negationreason_id'])) {
+                echo "<tr class='immrow text negated' id='".htmlspecialchars( $row["id"], ENT_QUOTES)."'>";
+            }
             else {
                 echo "<tr class='immrow text' id='".htmlspecialchars( $row["id"], ENT_QUOTES)."'>";
             }
@@ -322,6 +464,7 @@ var mypcc = '<?php echo htmlspecialchars( $GLOBALS['phone_country_code'], ENT_QU
             echo "<td>" . generate_display_field(array('data_type'=>'1','list_id'=>'immunizations'), $row['immunization_id']) . "</td>";
             echo "<td>" . htmlspecialchars( $row["administered_date"], ENT_NOQUOTES) . "</td>";
             echo "<td>" . htmlspecialchars( $row["manufacturer"], ENT_NOQUOTES) . "</td>";
+            echo "<td>" . htmlspecialchars( $row["product_name"], ENT_NOQUOTES) . "</td>";
             echo "<td>" . htmlspecialchars( $row["lot_number"], ENT_NOQUOTES) . "</td>";
             echo "<td>" . htmlspecialchars( $row["administered_by"], ENT_NOQUOTES) . "</td>";
             echo "<td>" . htmlspecialchars( $row["education_date"], ENT_NOQUOTES) . "</td>";
@@ -354,6 +497,7 @@ $(document).ready(function(){
 
     $(".immrow").mouseover(function() { $(this).toggleClass("highlight"); });
     $(".immrow").mouseout(function() { $(this).toggleClass("highlight"); });
+
 
     $("#administered_by_id").change(function() { $("#administered_by").val($("#administered_by_id :selected").text()); });
 });

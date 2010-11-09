@@ -1,0 +1,236 @@
+<html>
+<head>
+{php}html_header_show();{/php}
+{literal}
+
+
+ <style type="text/css" title="mystyles" media="all">
+<!--
+td {
+	font-size:12pt;
+	font-family:helvetica;
+}
+li{
+	font-size:11pt;
+	font-family:helvetica;
+	margin-left: 15px;
+}
+a {
+	font-size:11pt;
+	font-family:helvetica;
+}
+.title {
+	font-family: sans-serif;
+	font-size: 12pt;
+	font-weight: bold;
+	text-decoration: none;
+	color: #000000;
+}
+
+.form_text{
+	font-family: sans-serif;
+	font-size: 9pt;
+	text-decoration: none;
+	color: #000000;
+}
+
+-->
+</style>
+{/literal}
+<style type="text/css">@import url({$webroot}/library/dynarch_calendar.css);</style>
+<script type="text/javascript" src="{$webroot}/library/dynarch_calendar.js"></script>
+<script type="text/javascript" src="{$webroot}/library/dynarch_calendar_setup.js"></script>
+
+<script type="text/javascript" src="{$webroot}/library/dialog.js"></script>
+<script type="text/javascript" src="{$webroot}/library/textformat.js"></script>
+</head>
+<body bgcolor="{$STYLE.BGCOLOR2}">
+<p><span class="title">{php} xl('Diagnostic Test','e'); {/php}</span></p>
+<form name="diagnostic_test" method="post" action="{$FORM_ACTION}/interface/forms/diagnostic_test/save.php"
+ onsubmit="return top.restoreSession()">
+<table>
+	<tr>
+		<td align="left">{php} xl('Procedure Code','e'); {/php}</td>
+		<td width="90%">
+			<input type=text name="test_procedure_id" value="{$data->get_test_procedure_id()}" />
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Result Normalcy','e'); {/php}</td>
+		<td width="90%">
+      <select name="result_normalcy_id">
+        {foreach item=i from=$result_normalcy}
+          {if $data->get_result_normalcy_id() == $i.id}
+            <option value="{$i.id}" selected>{$i.value}</option>
+          {else}
+            <option value="{$i.id}">{$i.value}</option>
+          {/if}
+        {/foreach}
+      </select>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Results Status','e'); {/php}</td>
+		<td width="90%">
+      <select name="result_status_id">
+        {foreach item=i from=$results_status}
+          {if $data->get_result_status_id() == $i.id}
+            <option value="{$i.id}" selected>{$i.value}</option>
+          {else}
+            <option value="{$i.id}">{$i.value}</option>
+          {/if}
+        {/foreach}
+      </select>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Negation Rationale','e'); {/php}</td>
+		<td width="90%">
+      <select name="negation_rationale_id">
+        {foreach item=i from=$negation_rationale}
+          {if $data->get_result_status_id() == $i.id}
+            <option value="{$i.id}" selected>{$i.code_text_short}</option>
+          {else}
+            <option value="{$i.id}">{$i.code_text_short}</option>
+          {/if}
+        {/foreach}
+      </select>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Result Test Type','e'); {/php}</td>
+		<td width="90%">
+      <select name="result_test_type_id">
+        {foreach item=i from=$result_test_type}
+          {if $data->get_result_test_type_id() == $i.id}
+            <option value="{$i.id}" selected>{$i.value}</option>
+          {else}
+            <option value="{$i.id}">{$i.value}</option>
+          {/if}
+        {/foreach}
+      </select>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Result Description','e'); {/php}</td>
+		<td width="90%">
+			<textarea name="result_description" cols="60" rows="6">{$data->get_result_description()}</textarea>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Result Type','e'); {/php}</td>
+		<td width="90%">
+      <select name="result_type_id">
+        {foreach item=i from=$result_type}
+          {if $data->get_result_type_id() == $i.id}
+            <option value="{$i.id}" selected>{$i.value}</option>
+          {else}
+            <option value="{$i.id}">{$i.value}</option>
+          {/if}
+        {/foreach}
+      </select>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Result Test Status','e'); {/php}</td>
+		<td width="90%">
+      <select name="result_test_status_id">
+        {foreach item=i from=$result_test_status}
+          {if $data->get_result_test_status_id() == $i.id}
+            <option value="{$i.id}" selected>{$i.value}</option>
+          {else}
+            <option value="{$i.id}">{$i.value}</option>
+          {/if}
+        {/foreach}
+      </select>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Test Result value Code','e'); {/php}</td>
+		<td width="90%">
+			<input type=text name="test_result_value_code" value="{$data->get_test_result_value()}" />
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Test Description','e'); {/php}</td>
+		<td width="90%">
+			<textarea name="test_description" cols="60" rows="6">{$data->get_result_description()}</textarea>
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Order Date','e'); {/php}</td>
+		<td width="90%">
+      <input type='text' size='10' name='order_date' id='order_date' value='{$data->get_order_date()}' title='Order date'
+        onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' />
+        <img src='{$webroot}/pic/show_calendar.gif' align='absbottom' width='24' height='22'
+        id='img_order_date' border='0' alt='[?]' style='cursor:pointer'
+        title='Click here to choose a date' />
+    </td>
+  </tr>
+	<tr>
+		<td align="left">{php} xl('Test Date','e'); {/php}</td>
+		<td width="90%">
+      <input type='text' size='10' name='test_date' id='test_date' value='{$data->get_test_date()}' title='Test date'
+        onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' />
+        <img src='{$webroot}/pic/show_calendar.gif' align='absbottom' width='24' height='22'
+        id='img_test_date' border='0' alt='[?]' style='cursor:pointer'
+        title='Click here to choose a date' />
+    </td>
+  </tr>
+	<tr>
+		<td align="left">{php} xl('Performed Date','e'); {/php}</td>
+		<td width="90%">
+      <input type='text' size='10' name='performed_date' id='performed_date' value='{$data->get_test_date()}' title='Performed date'
+        onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' />
+        <img src='{$webroot}/pic/show_calendar.gif' align='absbottom' width='24' height='22'
+        id='img_performed_date' border='0' alt='[?]' style='cursor:pointer'
+        title='Click here to choose a date' />
+    </td>
+  </tr>
+	<tr>
+		<td align="left">{php} xl('Result Date','e'); {/php}</td>
+		<td width="90%">
+      <input type='text' size='10' name='result_date' id='result_date' value='{$data->get_result_date()}' title='Result Date'
+        onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' />
+        <img src='{$webroot}/pic/show_calendar.gif' align='absbottom' width='24' height='22'
+        id='img_result_date' border='0' alt='[?]' style='cursor:pointer'
+        title='Click here to choose a date' />
+    </td>
+  </tr>
+	<tr>
+		<td align="left">{php} xl('Test Result Value','e'); {/php}</td>
+		<td width="90%">
+      {if isset($diagnostic_test_results)}
+        {section loop=$diagnostic_test_results name=result}
+          <input type=text name="diagnostic_test_results[]" value="{$diagnostic_test_results[result].code}" /><br>
+        {/section}
+      {else}
+          <input type=text name="diagnostic_test_results[]" value="" /><br>
+          <input type=text name="diagnostic_test_results[]" value="" /><br>
+          <input type=text name="diagnostic_test_results[]" value="" /><br>
+          <input type=text name="diagnostic_test_results[]" value="" /><br>
+          <input type=text name="diagnostic_test_results[]" value="" /><br>
+      {/if}
+		</td>
+	</tr>
+	<tr>
+		<td align="left">{php} xl('Source','e'); {/php}</td>
+		<td width="90%">
+			<input type=text name="source" value="{$data->get_source()}" />
+		</td>
+	</tr>
+	<tr>
+		<td><input type="submit" name="Submit" value={php} xl('Save Form','e','"','"'); {/php}</td>
+    <td><a href="{$DONT_SAVE_LINK}" class="link" onclick="top.restoreSession()">[{php} xl("Don't Save","e"); {/php}]</a></td>
+	</tr>
+</table>
+<input type="hidden" name="id" value="{$data->get_id()}" />
+<input type="hidden" name="pid" value="{$data->get_pid()}">
+<input type="hidden" name="process" value="true">
+</form>
+
+<script language='JavaScript'>
+</script>
+
+</body>
+</html>

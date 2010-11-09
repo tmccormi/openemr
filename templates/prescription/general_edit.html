@@ -149,6 +149,11 @@
 </tr>
 {/if}
 <tr>
+	<td COLSPAN="1" class="text" ALIGN="right" VALIGN="MIDDLE" >{xl t='Brand Name'}</td>
+	<td COLSPAN="2" ALIGN="LEFT" VALIGN="MIDDLE" >
+	</td>
+</tr>
+<tr>
 	<td COLSPAN="1" class="text" ALIGN="right" VALIGN="MIDDLE" >{xl t='Quantity'}</td>
 	<td COLSPAN="2" ALIGN="LEFT" VALIGN="MIDDLE" >
 		<input TYPE="TEXT" NAME="quantity" id="quantity" SIZE="10" MAXLENGTH="31"
@@ -181,6 +186,12 @@
 		<select name="route" id="route">{html_options options=$prescription->route_array selected=$prescription->route}</select>
 		<select name="interval" id="interval">{html_options options=$prescription->interval_array selected=$prescription->interval}</select>
 {/if}
+	</td>
+</tr>
+<tr>
+	<td COLSPAN="1" class="text" ALIGN="right" VALIGN="MIDDLE" >{xl t='Site'}</td>
+	<td COLSPAN="2" class="text" ALIGN="LEFT" VALIGN="MIDDLE" >
+		{html_options name="site_id" options=$prescription->site_array selected=$prescription->site_id}
 	</td>
 </tr>
 <tr>

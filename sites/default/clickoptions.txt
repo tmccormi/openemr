@@ -45,3 +45,12 @@ general::Nutritional
 general::Fitness Testing
 general::Pre Participation Assessment
 general::Screening / Testing
+diagnosis::Problem
+diagnosis::Condition
+diagnosis::Diagnosis
+diagnosis::Symptom
+diagnosis::Finding
+diagnosis::Complaint
+diagnosis::Functional Limitation
+diagnosis::Family History
+diagnosis::Risk-Of

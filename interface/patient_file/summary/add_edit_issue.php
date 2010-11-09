@@ -141,8 +141,39 @@ if ($_POST['form_save']) {
     "injury_part = '" . $form_injury_part           . "', " .
     "injury_type = '" . $form_injury_type           . "', " .
     "outcome = '"     . $_POST['form_outcome']      . "', " .
-    "destination = '" . $_POST['form_destination']   . "' "  .
+    "destination = '" . $_POST['form_destination']   . "', "  .
+    "reaction_id = "	. QuotedOrNull($_POST['reaction_id'])	. ", " .
+    "severity_id = "	. QuotedOrNull($_POST['severity_id'])	. ", " .
+    "healthstatus_id = "	. QuotedOrNull($_POST['healthstatus_id'])	. ", " .
+    "diagnosis_type_id = "	. QuotedOrNull($_POST['diagnosis_type_id'])	. ", " .
+    "status_id = "	. QuotedOrNull($_POST['status_id'])	. ", " .
+    "producttype_id = "	. QuotedOrNull($_POST['producttype_id'])	. ", " .
+    "rxnorm_id = "	. QuotedOrNull($_POST['rxnorm_id'])	. ", " .
+    "route_id = "	. QuotedOrNull($_POST['route_id'])	. ", " .
+    "site_id = "	. QuotedOrNull($_POST['site_id'])	. ", " .
+    "medication_form = "	. QuotedOrNull($_POST['medication_form'])	. ", " .
+    "medication_strength = "	. QuotedOrNull($_POST['medication_strength'])	. ", " .
+    "medication_quantity = "	. QuotedOrNull($_POST['medication_quantity'])	. ", " .
+    "medication_directions = "	. QuotedOrNull($_POST['medication_directions'])	. ", " .
+    "medication_frequency = "	. QuotedOrNull($_POST['medication_frequency'])	. ", " .
+    "medication_route = "	. QuotedOrNull($_POST['medication_route'])	. ", " .
+    "medication_dose = "	. QuotedOrNull($_POST['medication_dose'])	. ", " .
+    "medication_value = "	. QuotedOrNull($_POST['medication_value'])	. ", " .
+    "medication_unit = "	. QuotedOrNull($_POST['medication_unit'])	. ", " .
+    "medication_indications = "	. QuotedOrNull($_POST['medication_indications'])	. ", " .
+    "medication_patient_instructions = "	. QuotedOrNull($_POST['medication_patient_instructions'])	. ", " .
+    "medication_refills = "	. QuotedOrNull($_POST['medication_refills'])	. ", " .
+    "medication_source = "	. QuotedOrNull($_POST['medication_source'])	. ", " .
+    "negationrationale_id = "	. QuotedOrNull($_POST['negationrationale_id'])	. ", " .
+    "adverse_agent_id = "	. QuotedOrNull($_POST['adverse_agent_id'])	. ", " .
+    "adverse_agent_ptr_id = "	. QuotedOrNull($_POST['adverse_agent_ptr_id'])	. ", " .
+    "adverse_agent_medical_equipment_id = "	. QuotedOrNull($_POST['adverse_agent_medical_equipment_id'])	. ", " .
+    "adverse_agent_test_id = "	. QuotedOrNull($_POST['adverse_agent_test_id'])	. ", " .
+    "problem_type_id = "	. QuotedOrNull($_POST['problem_type_id'])	. ", " .
+    "description_code_id = "	. QuotedOrNull($_POST['description_code_id'])	. " " .
     "WHERE id = '$issue'";
+
+
     sqlStatement($query);
     if ($text_type == "medication" && enddate != '') {
       sqlStatement('UPDATE prescriptions SET '
@@ -153,10 +184,35 @@ if ($_POST['form_save']) {
 
   } else {
 
+  $reaction_id = (empty($_POST['reaction_id'])) ? "NULL" : $_POST['reaction_id'];
+  $severity_id = (empty($_POST['severity_id'])) ? "NULL" : $_POST['severity_id'];
+  $healthstatus_id = (empty($_POST['healthstatus_id'])) ? "NULL" : $_POST['healthstatus_id'];
+  $diagnosis_type_id = (empty($_POST['diagnosis_type_id'])) ? "NULL" : $_POST['diagnosis_type_id'];
+  $status_id = (empty($_POST['status_id'])) ? "NULL" : $_POST['status_id'];
+  $producttype_id  = (empty($_POST['producttype_id'])) ? "NULL" : $_POST['producttype_id'];
+  $rxnorm_id  = (empty($_POST['rxnorm_id'])) ? "NULL" : $_POST['rxnorm_id'];
+  $route_id  = (empty($_POST['route_id'])) ? "NULL" : $_POST['route_id'];
+  $site_id  = (empty($_POST['site_id'])) ? "NULL" : $_POST['site_id'];
+  $negationrationale_id  = (empty($_POST['negationrationale_id'])) ? "NULL" : $_POST['negationrationale_id'];
+
+  $adverse_agent_id = (empty($_POST['adverse_agent_id'])) ? "NULL" : $_POST['adverse_agent_id'];
+  $adverse_agent_ptr_id = (empty($_POST['adverse_agent_ptr_id'])) ? "NULL" : $_POST['adverse_agent_ptr_id'];
+  $adverse_agent_medical_equipment_id = (empty($_POST['adverse_agent_medical_equipment_id'])) ? "NULL" : $_POST['adverse_agent_medical_equipment_id'];
+  $adverse_agent_test_id = (empty($_POST['adverse_agent_test_id'])) ? "NULL" : $_POST['adverse_agent_test_id'];
+
+  $problem_type_id  = (empty($_POST['problem_type_id'])) ? "NULL" : $_POST['problem_type_id'];
+  $description_code_id  = (empty($_POST['description_code_id'])) ? "NULL" : $_POST['description_code_id'];
+
    $issue = sqlInsert("INSERT INTO lists ( " .
     "date, pid, type, title, activity, comments, begdate, enddate, returndate, " .
     "diagnosis, occurrence, classification, referredby, user, groupname, " .
-    "outcome, destination, reinjury_id, injury_grade, injury_part, injury_type " .
+    "outcome, destination, reinjury_id, injury_grade, injury_part, injury_type, reaction_id, " .
+    "severity_id, healthstatus_id, diagnosis_type_id, status_id, producttype_id, rxnorm_id, route_id," .
+    "site_id, medication_form, medication_strength, medication_quantity, medication_directions," .
+    "medication_frequency, medication_route, medication_dose, medication_value, medication_unit," .
+    "medication_indications, medication_patient_instructions, medication_refills, medication_source," .
+    "negationrationale_id, adverse_agent_id, adverse_agent_ptr_id, adverse_agent_medical_equipment_id," .
+    "adverse_agent_test_id, problem_type_id, description_code_id" .
     ") VALUES ( " .
     "NOW(), " .
     "'$thispid', " .
@@ -178,9 +234,37 @@ if ($_POST['form_save']) {
     "'" . $_POST['form_reinjury_id'] . "', " .
     "'" . $_POST['form_injury_grade'] . "', " .
     "'" . $form_injury_part          . "', " .
-    "'" . $form_injury_type          . "' "  .
+    "'" . $form_injury_type          . "', "  .
+    $reaction_id . ", "  .
+    $severity_id . ", "  .
+    $healthstatus_id . ", "  .
+    $diagnosis_type_id . ", "  .
+    $status_id . ", "  .
+    $producttype_id . ", " .
+    $rxnorm_id . ", " .
+    $route_id . ", " .
+    $site_id . ", " .
+    "'" . $_POST['medication_form'] . "', " .
+    "'" . $_POST['medication_strength'] . "', " .
+    "'" . $_POST['medication_quantity'] . "', " .
+    "'" . $_POST['medication_directions'] . "', " .
+    "'" . $_POST['medication_frequency'] . "', " .
+    "'" . $_POST['medication_route'] . "', " .
+    "'" . $_POST['medication_dose'] . "', " .
+    "'" . $_POST['medication_value'] . "', " .
+    "'" . $_POST['medication_unit'] . "', " .
+    "'" . $_POST['medication_indications'] . "', " .
+    "'" . $_POST['medication_patient_instructions'] . "', " .
+    "'" . $_POST['medication_refills'] . "', " .
+    "'" . $_POST['medication_source'] . "', " .
+    $negationrationale_id . ", ".
+    $adverse_agent_id . ", " .
+    $adverse_agent_ptr_id . ", " .
+    $adverse_agent_medical_equipment_id . ", " .
+    $adverse_agent_test_id . ", " .
+    $problem_type_id . ", " .
+    $description_code_id . " " .
    ")");
-
   }
 
   if ($text_type == 'football_injury') issue_football_injury_save($issue);
@@ -290,12 +374,86 @@ div.section {
 
 <?php require($GLOBALS['srcdir'] . "/restoreSession.php"); ?>
 
- // React to selection of an issue type.  This loads the associated
+  function update_issue_specific(index) {
+    //alert("<?= preg_replace("@/[^/]*$@", "", $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF']); ?>");
+    mygetrequest.open("GET", "http://<?= preg_replace("@/[^/]*$@", "", $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF']); ?>/issue_json.php?type=" + index + "&pid=" + <?= $thispid; ?> + "&id=" + <?= $issue ?>, true);
+    mygetrequest.send(null);
+  }
+
+  function ajaxRequest(){
+    var activexmodes=["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"]
+      if (window.ActiveXObject){
+        for (var i=0; i<activexmodes.length; i++){
+          try{
+            return new ActiveXObject(activexmodes[i])
+          }
+          catch(e){ }
+        }
+      }
+      else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+        return new XMLHttpRequest()
+      else
+        return false
+  }
+
+  var oldElements;
+  var mygetrequest=new ajaxRequest();
+  mygetrequest.onreadystatechange=function(){
+    if (mygetrequest.readyState==4){
+      if (mygetrequest.status==200 || window.location.href.indexOf("http")==-1){
+        var jsondata=eval("("+mygetrequest.responseText+")") //retrieve result as an JavaScript object
+        outputText = "<table>";
+        for (x in jsondata.data) {
+          outputText += "<tr><td>";
+          outputText += jsondata.data[x].name;
+          outputText += "</td>";
+          if (jsondata.data[x].type == 'dropdown') {
+            outputText += "<select name=\"" + jsondata.data[x].fieldname + "\">";
+            for (y in jsondata.data[x].options) {
+              if (y == jsondata.data[x].value) {
+                outputText += "<option value=\"" + y + "\" selected>" + jsondata.data[x].options[y] + "</option>";
+              } else {
+                outputText += "<option value=\"" + y + "\">" + jsondata.data[x].options[y] + "</option>";
+              }
+            }
+            outputText += "</select>";
+          } else if (jsondata.data[x].type == 'date') {
+            thisDate = (jsondata.data[x].value == undefined) ? "" : jsondata.data[x].value;
+            outputText += "<input type='text' size='10' name='" + jsondata.data[x].fieldname + "' id='" + jsondata.data[x].fieldname + "' value='" + thisDate + "' onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='' /> <img src='../../pic/show_calendar.gif' align='absbottom' width='24' height='22' id='" + jsondata.data[x].image + "' border='0' alt='[?]' style='cursor:pointer' title='' />";
+            Calendar.setup({inputField:jsondata.data[x].fieldname, ifFormat:"%Y-%m-%d", button: jsondata.data[x].image});
+          } else {
+            thisValue = (jsondata.data[x].value == undefined) ? "" : jsondata.data[x].value;
+            outputText += "<input type=text name=\"" + jsondata.data[x].fieldname + "\" value='" + thisValue + "'>";
+          }
+          outputText += "</tr>";
+        }
+
+        outputText += "</table>";
+
+        document.getElementById("issue_specific").innerHTML = outputText;
+        if (jsondata.showMain == 0) {
+          document.getElementById("mainArea").innerHTML = "";
+        } else {
+          document.getElementById("mainArea").innerHTML = oldElements;
+        }
+      }
+      else{
+        alert("An error has occured making the request")
+      }
+    }
+  }
+
+
+
+
+ // react to selection of an issue type.  this loads the associated
  // shortcuts into the selection list of titles, and determines which
  // rows are displayed or hidden.
  function newtype(index) {
   var f = document.forms[0];
   var theopts = f.form_titles.options;
+  //alert("<?= preg_replace("@/[^/]*$@", "", $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF']); ?>");
+  update_issue_specific(index);
   theopts.length = 0;
   var i = 0;
   for (i = 0; i < aopts[index].length; ++i) {
@@ -447,17 +605,22 @@ function divclick(cb, divid) {
       echo "<input type='hidden' name='form_type' value='$index'>\n";
     }
   } else {
-    echo "   <input type='radio' name='form_type' value='$index' onclick='newtype($index)'";
+    echo "   <input type='radio' name='form_type' id='form_type_$index' value='$index' onclick='newtype($index)'";
     if ($index == $type_index) echo " checked";
-    echo " />" . $value[1] . "&nbsp;\n";
+    echo " /><label for='form_type_$index'>" . $value[1] . "</label>&nbsp;\n";
   }
   ++$index;
  }
 ?>
   </td>
  </tr>
+</table>
 
- <tr id='row_titles'>
+<div id='mainArea'>
+<table border='0' width='100%'>
+
+
+ <tr id='row_titles' valign='top' width='1%' nowrap>
   <td valign='top' nowrap>&nbsp;</td>
   <td valign='top'>
    <select name='form_titles' size='4' onchange='set_text()'>
@@ -672,6 +835,9 @@ echo generate_select_list('form_medical_type', 'medical_type', $irow['injury_typ
  </tr>
 
 </table>
+</div>
+<div id="issue_specific">
+</div>
 
 <?php
   if ($ISSUE_TYPES['football_injury']) {
@@ -707,6 +873,7 @@ echo generate_select_list('form_medical_type', 'medical_type', $irow['injury_typ
  Calendar.setup({inputField:"form_begin", ifFormat:"%Y-%m-%d", button:"img_begin"});
  Calendar.setup({inputField:"form_end", ifFormat:"%Y-%m-%d", button:"img_end"});
  Calendar.setup({inputField:"form_return", ifFormat:"%Y-%m-%d", button:"img_return"});
+ oldElements = document.getElementById("mainArea").innerHTML;
 </script>
 </body>
 </html>

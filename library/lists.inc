@@ -29,6 +29,7 @@ else { // default version
     'medication'      => array(xl('Medications')     ,xl('Medication'),xl('M'),0),
     'surgery'         => array(xl('Surgeries')       ,xl('Surgery')   ,xl('S'),0),
     'dental'          => array(xl('Dental Issues')   ,xl('Dental')    ,xl('D'),0),
+    'diagnosis'       => array(xl('Diagnoses')       ,xl('Diagnosis') ,xl('I'),0),
     //
     // Styles are:
     // 0 - Normal, as in 2.8.1.

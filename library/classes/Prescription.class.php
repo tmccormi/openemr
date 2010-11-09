@@ -96,6 +96,20 @@ function load_drug_attributes($id) {
     return $arr;
 }
 
+function load_snomed_codes() {
+  $res = sqlStatement("SELECT * FROM codes WHERE code_type = '1' AND modifier = 'SITE' ORDER BY id");
+  $arr = array();
+  while ($row = sqlFetchArray($res)) {
+    if ($row['code_text_short'] == '') {
+      $arr[$row['id']] = ' ';
+    }
+    else {
+      $arr[$row['id']] = xl_list_label($row['code_text_short']);
+    }
+  }
+  return $arr;
+}
+
 /**
  * class Prescription
  *
@@ -150,6 +164,8 @@ class Prescription extends ORDataObject {
     var $drug_id;
     var $active;
 
+    var $site_id;
+
     /**
     * Constructor sets all Prescription attributes to their default value
     */
@@ -162,7 +178,8 @@ class Prescription extends ORDataObject {
         $this->route_array = load_drug_attributes('drug_route');        
         $this->form_array = load_drug_attributes('drug_form');
         $this->interval_array = load_drug_attributes('drug_interval');
-	$this->unit_array = load_drug_attributes('drug_units');
+        $this->unit_array = load_drug_attributes('drug_units');
+        $this->site_array = load_snomed_codes();
 
         $this->substitute_array = array("",xl("substitution allowed"),
             xl ("do not substitute"));
@@ -626,6 +643,13 @@ class Prescription extends ORDataObject {
         $refills_row = sqlQuery("SELECT count(*) AS count FROM drug_sales " .
                     "WHERE prescription_id = '" . $this->id . "' AND quantity > 0");
         return $refills_row['count'];
+    }
+
+    function set_site_id($site_id) {
+        $this->site_id = $site_id;
+    }
+    function get_site_id() {
+        return $this->site_id;
     }
 
 }// end of Prescription

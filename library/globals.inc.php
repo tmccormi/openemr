@@ -790,6 +790,57 @@ $GLOBALS_METADATA = array(
       xl('The payments posted cannot go below this date.This ensures that after taking the final report nobody post for previous dates.')
     ),
 
+    'medication_negation_rationale' => array(
+      xl('Medication Negation Rationale'),
+      array(
+        'SNOMED' => xl('SNOMED'),
+        'HL7patientreason' => xl('HL7 Patient Reason'),
+        'HL7medicalreason' => xl('HL7 Medical Reason'),
+      ),
+      'SNOMED',                             // default
+      xl('Field type to use for medication negation rationale.'),
+    ),
+
+    'adverse_agent' => array(
+      xl('Adverse Reaction Agent'),
+      array(
+        'RxNORM' => xl('RxNORM'),
+        'ICD9' => xl('ICD9'),
+        'ICD10' => xl('ICD10'),
+        'CPT4' => xl('CPT-4'),
+        'LOINC' => xl('LOINC'),
+        'Lab' => xl('Lab Test'),
+        'Device' => xl('Device Record'),
+        'Enum' => xl('Selectable List'),
+      ),
+      'ICD9',                             // default
+      xl('Field type to use for Allergy/Adverse reaction agent.'),
+    ),
+
+    'diagnosis_description_code' => array(
+      xl('Diagnosis Description Code'),
+      array(
+        'SNOMED' => xl('SNOMED'),
+        'ICD9' => xl('ICD9'),
+        'ICD10' => xl('ICD10'),
+      ),
+      'SNOMED',                             // default
+      xl('Field type to use for Allergy/Adverse reaction agent.'),
+    ),
+
+    'diagnostic_negation_rationale' => array(
+      xl('Diagnostic Negation Rationale'),
+      array(
+        'SNOMED' => xl('SNOMED'),
+        'HL7patientreason' => xl('HL7 Patient Reason'),
+        'HL7medicalreason' => xl('HL7 Medical Reason'),
+        'HL7systemreason' => xl('HL7 System Reason'),
+      ),
+      'SNOMED',                             // default
+      xl('Field type to use for diagnostic negation.'),
+    ),
+
+
   ),
 
 );
