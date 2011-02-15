@@ -202,12 +202,12 @@ $form_cptcode   = trim($_POST['form_cptcode']);
     }
 }
 </style>
-<title><?xl('Receipts Summary','e')?></title>
+<title><?xl('Receipts by Payment Method','e')?></title>
 </head>
 
 <body class="body_top">
 
-<span class='title'><?php xl('Report','e'); ?> - <?php xl('Receipts Summary','e'); ?></span>
+<span class='title'><?php xl('Report','e'); ?> - <?php xl('Receipts by Payment Method','e'); ?></span>
 
 <form method='post' action='receipts_by_method_report.php' id='theform'>
 
@@ -217,7 +217,7 @@ $form_cptcode   = trim($_POST['form_cptcode']);
 
 <table>
  <tr>
-  <td width='630px'>
+  <td width='85%'>
 	<div style='float:left'>
 
 	<table class='text'>

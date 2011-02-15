@@ -228,7 +228,8 @@ if( !(empty($_POST['start']) || empty($_POST['end']))) {
 
     $res = sqlStatement("select * from forms where " .
                         "form_name = 'New Patient Encounter' and " .
-                        "date between '$startdate' and '$enddate' " .
+                        //"date between '$startdate' and '$enddate' " .
+                        "date between CAST('$start' AS DATETIME) and CAST('$end 23:59:59' AS DATETIME)" .
                         "order by date DESC");
     while($result = sqlFetchArray($res)) {
         if ($result{"form_name"} == "New Patient Encounter") {
@@ -322,7 +323,7 @@ if( !(empty($_POST['start']) || empty($_POST['end']))) {
         echo "</div>";
 
         ++$iCounter;
-        print "<br/><br/>".xl('Physician Signature').":  _______________________________________________";
+        print "<br/><br/>".xl('Physician Signature').": ---ON FILE---";
         print "<hr class='pagebreak' />";
     }
 }

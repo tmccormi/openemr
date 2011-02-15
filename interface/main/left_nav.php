@@ -266,7 +266,7 @@ function genFindBlock() {
  <tr>
   <td class='smalltext'><?php xl('Find','e') ?>:&nbsp;</td>
   <td class='smalltext' colspan='2'>
-   <input type="entry" size="7" name="patient" class='inputtext' style='width:65px;' />
+   <input type="text" size="7" name="patient" class='inputtext' style='width:65px;' />
   </td>
  </tr>
  <tr>
@@ -1247,8 +1247,8 @@ if (!empty($reg)) {
 	  <?php genMiscLink('RTop','rep','0',xl('List'),'reports/patient_list.php'); ?>
           <?php if (acl_check('patients', 'med') && !$GLOBALS['disable_prescriptions']) genMiscLink('RTop','rep','0',xl('Rx'),'reports/prescriptions_report.php'); ?>
           <?php if (acl_check('patients', 'med')) genMiscLink('RTop','rep','0',xl('Clinical'),'reports/clinical_reports.php'); ?>
-	  <?php genMiscLink('RTop','rep','0',xl('Referrals'),'reports/referrals_report.php'); ?>
-	  <?php genMiscLink('RTop','rep','0',xl('Immunization Registry'),'reports/immunization_report.php'); ?>
+	        <?php genMiscLink('RTop','rep','0',xl('Referrals'),'reports/referrals_report.php'); ?>
+	        <?php genMiscLink('RTop','rep','0',xl('Immunization Registry'),'reports/immunization_report.php'); ?>
         </ul>
       </li>
       <li><a class="collapsed_lv2"><span><?php xl('Clinic','e') ?></span></a>
@@ -1264,12 +1264,12 @@ if (!empty($reg)) {
           <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appointments'),'reports/appointments_report.php'); ?>
           <?php  genMiscLink('RTop','rep','0',xl('Encounters'),'reports/encounters_report.php'); ?>
           <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appt-Enc'),'reports/appt_encounter_report.php'); ?>
-<?php if (empty($GLOBALS['code_types']['IPPF'])) { ?>
-          <?php genMiscLink('RTop','rep','0',xl('Superbill'),'reports/custom_report_range.php'); ?>
-<?php } ?>
-	  <?php  genMiscLink('RTop','rep','0',xl('Eligibility'),'reports/edi_270.php'); ?>
-	  <?php  genMiscLink('RTop','rep','0',xl('Eligibility Response'),'reports/edi_271.php'); ?>
-	  
+          <?php if (empty($GLOBALS['code_types']['IPPF'])) { ?>
+              <?php genMiscLink('RTop','rep','0',xl('Superbill'),'reports/custom_report_range.php'); ?>
+          <?php } ?>
+	        
+	        <?php  genMiscLink('RTop','rep','0',xl('Eligibility'),'reports/edi_270.php'); ?>
+	        <?php  genMiscLink('RTop','rep','0',xl('Eligibility Response'),'reports/edi_271.php'); ?>
 
           <?php if (!$GLOBALS['disable_chart_tracker']) genMiscLink('RTop','rep','0',xl('Chart Activity'),'reports/chart_location_activity.php'); ?>
           <?php if (!$GLOBALS['disable_chart_tracker']) genMiscLink('RTop','rep','0',xl('Charts Out'),'reports/charts_checked_out.php'); ?>
@@ -1283,7 +1283,13 @@ if (!empty($reg)) {
           <?php genMiscLink('RTop','rep','0',xl('Sales'),'reports/sales_by_item.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Cash Rec'), 'billing/sl_receipts_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Front Rec'), 'reports/front_receipts_report.php'); ?>
-          <?php genMiscLink('RTop','rep','0',xl('Pmt Method'), 'reports/receipts_by_method_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Deposits'),'reports/deposits_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Payments'),'reports/payments_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Pay by Method'), 'reports/receipts_by_method_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Demog w/ Pmts'), 'reports/demog_pmt_summary.php'); ?>          
+          <?php genMiscLink('RTop','rep','0',xl('Billing by CPT'),'reports/billing_by_cpt.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Daily Billing'),'reports/daily_billing_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Provider Income'), 'reports/providerincome_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Collections'), 'reports/collections_report.php'); ?>
         </ul>
       </li>
