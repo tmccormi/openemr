@@ -13,6 +13,7 @@ require_once("$srcdir/acl.inc");
 require_once("$srcdir/options.inc.php");
 require_once("$srcdir/../custom/code_types.inc.php");
 require_once("$srcdir/csv_like_join.php");
+require_once("$srcdir/payment_jav.inc.php");  // 12-21-10: Ram: Fix for JIRA bug DRCLOUDEMR-19 
 
 if ($ISSUE_TYPES['football_injury']) {
   // Most of the logic for the "football injury" issue type comes from this
@@ -207,13 +208,18 @@ if ($_POST['form_save']) {
   //
   echo "<html><body><script language='JavaScript'>\n";
   if ($info_msg) echo " alert('$info_msg');\n";
-
   echo " var myboss = opener ? opener : parent;\n";
   echo " if (myboss.refreshIssue) myboss.refreshIssue($issue,'$tmp_title');\n";
   echo " else myboss.location.reload();\n";
-  echo " if (parent.$ && parent.$.fancybox) parent.$.fancybox.close();\n";
-  echo " else window.close();\n";
-
+  echo "if (window.opener != null)\n";
+  echo "  window.close();\n";
+  echo "else if ( parent.$ ) {\n";
+  echo "  if ( parent.$.fancybox ) {\n";
+  echo "    parent.$.fancybox.close();\n";
+  echo "  } else {\n";
+  echo "    parent.$.fn.fancybox.close();\n";
+  echo "  }\n";
+  echo "}\n";
   echo "</script></body></html>\n";
   exit();
 }
@@ -238,7 +244,7 @@ if (!empty($irow['type'])) {
 <?php html_header_show();?>
 <title><?php echo $issue ? xl('Edit') : xl('Add New'); ?><?php xl('Issue','e',' '); ?></title>
 <link rel="stylesheet" href='<?php echo $css_header ?>' type='text/css'>
-
+<link rel="stylesheet" type="text/css" href="<?php echo $GLOBALS['webroot'] ?>/library/js/fancybox-1.3.4/jquery.fancybox-1.3.4.css" media="screen" />
 <style>
 
 td, input, select, textarea {
@@ -263,12 +269,39 @@ div.section {
 <script type="text/javascript" src="../../../library/textformat.js"></script>
 <script type="text/javascript" src="../../../library/dialog.js"></script>
 
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery-1.4.3.min.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/fancybox-1.3.4/jquery.fancybox-1.3.4.patched.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/common.js"></script>
+
 <script language="JavaScript">
 
  var mypcc = '<?php echo $GLOBALS['phone_country_code'] ?>';
 
  var aitypes = new Array(); // issue type attributes
  var aopts   = new Array(); // Option objects
+
+$(document).ready(function(){
+
+
+enable_modals_1_3();
+
+	$(".find_code_modal").fancybox( {
+	      'overlayOpacity' : 0.0,
+	      'showCloseButton' : true,
+	      'height' : 400,
+	      'width' : 560,
+	      'hideOnOverlayClick' : false,
+              'centerOnScroll' : false
+	});
+	$(".delete_confirm_modal").fancybox( {
+		'overlayOpacity' : 0.0,
+	        'showCloseButton' : false,
+		'height' : 180,
+		'width' : 500,
+                'centerOnScroll' : false
+	});
+});
+
 <?php
  // "Clickoptions" is a feature by Mark Leeds that provides for one-click
  // access to preselected lists of issues in each category.  Here we get
@@ -369,18 +402,31 @@ div.section {
 
  // Process click on Delete link.
  function deleteme() {
-  dlgopen('../deleter.php?issue=<?php echo $issue ?>', '_blank', 500, 450);
+   //   dlgopen('../deleter.php?issue=<?php echo $issue ?>', '_blank', 500, 450);
+    var fbox = document.getElementById("fDeleteThing");
+    fbox.href = '../deleter.php?issue=<?php echo $issue ?>';
+    $('#fDeleteThing').trigger('click');	 
+
   return false;
  }
 
  // Called by the deleteme.php window on a successful delete.
  function imdeleted() {
+  if ( window.opener != null ) { opener.location.reload(); } else { parent.location.reload();}
+
   closeme();
  }
 
  function closeme() {
-    if (parent.$) parent.$.fancybox.close();
-    window.close();
+   if (window.opener != null)
+     window.close();
+   else if ( parent.$ ) {
+     if ( parent.$.fancybox ) {
+       parent.$.fancybox.close();
+     } else {
+       parent.$.fn.fancybox.close();
+     }
+   }
  }
 
  // Called when the Active checkbox is clicked.  For consistency we
@@ -424,7 +470,13 @@ function set_related(codetype, code, selector, codedesc) {
 
 // This invokes the find-code popup.
 function sel_diagnosis() {
- dlgopen('../encounter/find_code_popup.php?codetype=<?php echo $diagnosis_type ?>', '_blank', 500, 400);
+    dlgopen('../encounter/find_code_popup.php?codetype=<?php echo $diagnosis_type ?>', '_blank', 500, 400);
+    /*
+    var fbox = document.getElementById("fFindCode");
+    fbox.href = '../encounter/find_code_popup.php?codetype=<?php echo $diagnosis_type ?>';
+    $('#fFindCode').trigger('click');	 
+    */
+
 }
 
 // Check for errors when the form is submitted.
@@ -434,6 +486,18 @@ function validate() {
   alert("<?php xl('Please enter a title!','e'); ?>");
   return false;
  }
+
+ // 12-21-10: Ram: Fix for JIRA bug DRCLOUDEMR-19 
+ // Validate the begin and end date fields.
+ sBeginDate = f.form_begin.value;
+ sEndDate = f.form_end.value;
+  if ( (sBeginDate.length > 0) && (sEndDate.length > 0) ) {
+	 if ( DateCheckGreater(sBeginDate, sEndDate, '%Y-%m-%d') == false ){
+		  alert("<?php xl('End date cannot be later than begin date!','e'); ?>");
+		  return false;
+	 }
+ }	 
+ 
  top.restoreSession();
  return true;
 }
@@ -453,10 +517,16 @@ function divclick(cb, divid) {
 
 </head>
 
-<body class="body_top" style="padding-right:0.5em">
+<body class="body_top" style="padding-right:0.5em;">
 
-<form method='post' name='theform'
- action='add_edit_issue.php?issue=<?php echo $issue; ?>&thispid=<?php echo $thispid; ?>&thisenc=<?php echo $thisenc; ?>'
+<h4><?php echo $issue ? xl('Edit') : xl('Add New'); ?><?php xl('Issue','e',' '); ?></h4>
+
+ <div style="display:none">
+  <a href="#" id="fDeleteThing" class="iframe delete_confirm_modal"></a>
+  <a href="#" id="fFindCode" class="iframe find_code_modal"></a>
+ </div>
+
+<form method='post' name='theform' action='add_edit_issue.php?issue=<?php echo $issue ?>&thisenc=<?php echo $thisenc ?>'
  onsubmit='return validate()'>
 
 <table border='0' width='100%'>
@@ -486,7 +556,7 @@ function divclick(cb, divid) {
  <tr id='row_titles'>
   <td valign='top' nowrap>&nbsp;</td>
   <td valign='top'>
-   <select name='form_titles' size='<?php echo $GLOBALS['athletic_team'] ? 10 : 4; ?>' onchange='set_text()'>
+   <select name='form_titles' size='4' onchange='set_text()' style='width:150px;'>
    </select> <?php xl('(Select one of these, or type your own title)','e'); ?>
   </td>
  </tr>
@@ -502,7 +572,7 @@ function divclick(cb, divid) {
   <td valign='top' nowrap><b><?php xl('Diagnosis Code','e'); ?>:</b></td>
   <td>
    <input type='text' size='50' name='form_diagnosis'
-    value='<?php echo $irow['diagnosis'] ?>' onclick='sel_diagnosis()'
+    value='<?php echo $irow['diagnosis'] ?>' onclick='sel_diagnosis()' 
     title='<?php xl('Click to select or change diagnoses','e'); ?>'
     style='width:100%' readonly />
   </td>
@@ -736,6 +806,7 @@ echo generate_select_list('form_medical_type', 'medical_type', $irow['injury_typ
 </center>
 
 </form>
+
 <script language='JavaScript'>
  newtype(<?php echo $type_index ?>);
  Calendar.setup({inputField:"form_begin", ifFormat:"%Y-%m-%d", button:"img_begin"});

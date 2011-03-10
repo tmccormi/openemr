@@ -15,15 +15,37 @@ function tabbify() {
     
 }
 
-function enable_modals() {
+function enable_modals( fWidth, fHeight ) {
+  frameWidth = (typeof fWidth == 'undefined') ? 640 : fWidth;
+  frameHeight = (typeof fHeight == 'undefined') ? 480 : fHeight;
+  
+    // fancy box
+	$(".iframe").fancybox( {
+		'titleShow' : false,
+	        'autoScale' : false,
+		'showCloseButton' : true,
+		'overlayOpacity' : 0.0,
+		'frameWidth' : frameWidth,
+	        'frameHeight' : frameHeight,
+	        'centerOnScroll' : false
+    });
+}
 
+function enable_modals_1_3( fWidth, fHeight ) {
+  frameWidth = (typeof fWidth == 'undefined') ? 640 : fWidth;
+  frameHeight = (typeof fHeight == 'undefined') ? 480 : fHeight;
+  
     // fancy box
 	$(".iframe").fancybox( {
 		'overlayOpacity' : 0.0,
 		'showCloseButton' : true,
-        'centerOnScroll' : false
+	        'height' : frameHeight,
+		'width' : frameWidth,
+		'transitionOut' : 'none',
+		'transitionIn' : 'none',
+		'autoscale' : false,
+	        'centerOnScroll' : false
     });
-
 }
 
 function enable_big_modals() {
@@ -47,4 +69,16 @@ function PreventIt(evt)//Specially for the browser chrome.
 		if (evt.stopPropagation) evt.stopPropagation();
 	 }
 }
+
+//
+// To be used as keypress handler for Numeric-only text fields.
+//
+function number_filter(event) {
+  var keyCode = (event.which) ? event.which : event.keyCode;
+  return ((keyCode >= 0x30 && keyCode <= 0x39)  || // '0' - '9'
+ 	   keyCode == 8  || keyCode == 9    || // BS, HT
+	   keyCode == 12 || keyCode == 27   || // Clear, ESC
+	   keyCode == 37 || keyCode == 39   || // Left-Arrow, Right-Arrow
+           keyCode == 46);                     // Del
+ }
 

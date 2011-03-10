@@ -14,8 +14,10 @@ include_once("$srcdir/formdata.inc.php");
 <script type="text/javascript" src="../../../library/dynarch_calendar.js"></script>
 <?php include_once("{$GLOBALS['srcdir']}/dynarch_calendar_en.inc.php"); ?>
 <script type="text/javascript" src="../../../library/dynarch_calendar_setup.js"></script>
-<script type="text/javascript" src="<?php echo $GLOBALS['webroot']; ?>/library/js/jquery.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot']; ?>/library/js/jquery-1.4.3.min.js"></script>
+
 <SCRIPT LANGUAGE="JavaScript">
+
 var mypcc = '<?php echo $GLOBALS['phone_country_code'] ?>';
 function validate(f) {
 if (f.form_adreviewed.value == "")
@@ -26,8 +28,16 @@ if (f.form_adreviewed.value == "")
 }
  return true;
 }
+
 $(document).ready(function(){
-    $("#cancel").click(function() { window.close(); });
+    $("#cancel").click(function() {
+       if ( parent.$.fancybox ) {
+	   parent.$.fancybox.close();
+       } else {
+	   parent.$.fn.fancybox.close();
+       }
+       //window.close(); 
+    }); 
 });
 </script>
 </head>
@@ -39,8 +49,19 @@ if ($_POST['form_yesno'])
 	sqlQuery("UPDATE patient_data SET completed_ad='".formData('form_yesno','P',true)."', ad_reviewed='".formData('form_adreviewed','P',true)."' where pid='$pid'");
   // Close this window and refresh the calendar display.
   echo "<html>\n<body>\n<script language='JavaScript'>\n";
-  echo " if (!opener.closed && opener.refreshme) opener.refreshme();\n";
-  echo " window.close();\n";
+  echo " if (opener != null) {\n";
+  echo "   if (!opener.closed && opener.refreshme) {\n";
+  echo "     opener.refreshme();\n";
+  echo "   }\n";
+  echo "   window.close();\n";
+  echo " } else {\n";
+  echo "   if (parent.refreshme) parent.refreshme();\n";
+  echo "   if ( parent.$.fancybox ) {\n";
+  echo "     parent.$.fancybox.close();\n";
+  echo "   } else {\n";
+  echo "     parent.$.fn.fancybox.close();\n";
+  echo "   }\n";
+  echo " }\n";
   echo "</script>\n</body>\n</html>\n";
   exit();
 }
@@ -67,7 +88,8 @@ if ($myrow)
         generate_form_field(array('data_type'=>4,'field_id'=>'adreviewed'), $form_adreviewed);
         echo "<script language='JavaScript'>Calendar.setup({inputField:'form_adreviewed', ifFormat:'%Y-%m-%d', button:'img_adreviewed'});</script>";
 	echo "</td></tr>";
-	echo "<tr><td class=text colspan=2><br><input type=submit id=create value='" . xl('Save') . "' /> &nbsp; <input type=button id=cancel value='" . xl('Cancel') . "' /></td></tr>";
+	echo "<tr><td class=text colspan='3'><br><input type=submit id=create value='" . xl('Save') . "' /> &nbsp; <input type='button' id=cancel value='" . xl('Cancel') . "' /></td></tr>";
+
       ?>
       </table></form>
 <div>

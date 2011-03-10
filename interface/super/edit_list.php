@@ -378,6 +378,8 @@ function writeCTLine($ct_array) {
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery.js"></script>
 
 <link rel="stylesheet" href='<?php  echo $css_header ?>' type='text/css'>
+<link rel="stylesheet" type="text/css" href="<?php echo $GLOBALS['webroot'] ?>/library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
+
 <title><?php  xl('List Editor','e'); ?></title>
 
 <style>
@@ -393,6 +395,9 @@ a, a:visited, a:hover { color:#0000cc; }
 </style>
 
 <script type="text/javascript" src="../../library/dialog.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery.1.3.2.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/common.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
 
 <script language="JavaScript">
 
@@ -462,7 +467,11 @@ function delete_code(lino, seqno) {
 // For Fee Sheet administration.
 function select_code(lino) {
  current_lino = lino;
- dlgopen('../patient_file/encounter/find_code_popup.php', '_blank', 700, 400);
+ //dlgopen('../patient_file/encounter/find_code_popup.php', '_blank', 700, 400);
+
+  var fbox = document.getElementById("fFindCode");
+  fbox.href = '../patient_file/encounter/find_code_popup.php';
+  $('#fFindCode').trigger('click');	 
  return false;
 }
 
@@ -527,6 +536,10 @@ function mysubmit() {
 </head>
 
 <body class="body_top">
+
+<div "display:none">
+  <a href="#" id="fFindCode" class="find_code_modal"></a>
+</div>
 
 <form method='post' name='theform' id='theform' action='edit_list.php'>
 <input type="hidden" name="formaction" id="formaction">
@@ -673,6 +686,14 @@ if ($list_id) {
 // jQuery stuff to make the page a little easier to use
 
 $(document).ready(function(){
+    $(".find_code_modal").fancybox( {
+		'overlayOpacity' : 0.0,
+	        'showCloseButton' : false,
+		'frameHeight' : 400,
+		'frameWidth' : 560,
+                'centerOnScroll' : false
+    });
+
     $("#form_save").click(function() { SaveChanges(); });
     $("#list_id").change(function() { $('#theform').submit(); });
 

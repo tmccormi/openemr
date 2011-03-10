@@ -64,7 +64,11 @@ if ($_POST["mode"] == "facility" && $_POST["newmode"] == "admin_facility")
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery-ui.js"></script>
 
 <script type="text/javascript">
-
+	function reloadMe()
+	{
+		top.restoreSession();
+		window.location.reload();
+	}
 
 $(document).ready(function(){
 
@@ -76,21 +80,24 @@ $(document).ready(function(){
 		'overlayOpacity' : 0.0,
 		'showCloseButton' : true,
 		'frameHeight' : 460,
-		'frameWidth' : 650
+		'frameWidth' : 650,
+	    'centerOnScroll' : false,
+		'callbackOnClose' : function() { reloadMe(); }
 	});
 
     // special size for
-	$(".medium_modal").fancybox( {
+	$(".editfac_modal").fancybox( {
 		'overlayOpacity' : 0.0,
 		'showCloseButton' : true,
 		'frameHeight' : 460,
-		'frameWidth' : 650
+		'frameWidth' : 650,
+	    'centerOnScroll' : false,
+		'callbackOnClose' : function() { reloadMe(); }		
 	});
 
 });
 
 </script>
-<link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 </head>
 
 <body class="body_top">
@@ -103,14 +110,14 @@ $(document).ready(function(){
 		 </td></tr>
 	</table>
     </div>
-    <div class="tabContainer" style="width:550px;">
-        <div>
-<table cellpadding="1" cellspacing="0" class="showborder">
-	<tr class="showborder_head" height="22">
-		<th style="border-style:1px solid #000" width="140px"><?php xl('Name','e'); ?></th>
-		<th style="border-style:1px solid #000" width="320px"><?php xl('Address','e'); ?></th>
-		<th style="border-style:1px solid #000"><?php xl('Phone','e'); ?></th>
-    </tr>
+    <div class="tabContainer" style="width:100%;">
+        <div id="inner" style="width:650px; margin: 0 auto;">
+        <table class="oemr_list" cellpadding="1" cellspacing="0" class="showborder">
+			<tr class="showborder_head" height="22">
+				<th style="border-style:1px solid #000" width="140px"><?php xl('Name','e'); ?></th>
+				<th style="border-style:1px solid #000" width="320px"><?php xl('Address','e'); ?></th>
+				<th style="border-style:1px solid #000"><?php xl('Phone','e'); ?></th>
+		    </tr>
      <?php
         $fres = 0;
         $fres = sqlStatement("select * from facility order by name");
@@ -125,7 +132,7 @@ $(document).ready(function(){
           if ($iter3{state}!="")$varstate=$iter3{state}.",";
     ?>
     <tr height="22">
-       <td valign="top" class="text"><b><a href="facility_admin.php?fid=<?php echo $iter3{id};?>" class="iframe medium_modal"><span><?php echo htmlspecialchars($iter3{name});?></span></a></b>&nbsp;</td>
+       <td valign="top" class="text"><b><a href="facility_admin.php?fid=<?php echo $iter3{id};?>" class="iframe editfac_modal"><span><?php echo htmlspecialchars($iter3{name});?></span></a></b>&nbsp;</td>
        <td valign="top" class="text"><?php echo htmlspecialchars($varstreet.$varcity.$varstate.$iter3{country_code}." ".$iter3{postal_code}); ?>&nbsp;</td>
        <td><?php echo htmlspecialchars($iter3{phone});?>&nbsp;</td>
     </tr>
@@ -134,7 +141,7 @@ $(document).ready(function(){
 }
  if (count($result2)<=0)
   {?>
-  <tr height="25">
+    <tr height="25">
 		<td colspan="3"  style="text-align:center;font-weight:bold;"> <?php echo xl( "Currently there are no facilities." ); ?></td>
 	</tr>
   <?}

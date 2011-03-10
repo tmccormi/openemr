@@ -35,10 +35,8 @@ parent.$.fn.fancybox.close();
 
 function submitform() {
     if (document.forms[0].facility.value.length>0) {
-        top.restoreSession();
         document.forms[0].submit();
 		parent.$.fn.fancybox.close();
-		parent.location.reload();
     } else {
         document.forms[0].facility.style.backgroundColor="red";
         document.forms[0].facility.focus();
@@ -73,6 +71,7 @@ $(document).ready(function(){
 	$(".large_modal").fancybox( {
 		'overlayOpacity' : 0.0,
 		'showCloseButton' : true,
+        	'centerOnScroll' : false,
 		'frameHeight' : 600,
 		'frameWidth' : 1000
 	});
@@ -81,6 +80,7 @@ $(document).ready(function(){
 	$(".medium_modal").fancybox( {
 		'overlayOpacity' : 0.0,
 		'showCloseButton' : true,
+        	'centerOnScroll' : false,
 		'frameHeight' : 260,
 		'frameWidth' : 510
 	});
@@ -94,7 +94,6 @@ $(document).ready(function(){
 });
 
 </script>
-<link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 
 </head>
 <body class="body_top">

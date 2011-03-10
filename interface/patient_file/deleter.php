@@ -113,6 +113,21 @@ td { font-size:10pt; }
 </style>
 
 <script language="javascript">
+
+ function closeme() {
+   if (window.opener != null)
+     window.close();
+   else if ( parent.$ ) {
+     if ( parent.$.fancybox ) {
+       parent.$.fancybox.close();
+     } else {
+       parent.$.fn.fancybox.close();
+     }
+   }
+   return false;
+ }
+
+
 function submit_form()
 {
 document.deletefrm.submit();
@@ -341,7 +356,8 @@ document.deletefrm.submit();
 <p class="text">&nbsp;<br>
 <a href="#" onclick="submit_form()" class="css_button"><span><?php xl('Yes, Delete and Log','e'); ?></span></a>
 <input type='hidden' name='form_submit' value=<?php xl('Yes, Delete and Log','e','\'','\''); ?>/>
-<a href='#' class="css_button" onclick='parent.$.fn.fancybox.close();'><span><?php echo xl('No, Cancel');?></span></a>
+
+<a href='#' class="css_button" onclick='closeme();'><span><?php echo xl('No, Cancel');?></span></a>
 </p>
 
 </center>

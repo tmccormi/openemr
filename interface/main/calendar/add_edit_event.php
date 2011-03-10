@@ -58,9 +58,32 @@
 
  ?>
 
- <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/jquery-1.4.3.min.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/common.js"></script>
+<script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/js/fancybox-1.3.4/jquery.fancybox-1.3.4.patched.js"></script>
 
- <?php
+<script language="JavaScript">
+
+ function closeme() {
+   if (window.opener != null) {
+     window.close();
+   } else if ( parent.$ ) {
+     if ( parent.$.fancybox ) {
+       parent.$.fancybox.close();
+     } else { 
+       parent.$.fn.fancybox.close();
+     }
+   }
+ }
+</script>
+
+<style>
+td {
+ 	padding-top: 9px; 
+}
+</style>
+
+<?php
 
 // insert an event
 // $args is mainly filled with content from the POST http var
@@ -640,8 +663,8 @@ if ($_POST['form_action'] == "save") {
   // Close this window and refresh the calendar display.
   echo "<html>\n<body>\n<script language='JavaScript'>\n";
   if ($info_msg) echo " alert('$info_msg');\n";
-  echo " if (!opener.closed && opener.refreshme) opener.refreshme();\n";
-  echo " window.close();\n";
+  echo " if (opener != null && !opener.closed && opener.refreshme) opener.refreshme();\n";
+  echo " closeme();\n";
   echo "</script>\n</body>\n</html>\n";
   exit();
  }
@@ -776,6 +799,7 @@ if ($_POST['form_action'] == "save") {
 <?php html_header_show(); ?>
 <title><?php echo $eid ? xl('Edit','e') : xl('Add New','e') ?> <?php xl('Event','e');?></title>
 <link rel="stylesheet" href='<?php echo $css_header ?>' type='text/css'>
+<link rel="stylesheet" type="text/css" href="<?php echo $GLOBALS['webroot'] ?>/library/js/fancybox-1.3.4/jquery.fancybox-1.3.4.css" media="screen" />
 
 <style>
 td { font-size:0.8em; }
@@ -845,7 +869,11 @@ td { font-size:0.8em; }
 
  // This invokes the find-patient popup.
  function sel_patient() {
-  dlgopen('find_patient_popup.php', '_blank', 500, 400);
+   //dlgopen('find_patient_popup.php', '_blank', 500, 400);
+  $('#fFindPatient').trigger('click');	 
+
+  return false;
+
  }
 
  // Do whatever is needed when a new event category is selected.
@@ -955,10 +983,16 @@ td { font-size:0.8em; }
         <?php }?>
         var c = document.forms[0].form_category;
 	var formDate = document.forms[0].form_date;
-        dlgopen('find_appt_popup.php?providerid=' + s +
+        //dlgopen('find_appt_popup.php?providerid=' + s +
+        //        '&catid=' + c.options[c.selectedIndex].value +
+        //        '&facility=' + f +
+        //        '&startdate=' + formDate.value, '_blank', 500, 400);
+	var fbox = document.getElementById("fFindAppt");
+	fbox.href = 'find_appt_popup.php?providerid=' + s +
                 '&catid=' + c.options[c.selectedIndex].value +
                 '&facility=' + f +
-                '&startdate=' + formDate.value, '_blank', 500, 400);
+                '&startdate=' + formDate.value;
+	$('#fFindAppt').trigger('click');	 
         //END (CHEMED) modifications
     }
 
@@ -969,6 +1003,17 @@ td { font-size:0.8em; }
 </head>
 
 <body class="body_top" onunload='imclosing()'>
+<script language='JavaScript'>
+      if (window.opener == null) {
+	document.writeln("<h4><?php echo $eid ? xl('Edit','e') : xl('Add New','e') ?> <?php xl('Event','e');?></h4>");
+      }
+</script>
+
+<!-- fancybox -->
+<div "display:none">
+ <a href="find_patient_popup.php" id="fFindPatient" class="link_submit find_patient_modal iframe"></a>
+ <a href="#" id="fFindAppt" class="link_submit find_patient_modal iframe"></a>
+</div>
 
 <form method='post' name='theform' id='theform' action='add_edit_event.php?eid=<?php echo $eid ?>' />
 <!-- ViSolve : Requirement - Redirect to Create New Patient Page -->
@@ -978,11 +1023,15 @@ if ($_POST["resname"]=="noresult"){
 echo '
 <script language="Javascript">
 			// refresh and redirect the parent window
-			if (!opener.closed && opener.refreshme) opener.refreshme();
+			if (opener != null && !opener.closed && opener.refreshme) opener.refreshme();
 			top.restoreSession();
-			opener.document.location="../../new/new.php";
+			if (opener != null) {
+				opener.document.location="../../new/new.php";
+			else
+				parent.document.location="../../new/new.php";
+
 			// Close the window
-			window.close();
+			closeme();
 </script>';
 }
 ?>
@@ -1036,9 +1085,9 @@ echo '
    <?php xl('Time','e'); ?>
   </td>
   <td width='1%' nowrap id='tdallday3'>
-   <input type='text' size='2' name='form_hour' value='<?php echo $starttimeh ?>'
+   <input type='text' size='2' maxlength='2' name='form_hour' id='form_hour' value='<?php echo $starttimeh ?>'
     title='<?php xl('Event start time','e'); ?>' /> :
-   <input type='text' size='2' name='form_minute' value='<?php echo $starttimem ?>'
+   <input type='text' size='2' maxlength='2' name='form_minute' id='form_minute' value='<?php echo $starttimem ?>'
     title='<?php xl('Event start time','e'); ?>' />&nbsp;
    <select name='form_ampm' title='Note: 12:00 noon is PM, not AM'>
     <option value='1'><?php xl('AM','e'); ?></option>
@@ -1046,7 +1095,6 @@ echo '
    </select>
   </td>
  </tr>
-
  <tr>
   <td nowrap>
    <b><?php echo htmlspecialchars($GLOBALS['athletic_team'] ? xl('Team/Squad') : xl('Title')); ?>:</b>
@@ -1062,7 +1110,7 @@ echo '
   <td nowrap id='tdallday4'><?php xl('duration','e'); ?>
   </td>
   <td nowrap id='tdallday5'>
-   <input type='text' size='4' name='form_duration' value='<?php echo $thisduration ?>' title='<?php xl('Event duration in minutes','e'); ?>' />
+   <input type='text' size='4' name='form_duration' id='form_duration' value='<?php echo $thisduration ?>' title='<?php xl('Event duration in minutes','e'); ?>' />
     <?php xl('minutes','e'); ?>
   </td>
  </tr>
@@ -1359,7 +1407,7 @@ if ($repeatexdate != "") {
 &nbsp;
 <input type='button' name='form_delete' id='form_delete' value='<?php xl('Delete','e');?>'<?php if (!$eid) echo " disabled" ?> />
 &nbsp;
-<input type='button' id='cancel' value='<?php xl('Cancel','e');?>' />
+<input type='button' id='cancel' onclick="closeme()" value='<?php xl('Cancel','e');?>' />
 </p>
 <?php if ($informant) echo "<p class='text'>" . xl('Last update by') . " $informant</p>\n"; ?>
 </center>
@@ -1394,10 +1442,38 @@ if ($repeatexdate != "") {
 // jQuery stuff to make the page a little easier to use
 
 $(document).ready(function(){
+
+    enable_modals_1_3();
+
+    $('#form_hour').keypress(function (e) {
+			       return number_filter(e);
+			     });
+    $('#form_minute').keypress(function (e) {
+			       return number_filter(e);
+			     });
+
+    $('#form_duration').keypress(function (e) {
+			       return number_filter(e);
+			     });
+    // special size for
+    $(".find_patient_modal").fancybox( {
+		'titleShow' : false,
+		'showCloseButton' : true,
+		'opacity' : true,
+	      	'overlayShow' : true,
+		'showCloseButton' : true,
+		'transitionOut' : 'none',
+		'transitionIn' : 'none',
+ 		'overlayOpacity' : 0.0,
+		'width' : 675,
+		'height' : 300,
+                'centerOnScroll' : false
+		});
+
     $("#form_save").click(function() { validate(); });
     $("#find_available").click(function() { find_available(); });
     $("#form_delete").click(function() { deleteEvent(); });
-    $("#cancel").click(function() { window.close(); });
+    $("#cancel").click(function() { closeme(); });
 
     // buttons affecting the modification of a repeating event
     $("#all_events").click(function() { $("#recurr_affect").val("all"); EnableForm(); SubmitForm(); });
