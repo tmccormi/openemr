@@ -28,17 +28,19 @@ parent.$.fn.fancybox.close();
 <head>
 
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
-<link rel="stylesheet" type="text/css" href="../../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" />
+<!--link rel="stylesheet" type="text/css" href="../../library/js/fancybox/jquery.fancybox-1.2.6.css" media="screen" /-->
 <script type="text/javascript" src="../../library/dialog.js"></script>
 <script type="text/javascript" src="../../library/js/jquery.1.3.2.js"></script>
 <script type="text/javascript" src="../../library/js/common.js"></script>
-<script type="text/javascript" src="../../library/js/fancybox/jquery.fancybox-1.2.6.js"></script>
+<!--script type="text/javascript" src="../../library/js/fancybox/jquery.fancybox-1.2.6.js"></script-->
 <script type="text/javascript">
 function submitform() {
+ top.restoreSession();
     if (document.forms[0].facility.value.length>0) {
         document.forms[0].submit();
-        parent.$.fn.fancybox.close();
-		parent.location.reload();
+	parent.$.fn.fancybox.close();
+//        parent.$.fn.fancybox.close();
+//		parent.location.reload();
     } else {
         document.forms[0].facility.style.backgroundColor="red";
         document.forms[0].facility.focus();
@@ -70,7 +72,8 @@ $(document).ready(function(){
   </tr>
 </table>
 
-<form name='facility' method='post' action="facilities.php" >
+<!--form name='facility' method='post' action="facilities.php" -->
+<form name='facility' method='post' action="facilities.php" target="_parent" onsubmit='return top.restoreSession()' >
     <input type=hidden name=mode value="facility">
     <input type=hidden name=newmode value="admin_facility">	<!--	Diffrentiate Admin and add post backs -->
     <input type=hidden name=fid value="<?php echo $my_fid;?>">

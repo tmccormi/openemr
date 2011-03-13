@@ -6,7 +6,7 @@
 
 $ignoreAuth=true;
 include_once("../globals.php");
-include_once("$srcdir/md5.js");
+include_once("$srcdir/sha1.js");
 include_once("$srcdir/sql.inc");
 ?>
 <html>
@@ -163,9 +163,10 @@ if (count($result3) != 1) { ?>
 <tr><td>&nbsp;</td><td>
 <input type="hidden" name="authPass">
 <?php if ($GLOBALS['use_adldap_auth'] == true): ?>
-<input type="submit" onClick="javascript:this.form.authPass.value=MD5(this.form.clearPass.value);" value=<?php xl('Login','e');?>>
+<!-- ViCareplus : As per NIST standard, the SHA1 encryption algorithm is used -->
+<input type="submit" onClick="javascript:this.form.authPass.value=SHA1(this.form.clearPass.value);" value=<?php xl('Login','e');?>>
 <?php else: ?>
-<input type="submit" onClick="javascript:this.form.authPass.value=MD5(this.form.clearPass.value);this.form.clearPass.value='';" value=<?php xl('Login','e');?>>
+<input type="submit" onClick="javascript:this.form.authPass.value=SHA1(this.form.clearPass.value);this.form.clearPass.value='';" value=<?php xl('Login','e');?>>
 <?php endif; ?>
 </td></tr>
 <tr><td colspan='2' class='text' style='color:red'>

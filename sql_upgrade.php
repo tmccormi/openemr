@@ -246,6 +246,14 @@ foreach ($versions as $version => $filename) {
 releases, then choose the older of possible releases.</p>
 <p><input type='submit' name='form_submit' value='Upgrade Database' /></p>
 </form>
+<table bgcolor="#dfdfdf" width="80%" class=text><tr><td>
+<b>Important Note for 3.2.0 to 4.0.0 OpenEMR Upgradation:</b>
+<p>
+For NIST MUO consistency, we've modified the password algorithm from 'MD5' to 'SHA1'. In order to support upgrades, 
+the User Password will be resetted to <b><i> 'pass'</i></b> and the respective password history will also be cleared during OpenEMR upgrade from 3.2.0 to 4.0.x.
+</p><p>
+The adminstrators are requested to change their password and also instruct their users to change their password immediately after the OpenEMR upgrade from 3.2.0 to 4.0.x. </p>
+</td></tr></table>
 </center>
 </body>
 </html>

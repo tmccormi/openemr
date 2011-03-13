@@ -119,6 +119,10 @@ $(document).ready(function(){
           for ($iter3 = 0;$frow = sqlFetchArray($fres);$iter3++)
             $result2[$iter3] = $frow;
           foreach($result2 as $iter3) {
+	$varstreet="";
+        $varcity="";
+        $varstate="";
+
           $varstreet=$iter3{street };
           if ($iter3{street }!="")$varstreet=$iter3{street }.",";
           if ($iter3{city}!="")$varcity=$iter3{city}.",";

@@ -47,7 +47,19 @@
     </tr>
     <tr>
 		<td valign="top">
-
+			<div class="text">
+                <form method="post" name="document_validate" action="{$VALIDATE_ACTION}" onsubmit="return top.restoreSession()">
+                <div>
+                    <div style="float:left">
+                        <b>{xl t='Sha-1 Hash'}:</b>&nbsp;
+                        <i>{$file->get_hash()}</i>&nbsp;
+                    </div>
+                    <div style="float:none">
+                        <a href="javascript:;" onclick="document.forms['document_validate'].submit();">(<span>{xl t='validate'})</span></a>
+                    </div>
+                </div>
+                </form>
+               </div>
             <div class="text">
                 <form method="post" name="document_update" action="{$UPDATE_ACTION}" onsubmit="return top.restoreSession()">
                 <div>
@@ -58,6 +70,10 @@
                         <a href="javascript:;" onclick="document.forms['document_update'].submit();">(<span>{xl t='submit'})</span></a>
                     </div>
                 </div>
+                <div>
+                    {xl t='Rename'}:
+                    <input type='text' size='20' name='docname' id='docname' value='{$file->get_url_web()}'/>
+              	</div>
                 <div>
                     {xl t='Date'}:
                     <input type='text' size='10' name='docdate' id='docdate'

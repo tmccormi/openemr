@@ -83,20 +83,24 @@ class C_Document extends Controller {
 		  			$error .= "The system was unable to create the directory for this upload, '" . $this->file_path . "'.\n";
 		  		}
 		  	}
-		  	
+  		    if ( $_POST['destination'] != '' ) {
+  		        $fname = $_POST['destination'];
+  		    }
 		  	$fname = preg_replace("/[^a-zA-Z0-9_.]/","_",$fname);
-		  	if (file_exists($this->file_path.$file['name'])) {
+		  	if (file_exists($this->file_path.$fname)) {
                                 $error .= xl('File with same name already exists at location:','','',' ') . $this->file_path . "\n";
-		  		$fname = basename($this->_rename_file($this->file_path.$file['name']));
+		  		$fname = basename($this->_rename_file($this->file_path.$fname));
 		  		$file['name'] = $fname;
                                 $error .= xl('Current file name was changed to','','',' ') . $fname ."\n";
 		  	}
-		  	if (move_uploaded_file($file['tmp_name'],$this->file_path.$file['name'])) {
+		  	if (move_uploaded_file($file['tmp_name'],$this->file_path.$fname)) {
         		$this->assign("upload_success", "true");
 		  		$d = new Document();
-		  		$d->url = "file://" .$this->file_path.$file['name'];
+		  		$d->url = "file://" .$this->file_path.$fname;
 		  		$d->mimetype = $file['type'];
 		  		$d->size = $file['size'];
+		  		$sha1Hash = sha1_file( $this->file_path.$fname );
+		  		$d->hash = $sha1Hash;
 		  		$d->type = $d->type_array['file_url'];
 		  		$d->set_foreign_id($patient_id);
 		  		$d->persist();
@@ -163,6 +167,9 @@ class C_Document extends Controller {
 		}
 		$this->assign("delete_string", $delete_string);
 		$this->assign("REFRESH_ACTION",$this->_link("list"));
+		
+		$this->assign("VALIDATE_ACTION",$this->_link("validate") .
+			"document_id=" . $d->get_id() . "&process=true");
 
 		// Added by Rod to support document date update:
 		$this->assign("DOCDATE", $d->get_docdate());
@@ -487,6 +494,27 @@ class C_Document extends Controller {
 		$this->assign("messages",$messages);
 		return $this->view_action($patient_id,$document_id);
 	}
+	
+	function validate_action_process($patient_id="", $document_id) {
+	    if ($_POST['process'] != "true") {
+			die("process is '" . $_POST['process'] . "', expected 'true'");
+			return;
+		}
+		
+		$d = new Document( $document_id );
+		$current_hash = sha1_file( $d->get_url_filepath() );
+		$messages = xl('Current Hash').": ".$current_hash."<br>";
+		$messages .= xl('Stored Hash').": ".$d->get_hash()."<br>";
+		if ( $current_hash != $d->get_hash() ) {
+		    $messages .= xl('Hash does not match. Data integrity has been compromised.');
+		} else {
+		    $messages .= xl('Document passed integrity check.');
+		}
+		
+		$this->_state = false;
+		$this->assign("messages", $messages);
+		return $this->view_action($patient_id, $document_id);
+	}
 
 	// Added by Rod for metadata update.
 	//
@@ -497,9 +525,28 @@ class C_Document extends Controller {
 		}
 
 		$docdate = $_POST['docdate'];
+		$docname = $_POST['docname'];
 		$issue_id = $_POST['issue_id'];
 
 		if (is_numeric($document_id)) {
+		    $messages = '';
+		    $d = new Document( $document_id );
+		    $file_name = $d->get_url_file();
+		    if ( $docname != '' &&
+		         $docname != $file_name ) {
+		        $path = $d->get_url_filepath();
+		        $path = str_replace( $file_name, "", $path );  
+		        $new_url = $path.$docname;
+     		    if (rename($d->get_url(),$new_url)) {
+     		        $d->url = $new_url;
+     	            $d->persist();
+     	            $d->populate();
+     				$messages .= xl('Document successfully renamed.')."<br>";
+     		  	} else {
+     		  		$messages .= xl('The file could not be succesfully renamed, this error is usually related to permissions problems on the storage system.')."<br>";
+     		  	}
+		    }
+		 
 			if (preg_match('/^\d\d\d\d-\d+-\d+$/', $docdate)) {
 				$docdate = "'$docdate'";
 			} else {
@@ -512,7 +559,7 @@ class C_Document extends Controller {
 				"list_id = '$issue_id' " .
 				"WHERE id = '$document_id'";
 			$this->tree->_db->Execute($sql);
-			$messages .= xl('Document date and issue updated successfully') . "\n";
+			$messages .= xl('Document date and issue updated successfully') . "<br>";
 		}
 
 		$this->_state = false;

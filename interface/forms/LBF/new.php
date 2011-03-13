@@ -126,10 +126,8 @@ if ($_POST['bn_save']) {
   exit;
 }
 
-if (empty($is_lbf)) {
-  $fname = $GLOBALS['OE_SITE_DIR'] . "/LBF/$formname.plugin.php";
-  if (file_exists($fname)) include_once($fname);
-}
+$fname = $GLOBALS['OE_SITE_DIR'] . "/LBF/$formname.plugin.php";
+if (file_exists($fname)) include_once($fname);
 ?>
 <html>
 <head>
