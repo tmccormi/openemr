@@ -507,6 +507,13 @@ $GLOBALS_METADATA = array(
       '0',                              // default = false
       xl('This will activate the CCR(Continuity of Care Record) and CCD(Continuity of Care Document) reporting.')
     ),
+    
+    'hide_document_encryption' => array(
+      xl('Hide Encryption/Decryption Options In Document Management'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('This will deactivate document the encryption and decryption features, and hide them in the UI.')
+    ),
 
   ),
 

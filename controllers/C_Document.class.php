@@ -44,6 +44,7 @@ class C_Document extends Controller {
 		$category_name = $this->tree->get_node_name($category_id);
 		$this->assign("category_id", $category_id);
 		$this->assign("category_name", $category_name);
+		$this->assign("hide_encryption", $GLOBALS['hide_document_encryption'] );
 		$this->assign("patient_id", $patient_id);
 		$activity = $this->fetch($GLOBALS['template_dir'] . "documents/" . $this->template_mod . "_upload.html");
 		$this->assign("activity", $activity);
@@ -54,6 +55,14 @@ class C_Document extends Controller {
 		
 		if ($_POST['process'] != "true")
 			return;
+			
+		$doDecryption = false;
+		$encrypted = $_POST['encrypted'];
+		$passphrase = $_POST['passphrase'];
+		if ( !$GLOBALS['hide_document_encryption'] && 
+		    $encrypted && $passphrase ) {
+		    $doDecryption = true;
+		}
 			
 		if (is_numeric($_POST['category_id'])) {	
 			$category_id = $_POST['category_id'];
@@ -93,6 +102,18 @@ class C_Document extends Controller {
 		  		$file['name'] = $fname;
                                 $error .= xl('Current file name was changed to','','',' ') . $fname ."\n";
 		  	}
+		  	
+		  	if ( $doDecryption ) {
+		  	    $tmpfile = fopen( $file['tmp_name'], "r" );
+		  	    $filetext = fread( $tmpfile, $file['size'] );
+		        $plaintext = $this->decrypt( $filetext, $passphrase );
+		        unlink( $file['tmp_name'] );
+		        $tmpfile = fopen( $file['tmp_name'], "w+" );
+                fwrite( $tmpfile, $plaintext );
+                fclose( $tmpfile );
+                $file['size'] = filesize( $tmpfilepath.$tmpfilename );
+		  	} 
+		  	
 		  	if (move_uploaded_file($file['tmp_name'],$this->file_path.$fname)) {
         		$this->assign("upload_success", "true");
 		  		$d = new Document();
@@ -158,6 +179,7 @@ class C_Document extends Controller {
 		$this->assign("web_path", $this->_link("retrieve") . "document_id=" . $d->get_id() . "&");
 		$this->assign("NOTE_ACTION",$this->_link("note"));
 		$this->assign("MOVE_ACTION",$this->_link("move") . "document_id=" . $d->get_id() . "&process=true");
+		$this->assign("hide_encryption", $GLOBALS['hide_document_encryption'] );
 
 		// Added by Rod to support document delete:
 		$delete_string = '';
@@ -209,8 +231,43 @@ class C_Document extends Controller {
 		return $this->list_action($patient_id);
 	}
 	
+	function encrypt( $plaintext, $key, $cypher = 'tripledes', $mode = 'cfb' )
+    {
+        $td = mcrypt_module_open( $cypher, '', $mode, '');
+        $iv = mcrypt_create_iv( mcrypt_enc_get_iv_size( $td ), MCRYPT_RAND );
+        mcrypt_generic_init( $td, $key, $iv );
+        $crypttext = mcrypt_generic( $td, $plaintext );
+        mcrypt_generic_deinit( $td );
+        return $iv.$crypttext;
+    }
+
+    function decrypt( $crypttext, $key, $cypher = 'tripledes', $mode = 'cfb' )
+    {
+        $plaintext = '';
+        $td = mcrypt_module_open( $cypher, '', $mode, '' );
+        $ivsize = mcrypt_enc_get_iv_size( $td) ;
+        $iv = substr( $crypttext, 0, $ivsize );
+        $crypttext = substr( $crypttext, $ivsize );
+        if( $iv )
+        {
+            mcrypt_generic_init( $td, $key, $iv );
+            $plaintext = mdecrypt_generic( $td, $crypttext );
+        }
+        return $plaintext;
+    }
+	
+	
 	function retrieve_action($patient_id="",$document_id,$as_file=true,$original_file=true) {
 	    
+	    $encrypted = $_POST['encrypted'];
+		$passphrase = $_POST['passphrase'];
+		$doEncryption = false;
+		if ( !$GLOBALS['hide_document_encryption'] &&
+		    $encrypted == "true" && 
+		    $passphrase ) {
+		    $doEncryption = true;        
+		}
+		
 	        //controller function ruins booleans, so need to manually re-convert to booleans
 	        if ($as_file == "true") {
 		        $as_file=true;
@@ -249,14 +306,34 @@ class C_Document extends Controller {
 		else {
 		        if ($original_file) {
 			    //normal case when serving the file referenced in database
-                            header("Pragma: public");
-			    header("Expires: 0");
-			    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-			    header("Content-Disposition: " . ($as_file ? "attachment" : "inline") . "; filename=\"" . basename($d->get_url()) . "\"");
-			    header("Content-Type: " . $d->get_mimetype());
-			    header("Content-Length: " . $d->get_size());
+                header('Content-Description: File Transfer');
+                header('Content-Transfer-Encoding: binary');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                header('Pragma: public');
 			    $f = fopen($url,"r");
-			    fpassthru($f);
+			    if ( $doEncryption ) {
+			  		$filetext = fread( $f, filesize($url) );
+			        $ciphertext = $this->encrypt( $filetext, $passphrase );
+			        $tmpfilepath = $GLOBALS['temporary_files_dir'];
+			        $tmpfilename = "encrypted_".$d->get_url_file();
+			        $tmpfile = fopen( $tmpfilepath.$tmpfilename, "w+" );
+                    fwrite( $tmpfile, $ciphertext );
+                    fclose( $tmpfile );
+                    header('Content-Disposition: attachment; filename='.$tmpfilename );
+			        header("Content-Type: application/octet-stream" );
+			        header("Content-Length: " . filesize( $tmpfilepath.$tmpfilename ) );
+			        ob_clean();
+		            flush();
+		            readfile( $tmpfilepath.$tmpfilename );
+                    unlink( $tmpfilepath.$tmpfilename );
+			    } else {
+			        header("Content-Disposition: " . ($as_file ? "attachment" : "inline") . "; filename=\"" . basename($d->get_url()) . "\"");
+			        header("Content-Type: " . $d->get_mimetype());
+			        $size = filesize($d->get_url_filepath());
+			        header("Content-Length: " . $size );
+			        fpassthru($f);
+			    }
 			    exit;
 		        }
 		        else {

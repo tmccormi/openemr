@@ -47,6 +47,27 @@
     </tr>
     <tr>
 		<td valign="top">
+			{if !$hide_encryption}
+			<div class="text">
+                <form method="post" name="document_encrypt" action="{$web_path}" onsubmit="return top.restoreSession()">
+                <div>
+                    <div style="float:left">
+                        <b>{xl t='Encryption'}</b>&nbsp; 
+                    </div>
+                    <div style="float:none">
+                        <a href="javascript:;" onclick="document.forms['document_encrypt'].submit();">(<span>{xl t='encrypt'})</span></a>
+                    </div> 
+                </div>
+                <div>
+                    {xl t='Pass Phrase'}:
+                    <input type='text' size='20' name='passphrase' id='passphrase' value=''/>
+                    <p><i>{xl t='Supports TripleDES encryption/decrpyption only'}. {xl t='Leaving the pass phrase blank will not encrypt the document'}.</i></p>
+                    <input type="hidden" name="encrypted" value="true"></input>
+              	</div>
+                </form>
+            </div>
+            <br/>
+            {/if}
 			<div class="text">
                 <form method="post" name="document_validate" action="{$VALIDATE_ACTION}" onsubmit="return top.restoreSession()">
                 <div>
@@ -59,7 +80,8 @@
                     </div>
                 </div>
                 </form>
-               </div>
+            </div>
+            <br/>
             <div class="text">
                 <form method="post" name="document_update" action="{$UPDATE_ACTION}" onsubmit="return top.restoreSession()">
                 <div>
@@ -144,6 +166,7 @@
 
 		</td>
 	</tr>
+	{if $hide_encryption}
 	<tr>
 		<td>
             <div class="text"><b>{xl t='Content'}</b></div>
@@ -160,6 +183,7 @@
 			{/if}
 		</td>
 	</tr>
+	{/if}
 </table>
 <script language='JavaScript'>
  Calendar.setup({literal}{{/literal}inputField:"docdate", ifFormat:"%Y-%m-%d", button:"img_docdate"{literal}}{/literal});
