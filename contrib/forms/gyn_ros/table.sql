@@ -1,7 +1,7 @@
+# Modified from the original XMLForm Generated table
+# do not regenerate
 CREATE TABLE IF NOT EXISTS `form_gyn_ros` (
-    /* both extended and encounter forms need a last modified date */
     date datetime default NULL comment 'last modified date',
-    /* these fields are common to all encounter forms. */
     id bigint(20) NOT NULL auto_increment,
     pid bigint(20) NOT NULL default 0,
     user varchar(255) default NULL,
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS `form_gyn_ros` (
     lmpdate datetime default NULL,
     cycle_int varchar(30),
     cycle_int_note TEXT,
-    flowfhcount varchar(2),
-    flowhrs varchar(2),
+    flowfhcount tinyint(2),
+    flowhrs tinyint(2),
     pmb varchar(255),
     vag_discharge varchar(255),
     vag_discharge_note TEXT,
@@ -46,5 +46,5 @@ CREATE TABLE IF NOT EXISTS `form_gyn_ros` (
     pain_intercourse varchar(255),
     pain_intercourse_time TEXT,
     PRIMARY KEY (id)
-) TYPE=InnoDB;
+) TYPE=MyISAM;
 

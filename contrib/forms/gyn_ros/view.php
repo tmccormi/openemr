@@ -455,7 +455,6 @@ Calendar.setup({inputField:'lmpdate', ifFormat:'%Y-%m-%d', button:'img_lmpdate'}
 <fieldset>
 <input type="button" class="save" value="<?php xl('Save Changes','e'); ?>" />
 <input type="button" class="dontsave" value="<?php xl('Don\'t Save Changes','e'); ?>" />
-<input type="button" class="print" value="<?php xl('Print','e'); ?>" />
 </fieldset>
 </div><!-- end bottom_buttons -->
 </form>
@@ -465,7 +464,6 @@ Calendar.setup({inputField:'lmpdate', ifFormat:'%Y-%m-%d', button:'img_lmpdate'}
 $(document).ready(function(){
     $(".save").click(function() { top.restoreSession(); document.forms["<?php echo $form_folder; ?>"].submit(); });
     $(".dontsave").click(function() { location.href='<?php echo $returnurl; ?>'; });
-    $(".print").click(function() { PrintForm(); });
 });
 </script>
 </body>

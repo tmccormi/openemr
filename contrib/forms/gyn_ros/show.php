@@ -378,13 +378,6 @@ function PrintForm() {
 
 </div><!-- end form_container -->
 
-<!-- Print button -->
-<div id="button_bar" class="button_bar">
-<fieldset class="button_bar">
-<input type="button" class="print" value="<?php xl('Print','e'); ?>" />
-</fieldset>
-</div><!-- end button_bar -->
-
 </form>
 <script type="text/javascript">
 // jQuery stuff to make the page a little easier to use

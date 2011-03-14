@@ -16,7 +16,44 @@ $table_name = 'form_gyn_ros';
 
 
 /* an array of all of the fields' names and their types. */
-$field_names = array('cardio_reviewed' => 'checkbox_list','cardio_note' => 'textarea','gastro_reviewed' => 'checkbox_list','gastro_note' => 'textarea','Urinary_reviewed' => 'checkbox_list','Urinary_note' => 'textarea','cns_reviewed' => 'checkbox_list','cns_note' => 'textarea','other_reviewed' => 'checkbox_list','other_note' => 'textarea','complications_reviewed' => 'checkbox_list','complications_note' => 'textarea','lmpdate' => 'date','cycle_int' => 'dropdown_list','cycle_int_note' => 'textarea','flowfhcount' => 'textfield','flowhrs' => 'textfield','pmb' => 'checkbox_list','vag_discharge' => 'checkbox_list','vag_discharge_note' => 'textarea','vag_itching' => 'checkbox_list','vag_itching_note' => 'textarea','vag_odor' => 'checkbox_list','vag_odor_note' => 'textarea','vag_irratation' => 'checkbox_list','vag_irratation_note' => 'textarea','vag_spotting' => 'checkbox_list','vag_spotting_note' => 'textarea','priortreatment' => 'checkbox_list','priortreatment_note' => 'textarea','pain_menses' => 'dropdown_list','pain_level' => 'textfield','pain_location' => 'dropdown_list','pain_lenth' => 'textfield','pain_drug_resp' => 'textfield','pain_intercourse' => 'checkbox_list','pain_intercourse_time' => 'textarea');
+$field_names = array('cardio_reviewed' => 'checkbox_list',
+	'cardio_note' => 'textarea',
+	'gastro_reviewed' => 'checkbox_list',
+	'gastro_note' => 'textarea',
+	'Urinary_reviewed' => 'checkbox_list',
+	'Urinary_note' => 'textarea',
+	'cns_reviewed' => 'checkbox_list',
+	'cns_note' => 'textarea',
+	'other_reviewed' => 'checkbox_list',
+	'other_note' => 'textarea',
+	'complications_reviewed' => 'checkbox_list',
+	'complications_note' => 'textarea',
+	'lmpdate' => 'date',
+	'cycle_int' => 'dropdown_list',
+	'cycle_int_note' => 'textarea',
+	'flowfhcount' => 'textfield',
+	'flowhrs' => 'textfield',
+	'pmb' => 'checkbox_list',
+	'vag_discharge' => 'checkbox_list',
+	'vag_discharge_note' => 'textarea',
+	'vag_itching' => 'checkbox_list',
+	'vag_itching_note' => 'textarea',
+	'vag_odor' => 'checkbox_list',
+	'vag_odor_note' => 'textarea',
+	'vag_irratation' => 'checkbox_list',
+	'vag_irratation_note' => 'textarea',
+	'vag_spotting' => 'checkbox_list',
+	'vag_spotting_note' => 'textarea',
+	'priortreatment' => 'checkbox_list',
+	'priortreatment_note' => 'textarea',
+	'pain_menses' => 'dropdown_list',
+	'pain_level' => 'textfield',
+	'pain_location' => 'dropdown_list',
+	'pain_lenth' => 'textfield',
+	'pain_drug_resp' => 'textfield',
+	'pain_intercourse' => 'checkbox_list',
+	'pain_intercourse_time' => 'textarea');
+
 /* an array of the lists the fields may draw on. */
 $lists = array("menses_pain","menses_cycle","menses_pain_location");
     $data = formFetch($table_name, $id);
@@ -46,8 +83,27 @@ $lists = array("menses_pain","menses_cycle","menses_pain_location");
               $dateparts = split(' ', $value);
               $value = $dateparts[0];
             }
+            
+            // print $field_names[$key] . '=' . $value . "<br />\n";  //debug
 
-            // @TODO add list look ups here
+            // Lists
+            if ($key == 'cycle_int') {
+                if ($value != '') {
+                    $value = get_list_options('menses_cycle', $value);
+                }
+            }
+
+            if ($key == 'pain_menses') {
+                if ($value != '') {
+                    $value = get_list_options('menses_pain', $value);
+                }
+            }
+
+            if ($key == 'pain_location') {
+                if ($value != '') {
+                    $value = get_list_options('menses_pain_location', $value);
+                }
+            }
 
             /* replace underscores with spaces, and uppercase all words. */
             /* this is a primitive form of converting the column names into something displayable. */
@@ -56,15 +112,32 @@ $lists = array("menses_pain","menses_cycle","menses_pain_location");
             $myval = $value;
             echo '<td><span class=bold>'.xl("$mykey").': </span><span class=text>'.xl("$myval").'</span></td>';
 
-
             $count++;
             if ($count == $cols) {
                 $count = 0;
                 echo '</tr><tr>' . PHP_EOL;
             }
+            
         }
     }
     echo '</tr></table><hr>';
 }
+
+// Get list Options
+function get_list_options($list_id='',$option_id='',$field='title')
+{
+
+//      @TODO this is not working for some reason
+//        $row = sqlQuery("SELECT ? FROM list_options " .
+//          "WHERE list_id = ? AND option_id = ?", array($field,$list_id,$option_id) );
+
+     $row = sqlQuery("SELECT title FROM list_options " .
+           "WHERE list_id = '$list_id' AND option_id = '$option_id'");
+
+    // print var_dump($row[$field]) . "<br/>"; //debug
+
+    return($row[$field]);
+}
+
 ?>
 
