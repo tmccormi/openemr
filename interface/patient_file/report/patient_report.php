@@ -56,6 +56,8 @@ function show_date_fun(){
 <div id="patient_reports"> <!-- large outer DIV -->
 
 <?php if ( $GLOBALS['activate_ccr_ccd_report'] ) { // show CCR/CCD reporting options ?>
+
+<!-- Disabled CCR/CCD reporting in production release until functional
 <div id="ccr_report">
 
 <form name='ccr_form' id='ccr_form' method='post' action='../../../ccr/createCCR.php'>
@@ -123,6 +125,8 @@ function show_date_fun(){
 <hr/>
 
 </div>
+Disabled CCR/CCD reporting in production release until functional -->
+
 <?php } // end CCR/CCD reporting options ?>
 
 <form name='report_form' id="report_form" method='post' action='custom_report.php'>
