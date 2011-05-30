@@ -886,7 +886,7 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
                 </div>
      </td>
     </tr>		
-
+              
 <?php if ($vitals_is_registered) { ?>
     <tr>
      <td width='650px'>
@@ -1204,9 +1204,39 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
 			 }
 			}
 			?>
-		</div>
-
-		<div id='stats_div'>
+<?php
+// History lookup
+if ( (acl_check('patients', 'med')) && $GLOBALS['show_history_widget'] ) {
+     $result = getHistoryData($pid);
+     if (!is_array($result)) {
+      newHistoryData($pid);
+      $result = getHistoryData($pid);
+     }
+    echo "<tr><td width='650px'>";
+// History expand collapse widget
+    $widgetTitle = xl("History");
+    $widgetLabel = "history";
+    $widgetButtonLabel = xl("Edit");
+    $widgetButtonLink = "../history/history.php";
+    $widgetButtonClass = "";
+    $linkMethod = "html";
+    $bodyClass = "";
+    $widgetAuth = ($thisauth == "write");
+    $fixedWidth = true;
+    expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
+      $widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass,
+      $widgetAuth, $fixedWidth);
+?>
+     <?php display_layout_tabs_data('HIS', $result, $result2); ?>
+        </div> <!-- required for expand_collapse_widget -->
+       </td>
+      </tr>
+<?php
+} ?> 
+      <tr>
+          <td>
+<!-- End of Histoyr widget -->
+        <div id='stats_div'>
             <br/>
             <div style='margin-left:10px' class='text'><img src='../../pic/ajax-loader.gif'/></div><br/>
         </div>
