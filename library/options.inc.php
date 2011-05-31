@@ -111,7 +111,7 @@ function generate_form_field($frow, $currvalue) {
   $data_type   = $frow['data_type'];
   $field_id    = $frow['field_id'];
   $list_id     = $frow['list_id'];
-  // escaped variables to use in html
+// escaped variables to use in html
   $field_id_esc= htmlspecialchars( $field_id, ENT_QUOTES);
   $list_id_esc = htmlspecialchars( $list_id, ENT_QUOTES);
 
@@ -645,8 +645,61 @@ function generate_form_field($frow, $currvalue) {
       "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".
       htmlspecialchars( xl('Status'), ENT_NOQUOTES).":&nbsp;&nbsp;</td>";
     }
-    else if($data_type == 32)
-    {
+  }
+    // a set of family history; 3 radio buttons and a text field:
+  else if ($data_type == 29) {
+    $tmp = explode('|', $currvalue);
+    $avalue = array();
+    foreach ($tmp as $value) {
+      if (preg_match('/^([^:]+):(.*)$/', $value, $matches)) {
+        $avalue[$matches[1]] = $matches[2];
+      }
+    }
+    $maxlength = empty($frow['max_length']) ? 255 : $frow['max_length'];
+    $fldlength = empty($frow['fld_length']) ?  20 : $frow['fld_length'];
+    $lres = sqlStatement("SELECT * FROM list_options " .
+      "WHERE list_id = ? ORDER BY seq, title", array($list_id) );
+    echo "<table cellpadding='0' cellspacing='0'>";
+    echo "<tr><td>&nbsp;</td><td class='bold'>" .
+      htmlspecialchars( xl('Self'), ENT_NOQUOTES) .
+      "&nbsp;</td><td class='bold'>" .
+      htmlspecialchars( xl('Father'), ENT_NOQUOTES) . "&nbsp;</td>" .
+      "<td class='bold'>" .
+      htmlspecialchars( xl('Mother'), ENT_NOQUOTES) . "&nbsp;</td><td class='bold'>" .
+      htmlspecialchars( xl('Other/Notes'), ENT_NOQUOTES) . "</td></tr>";
+    while ($lrow = sqlFetchArray($lres)) {
+      $option_id = $lrow['option_id'];
+      $option_id_esc = htmlspecialchars( $option_id, ENT_QUOTES);
+      $restype = substr($avalue[$option_id], 0, 1);
+      $resnote = substr($avalue[$option_id], 2);
+
+      // Added 5-09 by BM - Translate label if applicable
+      echo "<tr><td>" . htmlspecialchars( xl_list_label($lrow['title']), ENT_NOQUOTES) . "&nbsp;</td>";
+
+      for ($i = 0; $i < 3; ++$i) {
+	$inputValue = htmlspecialchars( $i, ENT_QUOTES);
+        echo "<td><input type='radio'" .
+          " name='radio_{$field_id_esc}[$option_id_esc]'" .
+          " id='radio_{$field_id_esc}[$option_id_esc]'" .
+          " value='$inputValue'";
+        if ($restype === "$i") echo " checked";
+        echo " /></td>";
+      }
+      $fldlength = htmlspecialchars( $fldlength, ENT_QUOTES);
+      $maxlength = htmlspecialchars( $maxlength, ENT_QUOTES);
+      $resnote = htmlspecialchars( $resnote, ENT_QUOTES);
+      echo "<td><input type='text'" .
+        " name='form_{$field_id_esc}[$option_id_esc]'" .
+        " id='form_{$field_id_esc}[$option_id_esc]'" .
+        " size='$fldlength'" .
+        " maxlength='$maxlength'" .
+        " value='$resnote' /></td>";
+      echo "</tr>";
+    }
+    echo "</table>";
+  }
+   
+    else if($data_type == 32) {
     // input text
     echo "<tr><td><input type='text'" .
       " name='form_text_$field_id_esc'" .
@@ -660,7 +713,7 @@ function generate_form_field($frow, $currvalue) {
     echo generate_select_list("form_$field_id", $list_id, $reslist,
       $description, $showEmpty ? $empty_title : '', '', $onchange)."</td>";
     echo "<td class='bold'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".htmlspecialchars( xl('Status'), ENT_NOQUOTES).":&nbsp;&nbsp;</td>";
-    }
+   
     // current
     echo "<td><input type='radio'" .
       " name='radio_{$field_id_esc}'" .
@@ -1138,7 +1191,47 @@ function generate_print_field($frow, $currvalue) {
     }
     echo "</table>";
   }
-
+// a set of History w/ Notes; 3 radio buttons and a text field:
+  else if ($data_type == 29) {
+    $tmp = explode('|', $currvalue);
+    $avalue = array();
+    foreach ($tmp as $value) {
+      if (preg_match('/^([^:]+):(.*)$/', $value, $matches)) {
+        $avalue[$matches[1]] = $matches[2];
+      }
+    }
+    $maxlength = empty($frow['max_length']) ? 255 : $frow['max_length'];
+    $fldlength = empty($fld_length) ?  20 : $fld_length;
+    $lres = sqlStatement("SELECT * FROM list_options " .
+      "WHERE list_id = ? ORDER BY seq, title", array($list_id) );
+    echo "<table cellpadding='0' cellspacing='0'>";
+    echo "<tr><td>&nbsp;</td><td class='bold'>" .
+      htmlspecialchars( xl('Self'), ENT_NOQUOTES) .
+      "&nbsp;</td><td class='bold'>" .
+      htmlspecialchars( xl('Father'), ENT_NOQUOTES) . "&nbsp;</td>" .
+      "<td class='bold'>" .
+      htmlspecialchars( xl('Mother'), ENT_NOQUOTES) . "&nbsp;</td><td class='bold'>" .
+      htmlspecialchars( xl('Other/Notes'), ENT_NOQUOTES) . "</td></tr>";
+    while ($lrow = sqlFetchArray($lres)) {
+      $option_id = $lrow['option_id'];
+      $restype = substr($avalue[$option_id], 0, 1);
+      $resnote = substr($avalue[$option_id], 2);
+      echo "<tr><td>" . htmlspecialchars( xl_list_label($lrow['title']), ENT_NOQUOTES) . "&nbsp;</td>";
+      for ($i = 0; $i < 3; ++$i) {
+        echo "<td><input type='radio'";
+        if ($restype === "$i") echo " checked";
+        echo " /></td>";
+      }
+      $resnote = htmlspecialchars( $resnote, ENT_QUOTES);
+      $fldlength = htmlspecialchars( $fldlength, ENT_QUOTES);
+      echo "<td><input type='text'" .
+        " size='$fldlength'" .
+        " value='$resnote'" .
+        " class='under' /></td>" .
+        "</tr>";
+    }
+    echo "</table>";
+  }
   // special case for history of lifestyle status; 3 radio buttons and a date text field:
   else if ($data_type == 28 || $data_type == 32) {
     $tmp = explode('|', $currvalue);
@@ -1397,7 +1490,6 @@ function generate_display_field($frow, $currvalue) {
     $query = "SELECT title, comments FROM lists WHERE " .
       "pid = ? AND type = 'allergy' AND enddate IS NULL " .
       "ORDER BY begdate";
-    // echo "<!-- $query -->\n"; // debugging
     $lres = sqlStatement($query, array($GLOBALS['pid']) );
     $count = 0;
     while ($lrow = sqlFetchArray($lres)) {
@@ -1431,6 +1523,36 @@ function generate_display_field($frow, $currvalue) {
       $restype = $restype ? xl('Yes') : xl('No');  
       $s .= "<td class='text' valign='top'>" . htmlspecialchars($restype,ENT_NOQUOTES) . "</td></tr>";
       $s .= "<td class='text' valign='top'>" . htmlspecialchars($resnote,ENT_NOQUOTES) . "</td></tr>";
+      $s .= "</tr>";
+    }
+    $s .= "</table>";
+  }
+
+// a set of history w/ Notes; 
+  else if ($data_type == 29) {
+    $tmp = explode('|', $currvalue);
+    $avalue = array();
+    foreach ($tmp as $value) {
+      if (preg_match('/^([^:]+):(.*)$/', $value, $matches)) {
+        $avalue[$matches[1]] = $matches[2];
+      }
+    }
+    $lres = sqlStatement("SELECT * FROM list_options " .
+      "WHERE list_id = ? ORDER BY seq, title", array($list_id) );
+    $s .= "<table cellpadding='0' cellspacing='0'>";
+    while ($lrow = sqlFetchArray($lres)) {
+      $option_id = $lrow['option_id'];
+      $restype = substr($avalue[$option_id], 0, 1);
+      $resnote = substr($avalue[$option_id], 2);
+
+      if (empty($restype) && empty($resnote)) continue;
+      $s .= "<tr><td class='bold' valign='top'>" . htmlspecialchars(xl_list_label($lrow['title']),ENT_NOQUOTES) . "&nbsp;</td>";
+
+      $restype = ($restype == '1') ? xl('Father') : (($restype == '2') ? xl('Mother') : xl('Self'));
+      // $s .= "<td class='text' valign='top'>$restype</td></tr>";
+      // $s .= "<td class='text' valign='top'>$resnote</td></tr>";
+      $s .= "<td class='text' valign='top'>" . htmlspecialchars($restype,ENT_NOQUOTES) . "&nbsp;</td>";
+      $s .= "<td class='text' valign='top'>" . htmlspecialchars($resnote,ENT_NOQUOTES) . "</td>";
       $s .= "</tr>";
     }
     $s .= "</table>";
@@ -1577,7 +1699,11 @@ function display_layout_rows($formtype, $result1, $result2='') {
     if (strcmp($this_group, $last_group) != 0) {
       $group_name = substr($this_group, 1);
       // totally skip generating the employer category, if it's disabled.
-      if ($group_name === 'Employer' && $GLOBALS['omit_employers']) continue;
+//      if ($group_name === 'Employer' && $GLOBALS['omit_employers']) continue;
+      // totally skip for RITTER
+      if ($group_name === 'Employer') continue;
+      if ($group_name === 'Choices') continue;
+      
       disp_end_group();
       $last_group = $this_group;
     }
@@ -1912,7 +2038,7 @@ function get_layout_form_value($frow, $maxlength=255) {
         $value .= "$key:$val";
       }
     }
-    else if ($data_type == 23) {
+    else if ($data_type == 23 || $data_type == 29) {
       // $_POST["form_$field_id"] is an array of text fields with companion
       // radio buttons to be imploded into "key:n:notes|key:n:notes|...".
       foreach ($_POST["form_$field_id"] as $key => $val) {

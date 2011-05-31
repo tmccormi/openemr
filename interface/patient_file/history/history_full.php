@@ -38,7 +38,7 @@ if ($thisauth != 'write' && $thisauth != 'addonly')
 }
 </style>
 
-<style type="text/css">@import url(../../../library/dynarch_calendar.css);</style>
+<style type="text/css">@import url("../../../library/dynarch_calendar.css");</style>
 
 <script type="text/javascript" src="../../../library/dialog.js"></script>
 <script type="text/javascript" src="../../../library/textformat.js"></script>
