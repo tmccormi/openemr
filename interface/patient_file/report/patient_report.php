@@ -270,6 +270,8 @@ $res = sqlStatement("SELECT forms.encounter, forms.form_id, forms.form_name, " .
                     " AND forms.deleted=0 ". // --JRM--
                     "ORDER BY form_encounter.date DESC, fdate ASC");
 $res2 = sqlStatement("SELECT name FROM registry ORDER BY priority");
+// get order for LBF forms and mix in @TODO
+
 $html_strings = array();
 $registry_form_name = array();
 while($result2 = sqlFetchArray($res2)) {

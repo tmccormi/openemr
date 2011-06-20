@@ -134,8 +134,10 @@ function findPosX(id)
 <?php //DYNAMIC FORM RETREIVAL
 include_once("$srcdir/registry.inc");
 
-function myGetRegistered($state="1", $limit="unlimited", $offset="0") {
-  $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
+function GetForms($state="1", $limit="unlimited", $offset="0") {
+  $iter=0;
+  // Get Registered Forms
+  $sql = "SELECT category, priority, nickname, name, state, directory, id, sql_run, " .
     "unpackaged, date FROM registry WHERE " .
     "state LIKE \"$state\" ORDER BY category, priority, name";
   if ($limit != "unlimited") $sql .= " limit $limit, $offset";
@@ -145,13 +147,39 @@ function myGetRegistered($state="1", $limit="unlimited", $offset="0") {
       $all[$iter] = $row;
     }
   }
-  else {
-    return false;
+
+  // This shows Layout Based Form names just like the above.
+  $res = sqlStatement("SELECT * FROM list_options " .
+      "WHERE list_id = 'lbfnames' ORDER BY seq, title");
+  
+  if ($res) {
+      while ($row=sqlFetchArray($res)) {
+          $all[$iter++] = array(
+                            category => 'Clinical',
+                            priority => $row['seq'],
+                            nickname => $row['title'],
+                            name => $row['title'],
+                            state => 'LBF',
+                            directory => $row['option_id']
+                            );
+          }
+      }
+
+  // sort
+  foreach($all as $key => $value) {
+      $catg[$key] = $value['category'];
+      $seq[$key] = $value['priority'];
   }
-  return $all;
+  array_multisort($catg, $seq, $all);
+
+  if ($all) {
+    return $all;
+  } else {
+      return false;
+  }
 }
 
-$reg = myGetRegistered();
+$reg = GetForms();
 $old_category = '';
 
   $DivId=1;
@@ -177,8 +205,13 @@ if (!empty($reg)) {
       $old_category = $new_category;
       $DivId++;
     }
-    $StringEcho.= "<tr><td style='border-top: 1px solid #000000;padding:0px;'><a onclick=\"openNewForm('" . $rootdir .'/patient_file/encounter/load_form.php?formname=' .urlencode($entry['directory']) .
-    "')\" href='JavaScript:void(0);'>" . xl_form_title($nickname) . "</a></td></tr>";
+    if ($reg['state'] == 'LBF') {
+        $StringEcho.= "<tr><td style='border-top: 1px solid #000000;padding:0px;'><a href='" . $rootdir .'/patient_file/encounter/load_form.php?formname='
+			.urlencode($entry['directory']) ."' >" . xl_form_title($nickname) . "</a></td></tr>";
+    } else {
+        $StringEcho.= "<tr><td style='border-top: 1px solid #000000;padding:0px;'><a onclick=\"openNewForm('" . $rootdir .'/patient_file/encounter/load_form.php?formname='
+            .urlencode($entry['directory']) . "')\" href='JavaScript:void(0);'>" . xl_form_title($nickname) . "</a></td></tr>";
+    }
   }
   $StringEcho.= '</table></div></li>';
 }
@@ -193,28 +226,7 @@ if($StringEcho){
     <td valign="top"><?php //echo $StringEcho; ?></td>
   </tr>
 </table>-->
-<?php
-//$StringEcho='';
-// This shows Layout Based Form names just like the above.
-//
-$lres = sqlStatement("SELECT * FROM list_options " .
-  "WHERE list_id = 'lbfnames' ORDER BY seq, title");
-if (sqlNumRows($lres)) {
-  if(!$StringEcho){
-    $StringEcho= '<ul id="sddm">';
-  }
-  $StringEcho.= "<li><a href='JavaScript:void(0);' onClick=\"mopen('lbf');\" >".xl('Layout Based') ."</a><div id='lbf' ><table border='0'  cellspacing='0' cellpadding='0'>";
-  while ($lrow = sqlFetchArray($lres)) {
-  $option_id = $lrow['option_id']; // should start with LBF
-  $title = $lrow['title'];
-  $StringEcho.= "<tr><td style='border-top: 1px solid #000000;padding:0px;'><a href='" . $rootdir .'/patient_file/encounter/load_form.php?formname=' 
-				.urlencode($option_id) ."' >" . xl_form_title($title) . "</a></td></tr>";
-  }
-}
-if($StringEcho){
-  $StringEcho.= "</table></div></li></ul>".$StringEcho2;
-}
-?>
+
 <table cellspacing="0" cellpadding="0" align="center">
   <tr>
     <td valign="top"><?php echo $StringEcho; ?></td>

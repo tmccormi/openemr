@@ -174,21 +174,21 @@ function cancelClicked() {
 <table width='96%'>
 
  <tr>
-  <td width='33%' nowrap class='bold'><?php xl('Consultation Brief Description','e'); ?>:</td>
+  <td width='33%' nowrap class='bold'><?php xl('Reason For Visit','e'); ?>:</td>
   <td width='34%' rowspan='2' align='center' valign='center' class='text'>
    <table>
 
     <tr<?php if ($GLOBALS['athletic_team']) echo " style='visibility:hidden;'"; ?>>
      <td class='bold' nowrap><?php xl('Visit Category:','e'); ?></td>
      <td class='text'>
-      <select name='pc_catid' id='pc_catid'>
-	<option value='_blank'>-- Select One --</option>
-<?php
+        <select name='pc_catid' id='pc_catid'>
+          <option value='9'><?php xl('Established Patient','e'); ?></option>
+          <?php
  $cres = sqlStatement("SELECT pc_catid, pc_catname " .
   "FROM openemr_postcalendar_categories ORDER BY pc_catname");
  while ($crow = sqlFetchArray($cres)) {
   $catid = $crow['pc_catid'];
-  if ($catid < 9 && $catid != 5) continue;
+  if ($catid < 10 && $catid != 5) continue;
   echo "       <option value='$catid'";
   if ($viewmode && $crow['pc_catid'] == $result['pc_catid']) echo " selected";
   echo ">" . xl_appt_category($crow['pc_catname']) . "</option>\n";

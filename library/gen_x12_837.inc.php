@@ -691,7 +691,7 @@ function gen_x12_837($pid, $encounter, &$log, $encounter_claim=false) {
 
   // Loop 2310D is omitted in the case of home visits (POS=12).
   if ($claim->facilityPOS() != 12 &&
-      (!$CMS_5010 || $claim->facilityNPI() != $claim->billingFacilityNPI()))
+        ($claim->facilityNPI() != $claim->billingFacilityNPI()))  // was (!$CMS_5010 || $claim->facilityNPI() != $claim->billingFacilityNPI()))
     {
     ++$edicount;
     $out .= "NM1" .       // Loop 2310D Service Location
