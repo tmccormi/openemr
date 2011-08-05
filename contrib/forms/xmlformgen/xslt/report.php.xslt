@@ -30,7 +30,8 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 require_once('../../globals.php');
 /* for acl_check(), ?? */
 require_once($GLOBALS['srcdir'].'/api.inc');
-
+/* for generate_form_field, ?? */
+require_once($GLOBALS['srcdir'].'/options.inc.php');
 /* The name of the function is significant and must match the folder name */
 function ]]></xsl:text>
 <xsl:value-of select="safename" />
@@ -49,8 +50,9 @@ $field_names = array(]]></xsl:text>
 <xsl:text disable-output-escaping="yes"><![CDATA[']]></xsl:text>
 <xsl:if test="position()!=last()">,</xsl:if>
 </xsl:for-each>
-<xsl:text disable-output-escaping="yes"><![CDATA[);
-/* an array of the lists the fields may draw on. */
+<xsl:text disable-output-escaping="yes"><![CDATA[);]]></xsl:text>
+<xsl:apply-templates select="layout|manual" mode="head"/>
+<xsl:text disable-output-escaping="yes"><![CDATA[/* an array of the lists the fields may draw on. */
 $lists = array(]]></xsl:text>
 <xsl:for-each select="//field[@type='radio_group' or @type='checkbox_group' or @type='scrolling_list_multiples']">
 <xsl:text disable-output-escaping="yes"><![CDATA[']]></xsl:text>
@@ -102,6 +104,10 @@ $lists = array(]]></xsl:text>
             if ($value != '') {
               $dateparts = split(' ', $value);
               $value = $dateparts[0];
+            }
+            
+            if ( $field_names[$key] == 'checkbox_combo_list' ) {
+                $value = generate_display_field( $manual_layouts[$key], $value );
             }
 
             /* replace underscores with spaces, and uppercase all words. */
