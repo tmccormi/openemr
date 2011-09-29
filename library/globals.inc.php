@@ -99,15 +99,25 @@ $GLOBALS_METADATA = array(
       xl('Type of screen layout')
     ),
 
-    'concurrent_layout' => array(
-      xl('Layout Style'),               // descriptive name
+    'default_bot_pane' => array(
+      xl('Main Bottom Pane Screen'),       // descriptive name
       array(
-        '0' => xl('Old style layout with no left menu'),
+        'messages/messages.php' => xl('Patient Messages Screen'),
+	'onotes/office_comments.php' => xl('InterOffice Notes Screen'),
+	'../new/new.php' => xl('Patient Search/Add Screen'),
+       ),
+      'messages/messages.php',                  // default = messages
+      
+      xl('Type of screen layout')
+    ),
+    'concurrent_layout' => array(
+      xl('Menu Layout Style'),               // descriptive name
+      array(
         '1' => xl('Navigation menu consists of pairs of radio buttons'),
         '2' => xl('Navigation menu is a tree view'),
         '3' => xl('Navigation uses a sliding menu'),
       ),
-      '3',                              // default = tree menu
+      '3',                              // default = sliding menu with icons
       xl('Type of screen layout')
     ),
 
@@ -121,7 +131,7 @@ $GLOBALS_METADATA = array(
     'gbl_nav_area_width' => array(
       xl('Navigation Area Width'),
       'num',
-      '150',
+      '170',
       xl('Width in pixels of the left navigation frame.')
     ),
 
@@ -131,6 +141,14 @@ $GLOBALS_METADATA = array(
       'OpenEMR',
       xl('Application name for login page and main window title.')
     ),
+
+    'show_ama_license' => array(
+      xl('Display AMA CPT Code use license'),
+      'bool',
+      '1',
+      xl('Displays a link to the AMA CPT Code User license on the main login page. \
+          Required by the AMA if you use their licensed CPT codes.')  //default is true
+    ),     
 
     'full_new_patient_form' => array(
       xl('New Patient Form'),
@@ -164,7 +182,7 @@ $GLOBALS_METADATA = array(
     'gbl_nav_visit_forms' => array(
       xl('Navigation Area Visit Forms'),
       'bool',                           // data type
-      '1',                              // default = true
+      '0',                              // default = false
       xl('Navigation area includes encounter forms')
     ),
 
@@ -193,14 +211,21 @@ $GLOBALS_METADATA = array(
       xl('Use Charges Panel'),
       'bool',                           // data type
       '0',                              // default = false
-      xl('Enables the old Charges panel for entering billing codes and payments. Not recommended, use the Fee Sheet instead.')
+      xl('Enables the a simple Charges panel for directly entering billing codes and payments.')
     ),
 
     'online_support_link' => array(
       xl('Online Support Link'),
       'text',                           // data type
       'http://open-emr.org/',
-      xl('URL for OpenEMR support.')
+      xl('Configurable URL for OpenEMR support.')
+    ),
+
+    'online_userguide_link' => array(
+      xl('Online User Guide Link'),
+      'text',                           // data type
+      'http://open-emr.org/wiki/index.php/OpenEMR_4.1_Users_Guide',
+      xl('Configurable URL for Online User Guide.')
     ),
       
     'encounter_page_size' => array(
@@ -390,13 +415,13 @@ $GLOBALS_METADATA = array(
     'specific_application' => array(
       xl('Specific Application'),
       array(
-        '0' => xl('None'),
+        '0' => xl('Standard OpenEMR'),
         '1' => xl('Athletic team'),
         '2' => xl('IPPF'),
         '3' => xl('Weight loss clinic'),
       ),
       '0',                              // default
-      xl('Indicator for specialized usage')
+      xl('Indicator for specialized usage, Contact Sunset Systems for details. Most clinics do not want this.')
     ),
 
     'inhouse_pharmacy' => array(
@@ -1259,28 +1284,28 @@ $GLOBALS_METADATA = array(
       xl('Enable Lab Exchange'),
       'bool',                           // data type
       '0',
-      xl('Enable the OpenEMR Support LLC Lab Exchange Service.')
+      xl('Enable the Medical Information Integration, LLC Lab Exchange Service.')
     ),
 
     'lab_exchange_siteid' => array(
       xl('Lab Exchange Site ID'),
       'text',                           // data type
       '3',
-      xl('Site ID for the OpenEMR Support LLC Lab Exchange Service.')
+      xl('Site ID for the Medical Information Integration, LLC Lab Exchange Service.')
     ),
 
     'lab_exchange_token' => array(
       xl('Lab Exchange Token ID'),
       'text',                           // data type
       '12345',
-      xl('Token ID for the OpenEMR Support LLC Lab Exchange Service.')
+      xl('Token ID for the Medical Information Integration LLC Lab Exchange Service.')
     ),
 
     'lab_exchange_endpoint' => array(
       xl('Lab Exchange Site Address'),
       'text',                           // data type
       'https://openemrsupport.com:29443/len/api',
-      xl('Https link for the OpenEMR Support LLC Lab Exchange Service.')
+      xl('Https link for the Medical Information Integration LLC Lab Exchange Service.')
     ),
     
     'erx_enable' => array(

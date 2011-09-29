@@ -143,9 +143,12 @@ include_once("../../library/acl.inc");
 <?php xl('Logout','e'); ?></a>&nbsp;&nbsp;
 </td>
 
-<td align="center" nowrap>
-&nbsp;<a href="http://open-emr.org/wiki/index.php/OpenEMR_4.1_Users_Guide" target="_blank" class="menu"> 
-<?php xl('Manual','e'); ?></a>&nbsp;&nbsp;
+
+<?php if ($globals['online_userguide_link']) { // start if-block?>
+    <td align="center" nowrap> 
+    &nbsp;<a href="<?php echo $globals['online_userguide_link']?>" target="_blank" class="menu"> 
+    <?php xl('Manual','e'); ?></a>&nbsp;&nbsp;
+<?php } //end of if-block ?>
 </td>
 
 </tr>
