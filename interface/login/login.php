@@ -230,15 +230,18 @@ if ($result = sqlFetchArray($statement)) {
 <br>password = pass
 -->
 
-</center></p>
-
 </td>
 </table>
 
 </form>
 
 <address>
-<a href="../../copyright_notice.html" target="main"><?php xl('Copyright Notice','e'); ?></a><br />
+    <a href="../../copyright_notice.html" target="main"><?php xl('Attribution and Copyright Notices','e'); ?></a><br />
+    <a href="http://oemr.org">ONC-ATCB Full EHR Certificate #110040R00 by OEMR 501(c)3 with ICSA Labs</a></br />
+    <?php if ($GLOBALS['show_ama_license'] == true) { ?>
+        <a href="../../ama_cpt_license.html" target="main"><?php xl('AMA CPT(tm) User License Notice','e'); ?></a><br />
+    <?php }; ?>
+
 </address>
 
 </center>

@@ -137,8 +137,9 @@
   'enc' => array(xl('Encounter') , 2, 'patient_file/encounter/encounter_top.php'),
   'erx' => array(xl('e-Rx') , 1, 'eRx.php'),
   'err' => array(xl('e-Rx Renewal') , 1, 'eRx.php?page=status'),
+  'npa' => array(xl('Payments')   , 0, 'billing/new_payment.php'),
  );
- $primary_docs['npa']=array(xl('Payments')   , 0, 'billing/new_payment.php');
+
  if ($GLOBALS['use_charges_panel'] || $GLOBALS['concurrent_layout'] == 2) {
   $primary_docs['cod'] = array(xl('Charges'), 2, 'patient_file/encounter/encounter_bottom.php');
  }
@@ -531,7 +532,7 @@ function genFindBlock() {
 
 function goHome() {
     top.frames['RTop'].location='<?php echo $GLOBALS['default_top_pane']?>';
-    top.frames['RBot'].location='messages/messages.php';
+    top.frames['RBot'].location='<?php echo $GLOBALS['default_bot_pane']?>';
 }
 
  // Reference to the search.php window.
@@ -938,11 +939,10 @@ if ($GLOBALS['athletic_team']) {
   </td>
   <td class='smalltext' align='right' nowrap>
    <b><?php xl('Bot','e') ?></b>
-   <input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' <?php if (empty($GLOBALS['athletic_team'])) echo 'checked '; ?>/>
+   <input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' <?php if (!$GLOBALS['bottom_pane_off'])  echo 'checked '; ?>/>
   </td>
  </tr>
 </table>
-
 <?php if ( $GLOBALS['concurrent_layout'] == 3) { ?>
   <ul id="navigation-slide">
 <?php } else { // ($GLOBALS['concurrent_layout'] == 2) ?>
@@ -1354,7 +1354,8 @@ if (!empty($reg)) {
       <input type='checkbox' name='cb_top' onclick='toggleFrame(1)' checked /><b><?php xl('Top','e') ?></b>
      </td>
      <td class='smalltext' align='right' nowrap>
-      <b><?php xl('Bot','e') ?></b><input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' checked />
+      <b><?php xl('Bot','e') ?></b><input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' <?php if (!$GLOBALS['bottom_pane_off']) echo 'checked '; ?> />
+<!-- @TODO now that it's configurable as unchecked how do you make the bottom frame be closed??? TONY -->
      </td>
     </tr>
    </table>
