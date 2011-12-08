@@ -22,6 +22,7 @@ $fake_register_globals=false;
  require_once("../history/history.inc.php");
  require_once("$srcdir/formatting.inc.php");
  require_once("$srcdir/edi.inc");
+  require_once("$srcdir/billing_widget.inc.php");
  require_once("$srcdir/clinical_rules.php");
 
   if ($GLOBALS['concurrent_layout'] && isset($_GET['set_pid'])) {
@@ -560,7 +561,18 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
    "<span class='bold'><font color='#ee6600'>" .
    htmlspecialchars(xl('Balance Due'),ENT_NOQUOTES) .
    ": " . htmlspecialchars(oeFormatMoney(get_patient_balance($pid)),ENT_NOQUOTES) .
+   "</font></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" .
+   
+   "<span class='bold'><font color='#ee6600'>" .
+   htmlspecialchars(xl('Patient Bal Due'),ENT_NOQUOTES) .
+   ": " . htmlspecialchars(oeFormatMoney(getPatientBalance($pid)),ENT_NOQUOTES) .
+   "</font></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" .
+   
+   "<span class='bold'><font color='#ee6600'>" .
+   htmlspecialchars(xl('Insurance Bal Due'),ENT_NOQUOTES) .
+   ": " . htmlspecialchars(oeFormatMoney(getInsuranceBalance($pid)),ENT_NOQUOTES) .
    "</font></span><br>";
+   
   if ($result['genericname2'] == 'Billing') {
    echo "<span class='bold'><font color='red'>" .
     htmlspecialchars(xl('Billing Note'),ENT_NOQUOTES) . ":" .
