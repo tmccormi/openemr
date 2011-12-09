@@ -273,7 +273,7 @@ else {
 
 </style>
 
-<script language="JavaScript">
+<script type="text/javascript">
 
 function checkAll(checked) {
  var f = document.forms[0];
@@ -282,6 +282,25 @@ function checkAll(checked) {
   if (ename.indexOf('form_cb[') == 0)
    f.elements[i].checked = checked;
  }
+}
+
+function checkValid() {
+	 var f = document.forms[0];
+	 var checkFlag=0;
+	 for (var i = 0; i < f.elements.length; ++i) {
+	  var ename = f.elements[i].name;
+	  if (ename.indexOf('form_cb[') == 0 && f.elements[i].checked==true) {
+	  	checkFlag++;
+	  }
+	 }
+	 if(checkFlag == 0) {
+		alert("<?php echo xl('Please select at least one checkbox for exporting the report'); ?>");
+		return false;
+	 }
+	 else {
+		 $("#theform").submit();
+	 }
+     return true;
 }
 
 </script>
@@ -302,7 +321,7 @@ function checkAll(checked) {
 
 <table>
  <tr>
-  <td width='610px'>
+  <td width='66%'>
 	<div style='float:left'>
 
 	<table class='text'>
@@ -457,7 +476,7 @@ function checkAll(checked) {
 		<tr>
 			<td>
 				<div style='margin-left:15px'>
-					<a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#theform").submit();'>
+					<a href='#' class='css_button' onclick='$("#form_refresh").attr("value","true"); $("#form_csvexport").attr("value","");$("#theform").submit();'>
 					<span>
 						<?php xl('Submit','e'); ?>
 					</span>
@@ -1230,20 +1249,20 @@ if (!$_POST['form_csvexport']) {
   if (!$_POST['form_export']) {
 ?>
 
-<div style='float;margin-top:5px'>
+<div style='float:left; margin-top:5px'>
 
 <a href='javascript:;' class='css_button'  onclick='checkAll(true)'><span><?php xl('Select All','e'); ?></span></a>
 <a href='javascript:;' class='css_button'  onclick='checkAll(false)'><span><?php xl('Clear All','e'); ?></span></a>
-<a href='javascript:;' class='css_button' onclick='$("#form_csvexport").attr("value","true"); $("#theform").submit();'>
+<a href='javascript:;' class='css_button' onclick='$("#form_csvexport").attr("value","true"); $("#form_refresh").attr("value","");$("#form_export").attr("value","");checkValid();'>
 	<span><?php xl('Export Selected as CSV','e'); ?></span>
 </a>
-<a href='javascript:;' class='css_button' onclick='$("#form_export").attr("value","true"); $("#theform").submit();'>
+</div>
+ <div  style='float:right; margin-top:5px'>
+<a href='javascript:;' class='css_button' onclick='$("#form_export").attr("value","true");$("#form_csvexport").attr("value",""); $("#form_refresh").attr("value","");checkValid(); '>
 	<span><?php xl('Export Selected to Collections','e'); ?></span>
 </a>
-</div>
 
-<div style='float:left'>
-<input type='checkbox' name='form_without' value='1' /> <?php xl('Without Update','e') ?>
+    <input type='checkbox' name='form_without' value='1' /> <?php xl('Without Update','e') ?>
 </div>
 
 <?php
@@ -1251,7 +1270,7 @@ if (!$_POST['form_csvexport']) {
 ?>
 </form>
 </center>
-<script language="JavaScript">
+<script type="text/javascript">
 <?php
   if ($alertmsg) {
     echo "alert('" . htmlentities($alertmsg) . "');\n";
