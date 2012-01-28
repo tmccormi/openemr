@@ -183,6 +183,9 @@ include_once (dirname(__FILE__) . "/../library/htmlspecialchars.inc.php");
 // Includes functions for date internationalization
 include_once (dirname(__FILE__) . "/../library/date_functions.php");
 
+// Default Online Users Guide Link
+$GLOBALS['default_userguide_link'] = "http://open-emr.org/wiki/index.php/OpenEMR_4.1_Users_Guide";
+
 // Defaults for specific applications.
 $GLOBALS['athletic_team'] = false;
 $GLOBALS['weight_loss_clinic'] = false;

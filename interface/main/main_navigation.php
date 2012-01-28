@@ -144,11 +144,20 @@ include_once("../../library/acl.inc");
 </td>
 
 
-<?php if ($globals['online_userguide_link']) { // start if-block?>
-    <td align="center" nowrap> 
-    &nbsp;<a href="<?php echo $globals['online_userguide_link']?>" target="_blank" class="menu"> 
-    <?php xl('Manual','e'); ?></a>&nbsp;&nbsp;
-<?php } //end of if-block ?>
+    <td align="center" nowrap> &nbsp;
+    <a href="
+    <?php
+        if($GLOBALS['online_userguide_link'] === '') {
+            echo $GLOBALS['default_userguide_link'];
+        } else {
+            echo $GLOBALS['online_userguide_link'];
+        }
+        // close the href quote ?>"
+        <?php
+        echo " target='_blank'>";
+          xl('Manual','e');
+        ?>
+        </a>&nbsp;&nbsp;
 </td>
 
 </tr>

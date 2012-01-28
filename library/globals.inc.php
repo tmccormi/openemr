@@ -94,6 +94,9 @@ $GLOBALS_METADATA = array(
       array(
         'main_info.php' => xl('Calendar Screen'),
         '../new/new.php' => xl('Patient Search/Add Screen'),
+        'messages/messages.php' => xl('Patient Messages Screen'),
+        'onotes/office_comments.php' => xl('InterOffice Notes Screen'),
+
       ),
       'main_info.php',                  // default = calendar
       xl('Type of screen layout')
@@ -103,8 +106,9 @@ $GLOBALS_METADATA = array(
       xl('Main Bottom Pane Screen'),       // descriptive name
       array(
         'messages/messages.php' => xl('Patient Messages Screen'),
-	'onotes/office_comments.php' => xl('InterOffice Notes Screen'),
-	'../new/new.php' => xl('Patient Search/Add Screen'),
+        'onotes/office_comments.php' => xl('InterOffice Notes Screen'),
+        '../new/new.php' => xl('Patient Search/Add Screen'),
+        'main_info.php' => xl('Calendar Screen'),
        ),
       'messages/messages.php',                  // default = messages
       
@@ -142,12 +146,11 @@ $GLOBALS_METADATA = array(
       xl('Application name for login page and main window title.')
     ),
 
-    'show_ama_license' => array(
-      xl('Display AMA CPT Code use license'),
+    'show_ama_copyright' => array(
+      xl('Display AMA CPT Code Copyright'),
       'bool',
-      '1',
-      xl('Displays a link to the AMA CPT Code User license on the main login page. \
-          Required by the AMA if you use their licensed CPT codes.')  //default is true
+      '0',   //default is false
+      xl('Displays a link to the AMA CPT Code Copyright link on the main login page. Required by the AMA if you use their licensed CPT codes.')
     ),     
 
     'full_new_patient_form' => array(
@@ -211,7 +214,7 @@ $GLOBALS_METADATA = array(
       xl('Use Charges Panel'),
       'bool',                           // data type
       '0',                              // default = false
-      xl('Enables the a simple Charges panel for directly entering billing codes and payments.')
+      xl('Enables a simple Charges panel for directly entering billing codes and payments.')
     ),
 
     'online_support_link' => array(
@@ -224,8 +227,8 @@ $GLOBALS_METADATA = array(
     'online_userguide_link' => array(
       xl('Online User Guide Link'),
       'text',                           // data type
-      'http://open-emr.org/wiki/index.php/OpenEMR_4.1_Users_Guide',
-      xl('Configurable URL for Online User Guide.')
+      '',
+      xl('Configurable URL for Online User Guide, when empty it will default to the project users guide')
     ),
       
     'encounter_page_size' => array(
@@ -421,7 +424,7 @@ $GLOBALS_METADATA = array(
         '3' => xl('Weight loss clinic'),
       ),
       '0',                              // default
-      xl('Indicator for specialized usage, Contact Sunset Systems for details. Most clinics do not want this.')
+      xl('Indicator for specialized usage.')
     ),
 
     'inhouse_pharmacy' => array(

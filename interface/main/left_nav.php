@@ -939,7 +939,7 @@ if ($GLOBALS['athletic_team']) {
   </td>
   <td class='smalltext' align='right' nowrap>
    <b><?php xl('Bot','e') ?></b>
-   <input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' <?php if (!$GLOBALS['bottom_pane_off'])  echo 'checked '; ?>/>
+   <input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' <?php if (empty($GLOBALS['athletic_team']))  echo 'checked '; ?>/>
   </td>
  </tr>
 </table>
@@ -1354,8 +1354,7 @@ if (!empty($reg)) {
       <input type='checkbox' name='cb_top' onclick='toggleFrame(1)' checked /><b><?php xl('Top','e') ?></b>
      </td>
      <td class='smalltext' align='right' nowrap>
-      <b><?php xl('Bot','e') ?></b><input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' <?php if (!$GLOBALS['bottom_pane_off']) echo 'checked '; ?> />
-<!-- @TODO now that it's configurable as unchecked how do you make the bottom frame be closed??? TONY -->
+      <b><?php xl('Bot','e') ?></b><input type='checkbox' name='cb_bot' onclick='toggleFrame(2)' checked />
      </td>
     </tr>
    </table>

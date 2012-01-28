@@ -104,11 +104,19 @@ $res = sqlQuery("select * from users where username='".$_SESSION{"authUser"}."'"
 	<table cellspacing="0" cellpadding="1" style="margin:0px 3px 0px 0px;"><tr>
 		<td align="right" class="text" style="vertical-align:text-bottom;"><a href='main_title.php' onclick="javascript:parent.left_nav.goHome();return false;" ><?php xl('Home','e'); ?></a>
 		&nbsp;|&nbsp;
-                <?php if ($globals['online_userguide_link']) { // start if-block?>
-                	<td align="center" nowrap> 
-                    &nbsp;<a href="<?php echo $globals['online_userguide_link']?>" target="_blank" class="menu"> 
-                    <?php xl('Manual','e'); ?></a>&nbsp;&nbsp;</td>
-                <?php } //end of if-block ?>
+        <a href="
+    <?php
+        if($GLOBALS['online_userguide_link'] === '') {
+            echo $GLOBALS['default_userguide_link'];
+        } else {
+            echo $GLOBALS['online_userguide_link'];
+        }
+        // close the href quote ?>"
+        <?php
+        echo " target='_blank'>";
+          xl('Manual','e');
+        ?>
+        </a>&nbsp;&nbsp;
 		<td align="right" style="vertical-align:top;"><a href="../logout.php?auth=logout" target="_top" class="css_button_small" style='float:right;' id="logout_link" onclick="top.restoreSession()" >
 			<span><?php echo htmlspecialchars( xl('Logout'), ENT_QUOTES) ?></span></a></td>
 	</tr><tr>
