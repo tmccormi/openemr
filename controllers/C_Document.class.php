@@ -39,7 +39,7 @@ class C_Document extends Controller {
 		//print_r($t->tree);
 		$this->tree = $t;
 	}
-	
+        
 	function upload_action($patient_id,$category_id) {
 		$category_name = $this->tree->get_node_name($category_id);
 		$this->assign("category_id", $category_id);
@@ -146,6 +146,125 @@ class C_Document extends Controller {
 		$this->assign("error", nl2br($error));
 		//$this->_state = false;
 		$_POST['process'] = "";
+		//return $this->fetch($GLOBALS['template_dir'] . "documents/" . $this->template_mod . "_upload.html");
+	}
+        
+        /**
+         * function: upload_action_process_auto
+         * 
+         * description:  custom upload function to assign a file on the server to the documents section for a given patient in openemr
+         * 
+         * @param array $args
+                $args['destination']        // alternate file name
+                $args['file']['location']   // file location on server filesystem
+                $args['file']['size']       // size of file on server
+                $args['file']['type']       // file type
+                $args['process']            // set to true
+                $args['category_id']        // category id for the document tree
+                $args['patient_id']         // pid from the patient_data table
+         * @return string 
+         */
+	function upload_action_process_auto($args) {
+		if ($args['process'] != "true")
+			return;
+		
+                $error = "";
+		$doDecryption = false;
+		$encrypted = $args['encrypted'];
+		$passphrase = $args['passphrase'];
+		if ( !$GLOBALS['hide_document_encryption'] && 
+		    $encrypted && $passphrase ) {
+		    $doDecryption = true;
+		}
+			
+		if (is_numeric($args['category_id'])) {	
+			$category_id = $args['category_id'];
+		}
+		if (is_numeric($args['patient_id'])) {
+			$patient_id = $args['patient_id'];
+                        $this->file_path = $this->_config['repository'] . preg_replace("/[^A-Za-z0-9]/","_",$args['patient_id']) . "/";
+		}
+
+                // Add the document to the system
+                if(file_exists($args['file']['location']))
+                {
+                    $file_parts = explode("/",$args['file']['location']);
+                    
+                    $fname = $file_parts[count($file_parts) - 1];
+                    $err = "";
+                  
+                    if (!$args['file']['size']) 
+                    {
+                        $error .= "The system does not permit uploading files of with size 0.\n";
+                        return $error;
+                    }
+                  
+		  	
+                    if (!file_exists($this->file_path)) 
+                    {
+                        if (!mkdir($this->file_path,0700)) 
+                        {
+                            $error .= "The system was unable to create the directory for this upload, '" . $this->file_path . "'.\n";
+                            return $error;
+		  	}
+                    }
+                        
+  		    if ( $args['destination'] != '' ) 
+                    {
+  		        $fname = $args['destination'];
+  		    }
+		  	
+                    $fname = preg_replace("/[^a-zA-Z0-9_.]/","_",$fname);
+		  	
+                    if (file_exists($this->file_path.$fname)) 
+                    {
+                        $error .= xl('File with same name already exists at location:','','',' ') . $this->file_path . "\n";
+		  	$fname = basename($this->_rename_file($this->file_path.$fname));
+		  	$file['name'] = $fname;
+                        $error .= xl('Current file name was changed to','','',' ') . $fname ."\n";
+                    }
+		  	
+                    if(copy($args['file']['location'], $this->file_path.$fname))
+                    {
+                        $this->assign("upload_success", "true");
+		  	$d = new Document();
+		  	$d->url = "file://" .$this->file_path.$fname;
+
+                        if ($file['type'] == 'text/xml') 
+                        {
+                            $d->mimetype = 'application/xml';
+                        }
+                        else 
+                        {
+                            $d->mimetype = $file['type'];
+			}                                 
+		  	$d->size = $file['size'];
+		  	$sha1Hash = sha1_file( $this->file_path.$fname );
+		  	$d->hash = $sha1Hash;
+		  	$d->type = $d->type_array['file_url'];
+		  	$d->set_foreign_id($patient_id);
+
+		  	$d->persist();
+		  	$d->populate();
+		  	$this->assign("file",$d);
+		  		
+		  	if (is_numeric($d->get_id()) && is_numeric($category_id)) 
+                        {
+                            $sql = "REPLACE INTO categories_to_documents set category_id = '" . $category_id . "', document_id = '" . $d->get_id() . "'";
+                            $d->_db->Execute($sql);
+		  	}
+                        
+                    }
+                    else 
+                    {
+                        $error .= "The file could not be succesfully stored, this error is usually related to permissions problems on the storage system.\n";
+                        return $error;
+                    }
+		  }
+                  
+		$this->assign("error", nl2br($error));
+		//$this->_state = false;
+		$args['process'] = "";
 		//return $this->fetch($GLOBALS['template_dir'] . "documents/" . $this->template_mod . "_upload.html");
 	}
 	
