@@ -113,6 +113,7 @@ function InsertEventFull()
             InsertEvent($args);
         }
  }
+
 function DOBandEncounter()
  {
    global $event_date,$info_msg;
@@ -134,7 +135,6 @@ function DOBandEncounter()
 		 }
 	 }
  }
-//================================================================================================================
 
 // EVENTS TO FACILITIES (lemonsoftware)
 //(CHEMED) get facility name
@@ -257,8 +257,8 @@ if ($_POST['form_action'] == "duplicate" || $_POST['form_action'] == "save")
                         "exdate" => ""
                     );
 
- }//if ($_POST['form_action'] == "duplicate" || $_POST['form_action'] == "save") 
-//=============================================================================================================================
+ }
+
 if ($_POST['form_action'] == "duplicate") {
 	
 	InsertEventFull();
@@ -1160,6 +1160,11 @@ $classpati='';
     <tr>
       <td nowrap><b><?php echo xlt('Facility'); ?>:</b></td>
       <td>
+      <?php /*{CHEMED}*/
+       if ($userid != 0) { ?>
+      <input type='hidden' name="facility" id="facility" value='<?php echo $e2f; ?>'/>
+      <input type='input' readonly name="facility_txt" value='<?php echo $e2f_name; ?>'/>
+      <?php } else {?>
       <select name="facility" id="facility" >
       <?php
 
@@ -1191,7 +1196,7 @@ $classpati='';
       // EOS E2F
       // ===========================
       ?>
-      <?php
+      <?php }
       //END (CHEMED) IF ?>
       </td>
       </select>

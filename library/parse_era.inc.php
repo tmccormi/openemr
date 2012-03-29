@@ -30,6 +30,7 @@ function parse_era_2100(&$out, $cb) {
         }
         $paytotal = round($paytotal, 2);
         $adjtotal = round($adjtotal, 2);
+        /***
         if ($paytotal != 0 || $adjtotal != 0) {
             if ($out['svc'][0]['code'] != 'Claim') {
                 array_unshift($out['svc'], array());
@@ -55,7 +56,7 @@ function parse_era_2100(&$out, $cb) {
             //   "This should not happen!\n";
             // }
         }
-
+        ***/
         $cb($out);
     }
 }

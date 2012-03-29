@@ -98,18 +98,18 @@ function postError($msg) {
    "ON fe.date = e.pc_eventDate AND fe.pid = e.pc_pid " .
    "LEFT OUTER JOIN forms AS f ON f.pid = fe.pid AND f.encounter = fe.encounter AND f.formdir = 'newpatient' " .
    "LEFT OUTER JOIN patient_data AS p ON p.pid = e.pc_pid " .
-   // "LEFT OUTER JOIN users AS u ON BINARY u.username = BINARY f.user WHERE ";
-   "LEFT OUTER JOIN users AS u ON u.id = fe.provider_id WHERE ";
-  if ($form_to_date) {
-   $query .= "e.pc_eventDate >= '$form_from_date' AND e.pc_eventDate <= '$form_to_date' ";
-  } else {
-   $query .= "e.pc_eventDate = '$form_from_date' ";
-  }
+   "LEFT OUTER JOIN users AS u ON BINARY u.username = BINARY f.user WHERE ";
+  // "LEFT OUTER JOIN users AS u ON u.id = fe.provider_id WHERE ";
+//  if ($form_to_date) {
+  // $query .= "e.pc_eventDate >= '$form_from_date' AND e.pc_eventDate <= '$form_to_date' ";
+  //} else {
+  // $query .= "e.pc_eventDate = '$form_from_date' ";
+ // }
   if ($form_facility !== '') {
-   $query .= "AND e.pc_facility = '$form_facility' ";
+  $query .= "e.pc_facility = '$form_facility' AND ";
   }
   // $query .= "AND ( e.pc_catid = 5 OR e.pc_catid = 9 OR e.pc_catid = 10 ) " .
-  $query .= "AND e.pc_pid != '' AND e.pc_apptstatus != '?' " .
+  $query .= "e.pc_pid != '' AND e.pc_apptstatus != '?' " .
    ") UNION ( " .
    "SELECT " .
    "e.pc_eventDate, e.pc_startTime, " .
@@ -124,17 +124,17 @@ function postError($msg) {
    "e.pc_pid != '' AND e.pc_apptstatus != '?' " .
    "LEFT OUTER JOIN forms AS f ON f.pid = fe.pid AND f.encounter = fe.encounter AND f.formdir = 'newpatient' " .
    "LEFT OUTER JOIN patient_data AS p ON p.pid = fe.pid " .
-   // "LEFT OUTER JOIN users AS u ON BINARY u.username = BINARY f.user WHERE ";
-   "LEFT OUTER JOIN users AS u ON u.id = fe.provider_id WHERE ";
-  if ($form_to_date) {
+   "LEFT OUTER JOIN users AS u ON BINARY u.username = BINARY f.user ";
+   //"LEFT OUTER JOIN users AS u ON u.id = fe.provider_id WHERE ";
+  //if ($form_to_date) {
    // $query .= "LEFT(fe.date, 10) >= '$form_from_date' AND LEFT(fe.date, 10) <= '$form_to_date' ";
-   $query .= "fe.date >= '$form_from_date 00:00:00' AND fe.date <= '$form_to_date 23:59:59' ";
-  } else {
+   //$query .= "fe.date >= '$form_from_date 00:00:00' AND fe.date <= '$form_to_date 23:59:59' ";
+  //} else {
    // $query .= "LEFT(fe.date, 10) = '$form_from_date' ";
-   $query .= "fe.date >= '$form_from_date 00:00:00' AND fe.date <= '$form_from_date 23:59:59' ";
-  }
+   //$query .= "fe.date >= '$form_from_date 00:00:00' AND fe.date <= '$form_from_date 23:59:59' ";
+ // }
   if ($form_facility !== '') {
-   $query .= "AND fe.facility_id = '$form_facility' ";
+   $query .= "WHERE fe.facility_id = '$form_facility' ";
   }
   $query .= ") ORDER BY docname, pc_eventDate, pc_startTime";
 
@@ -188,7 +188,7 @@ function postError($msg) {
 
 <table>
  <tr>
-  <td width='630px'>
+  <td width='720px'>
 	<div style='float:left'>
 
 	<table class='text'>

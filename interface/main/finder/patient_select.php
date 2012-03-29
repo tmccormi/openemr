@@ -56,14 +56,14 @@ form {
     overflow: auto;
 }
 
-.srName { width: 12%; }
+.srName { width: 20%; }
 .srPhone { width: 11%; }
 .srSS { width: 11%; }
 .srDOB { width: 8%; }
 .srID { width: 7%; }
 .srPID { width: 7%; }
-.srNumEnc { width: 11%; }
-.srNumDays { width: 11%; }
+.srNumEnc { width: 6%; }
+.srNumDays { width: 6%; }
 .srDateLast { width: 11%; }
 .srDateNext { width: 11%; }
 .srMisc { width: 10%; }
@@ -192,6 +192,8 @@ else {
       $result = getPatientDOB("$patient", $given, "DOB ASC, ".$orderby, $sqllimit, $fstart);
   else if ($findBy == "SSN")
       $result = getPatientSSN("$patient", $given, "ss ASC, ".$orderby, $sqllimit, $fstart);
+  else if ($findBy == "InPatient") //(WHC) Search for Inpatient
+    $result = getPatientInPatient("$patient", $given, $orderby, $sqllimit);
   elseif ($findBy == "Phone")                  //(CHEMED) Search by phone number
       $result = getPatientPhone("$patient", $given, $orderby, $sqllimit, $fstart);
   else if ($findBy == "Any")
@@ -355,7 +357,8 @@ if ($result) {
           if ($results = sqlFetchArray($statement)) {
               $last_date_seen = $results['mydate']; 
               $day_diff = $results['day_diff'];
-              $next_appt_date= $results['next_appt_day'].', '.$results['next_appt'];
+              //$next_appt_date= $results['next_appt_day'].', '.$results['next_appt'];
+              $next_appt_date= $results['next_appt'];
           }
           // calculate date differences based on date of last encounter regardless of billing
           $query = "select DATE_FORMAT(max(form_encounter.date),'%m/%d/%y') as mydate," .
@@ -370,7 +373,8 @@ if ($result) {
           if ($results = sqlFetchArray($statement)) {
               $last_date_seen = $results['mydate']; 
               $day_diff = $results['day_diff'];
-              $next_appt_date= $results['next_appt_day'].', '.$results['next_appt'];
+              //$next_appt_date= $results['next_appt_day'].', '.$results['next_appt'];
+              $next_appt_date= $results['next_appt'];
           }
 
           //calculate count of encounters by distinct billing dates with cpt4

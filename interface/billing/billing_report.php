@@ -64,17 +64,21 @@ if ($_POST['mode'] == 'process') {
 
 //global variables:
 if (!isset($_POST["mode"])) {
-  $from_date = isset($_POST['from_date']) ? $_POST['from_date'] : date('Y-m-d');
-  $to_date   = isset($_POST['to_date'  ]) ? $_POST['to_date'  ] : '';
+ // $from_date = isset($_POST['from_date']) ? $_POST['from_date'] : date('Y-m-d');
+ // $to_date   = isset($_POST['to_date'  ]) ? $_POST['to_date'  ] : '';
+  $from_date = isset($_POST['from_date']) ? $_POST['from_date'] : date('Y-m-d', mktime(0, 0, 0, date("m")  , date("d")-7, date("Y")));
+  $to_date   = isset($_POST['to_date'  ]) ? $_POST['to_date'  ] : date('Y-m-d');
   $code_type = isset($_POST['code_type']) ? $_POST['code_type'] : 'all';
   $unbilled  = isset($_POST['unbilled' ]) ? $_POST['unbilled' ] : 'on';
   $my_authorized = $_POST["authorized"];
+  $form_facility  = isset($_POST['form_facility']) ? $_POST['form_facility'] : '%';
 } else {
   $from_date     = $_POST["from_date"];
   $to_date       = $_POST["to_date"];
   $code_type     = $_POST["code_type"];
   $unbilled      = $_POST["unbilled"];
   $my_authorized = $_POST["authorized"];
+  $form_facility  = $_POST['form_facility'];
 }
 
 // This tells us if only encounters that appear to be missing a "25" modifier
@@ -384,10 +388,10 @@ $ThisPageSearchCriteriaIncludeMaster=array();
 $ThisPageSearchCriteriaDisplayMaster= array( xl("Date of Service"),xl("Date of Entry"),xl("Date of Billing"),xl("Claim Type"),xl("Patient Name"),xl("Patient Id"),xl("Insurance Company"),xl("Encounter"),xl("Whether Insured"),xl("Charge Coded"),xl("Billing Status"),xl("Authorization Status"),xl("Last Level Billed"),xl("X12 Partner") );
 $ThisPageSearchCriteriaKeyMaster="form_encounter.date,billing.date,claims.process_time,claims.target,patient_data.fname,".
                                  "form_encounter.pid,claims.payer_id,form_encounter.encounter,insurance_data.provider,billing.id,billing.billed,".
-                                 "billing.authorized,form_encounter.last_level_billed,billing.x12_partner_id";
+                                 "billing.authorized,form_encounter.last_level_billed,billing.x12_partner_id,form_encounter.facility_id";
 $ThisPageSearchCriteriaDataTypeMaster="datetime,datetime,datetime,radio,text_like,".
                                       "text,include,text,radio,radio,radio,".
-                                      "radio_like,radio,query_drop_down";
+                                      "radio_like,radio,query_drop_down,query_drop_down";
 //The below section is needed if there is any 'radio' or 'radio_like' type in the $ThisPageSearchCriteriaDataTypeMaster
 //$ThisPageSearchCriteriaDisplayRadioMaster,$ThisPageSearchCriteriaRadioKeyMaster ==>For each radio data type this pair comes.
 //The key value 'all' indicates that no action need to be taken based on this.For that the key must be 'all'.Display value can be any thing.
@@ -407,6 +411,9 @@ $ThisPageSearchCriteriaRadioKeyMaster[6]="all,0,1,2";
 $ThisPageSearchCriteriaQueryDropDownMaster[1]="SELECT name,id FROM x12_partners;";
 $ThisPageSearchCriteriaQueryDropDownMasterDefault[1]= xl("All");//Only one item will be here
 $ThisPageSearchCriteriaQueryDropDownMasterDefaultKey[1]="all";//Only one item will be here
+$ThisPageSearchCriteriaQueryDropDownMaster[2]="SELECT id, name FROM facility ORDER BY name;";
+$ThisPageSearchCriteriaQueryDropDownMasterDefault[2]="All";//Only one item will be here
+$ThisPageSearchCriteriaQueryDropDownMasterDefaultKey[2]="all";//Only one item will be here
 //The below section is needed if there is any 'include' type in the $ThisPageSearchCriteriaDataTypeMaster
 //Function name is added here.Corresponding include files need to be included in the respective pages as done in this page.
 //It is labled(Included for Insurance ajax criteria)(Line:-279-299).
@@ -609,8 +616,8 @@ if (!isset($_POST["mode"])) {
   $code_type = $_POST["code_type"];
   $unbilled = $_POST["unbilled"];
   $my_authorized = $_POST["authorized"];
+  $form_facility  = $_POST['form_facility'];
 }
-
 if ($my_authorized == "on" ) {
   $my_authorized = "1";
 } else {
@@ -729,8 +736,17 @@ if(is_array($ret))
       $res = sqlQuery("select count(*) as count from insurance_data where " .
         "pid = ? and " .
         "type='primary' and " .
+        "policy_number != '' and " .
+        "policy_number REGEXP '[^0+]' and " . //Allows policy_number that is not all zeros
         "subscriber_lname is not null and " .
         "subscriber_lname != '' limit 1", array($iter['enc_pid']) );
+        "subscriber_street is not null and " .
+        "subscriber_street != '' and " .
+        "subscriber_DOB != '0000-00-00' and " .
+        "subscriber_postal_code REGEXP '^[0-9]{5}$' and " .
+        "subscriber_state REGEXP BINARY '^[A-Z]{2}$' " .
+        "limit 1",$iter['enc_pid']);
+
       $namecolor = ($res['count'] > 0) ? "black" : "#ff7777";
 
       $bgcolor = "#" . (($encount & 1) ? "ddddff" : "ffdddd");
@@ -739,13 +755,25 @@ if(is_array($ret))
       $rcount = 0;
       $oldcode = "";
 
-      $ptname = $name['fname'] . " " . $name['lname'];
+      $ptname = $name['fname'] . "&nbsp;" . $name['lname'];
       $raw_encounter_date = date("Y-m-d", strtotime($iter['enc_date']));
+    
+       //If a procedure is coded it needs a justify code
+      if ($iter['code_type'] == "CPT4") {
+        $namecolor = ($iter['justify']) ? $namecolor : "#ff7777";
+        }
             
-            //  Add Encounter Date to display with "To Encounter" button 2/17/09  JCH
-      $lhtml .= "&nbsp;<span class=bold><font color='$namecolor'>". text($ptname) .
-        "</font></span><span class=small>&nbsp;(" . text($iter['enc_pid']) . "-" .
-        text($iter['enc_encounter']) . ")</span>";
+        //  Add Encounter Date to display with "To Encounter" button 2/17/09  JCH
+      $lhtml .= "&nbsp;<span class=bold><font color='$namecolor'>$ptname" .
+        "</font></span><a class=\"link_submit\" " .
+        "href=\"javascript:window.toencounter(" . $iter['enc_pid'] .
+        ",'" . addslashes($name['pubpid']) .
+        "','" . addslashes($ptname) . "'," . $iter['enc_encounter'] .
+        ",'$raw_encounter_date')\"><span>&nbsp;(" . $iter['enc_pid'] . "-" .
+        $iter['enc_encounter'] . ")</span></a>";
+
+        //Added encounter date for encounters with no billing for easier identification
+        if (! $iter['id']) $lhtml .= "&nbsp;<span class=small>($raw_encounter_date)</span>";
 
          //Encounter details are stored to javacript as array.
         $result4 = sqlStatement("SELECT fe.encounter,fe.date,openemr_postcalendar_categories.pc_catname FROM form_encounter AS fe ".
@@ -1008,7 +1036,7 @@ if(is_array($ret))
     if ($iter['id']) $rhtml .= getProviderName(empty($iter['provider_id']) ? text($iter['enc_provider_id']) : text($iter['provider_id']));
     $rhtml .= "</span></td>\n";
     $rhtml .= '<td width=100>&nbsp;&nbsp;&nbsp;<span style="font-size:8pt;">';
-    if ($iter['id']) $rhtml .= text(oeFormatSDFT(strtotime($iter{"date"})));
+    if ($iter['id']) $rhtml .= date("Y-m-d",strtotime($iter{"enc_date"}));
     $rhtml .= "</span></td>\n";
     if ($iter['id'] && $iter['authorized'] != 1) {
       $rhtml .= "<td><span class=alert>".xlt("Note: This code was not entered by an authorized user. Only authorized codes may be uploaded to the Open Medical Billing Network for processing. If you wish to upload these codes, please select an authorized user here.")."</span></td>\n";
@@ -1016,7 +1044,7 @@ if(is_array($ret))
     else {
       $rhtml .= "<td></td>\n";
     }
-    if ($iter['id'] && $last_encounter_id != $this_encounter_id) {
+    if ($iter['id'] && $last_encounter_id != $this_encounter_id && $namecolor != "#ff7777") {
       $tmpbpr = $iter['bill_process'];
       if ($tmpbpr == '0' && $iter['billed']) $tmpbpr = '2';
       $rhtml .= "<td><input type='checkbox' value='" . attr($tmpbpr) . "' name='claims[" . attr($this_encounter_id) . "][bill]' onclick='set_button_states()' id='CheckBoxBilling" . attr($CheckBoxBilling*1) . "'>&nbsp;</td>\n";

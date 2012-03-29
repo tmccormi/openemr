@@ -206,7 +206,7 @@ function generate_form_field($frow, $currvalue) {
     echo "<select name='form_$field_id_esc' id='form_$field_id_esc' title='$description'>";
     echo "<option value=''>" . htmlspecialchars(xl($empty_title), ENT_NOQUOTES) . "</option>";
     while ($urow = sqlFetchArray($ures)) {
-      $uname = htmlspecialchars( $urow['fname'] . ' ' . $urow['lname'], ENT_NOQUOTES);
+      $uname = htmlspecialchars( $urow['lname'] . ' ' . $urow['fname'], ENT_NOQUOTES);
       $optionId = htmlspecialchars( $urow['id'], ENT_QUOTES);
       echo "<option value='$optionId'";
       if ($urow['id'] == $currvalue) echo " selected";
@@ -224,7 +224,7 @@ function generate_form_field($frow, $currvalue) {
     echo "<select name='form_$field_id_esc' id='form_$field_id_esc' title='$description'>";
     echo "<option value=''>" . htmlspecialchars( xl('Unassigned'), ENT_NOQUOTES) . "</option>";
     while ($urow = sqlFetchArray($ures)) {
-      $uname = htmlspecialchars( $urow['fname'] . ' ' . $urow['lname'], ENT_NOQUOTES);
+      $uname = htmlspecialchars( $urow['lname'] . ' ' . $urow['fname'], ENT_NOQUOTES);
       $optionId = htmlspecialchars( $urow['id'], ENT_QUOTES);
       echo "<option value='$optionId'";
       if ($urow['id'] == $currvalue) echo " selected";

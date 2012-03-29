@@ -9,6 +9,9 @@
     // This processes X12 835 remittances and produces a report.
 
     // Buffer all output so we can archive it to a file.
+
+    // Modified by MI2 and R.Mendelhe 2011
+
     ob_start();
 
 require_once("../globals.php");
@@ -184,6 +187,7 @@ require_once("$srcdir/billing.inc");
 
         // Get details, if we have them, for the invoice.
         $inverror = true;
+        $invdenied = false;
         $codes = array();
         if ($pid && $encounter) {
             // Get invoice data into $arrow or $ferow.
@@ -232,19 +236,12 @@ require_once("$srcdir/billing.inc");
             writeMessageLine($bgcolor, 'errdetail',
                 "The following claim is not in our database");
         }
-        else {
-            // Skip this test. Claims can get multiple CLPs from the same payer!
-            //
-            // $insdone = strtolower($arrow['shipvia']);
-            // if (strpos($insdone, 'ins1') !== false) {
-            //  $inverror = true;
-            //  writeMessageLine($bgcolor, 'errdetail',
-            //   "Primary insurance EOB was already posted for the following claim");
-            // }
-        }
+        // Removed original else test. Claims can get multiple CLPs from the same payer!
+
 
         if ($csc == '4') {//Denial case, code is stored in the claims table for display in the billing manager screen with reason explained.
-            $inverror = true;
+            //$inverror = true;
+            $invdenied = true;
             if (!$debug) {
                 if ($pid && $encounter) {
                     $code_value = '';
@@ -276,6 +273,21 @@ require_once("$srcdir/billing.inc");
         $service_date = parse_date($out['dos']);
     $check_date      = $paydate ? $paydate : parse_date($out['check_date']);
     $production_date = $paydate ? $paydate : parse_date($out['production_date']);
+    if ($INTEGRATED_AR && !$error && !$debug) {
+
+    //Get PayerID from insurance_data
+        $payerid = arGetPayerID($pid, $service_date, substr($inslabel, 3));
+
+    //If PayerID is found get session_id
+    //else PayerID '0' means self/COPAY or not our claim likely different invoice number.
+        if ($payerid) {
+
+                //Get session_id if present or create one if new check/payer in ar_session
+                        $session_id = arGetSession($payerid, $out['check_number'],
+                        $check_date, $check_date, $out['check_amount']);
+                     }
+        }
+
 
     if ($INTEGRATED_AR) {
       $insurance_id = arGetPayerID($pid, $service_date, substr($inslabel, 3));
@@ -320,45 +332,13 @@ require_once("$srcdir/billing.inc");
                     $error = true;
                 }
 
-                // Check for already-existing primary remittance activity.
-                // Removed this check because it was not allowing for copays manually
-                // entered into the invoice under a non-copay billing code.
-                /****
-                if ((sprintf("%.2f",$prev['chg']) != sprintf("%.2f",$prev['bal']) ||
-                    $prev['adj'] != 0) && $primary)
-                {
-                    writeMessageLine($bgcolor, 'errdetail',
-                        "This service item already has primary payments and/or adjustments!");
-                    $error = true;
-                }
-                ****/
-
                 unset($codes[$codekey]);
             }
 
             // If the service item is not in our database...
-            else {
+            //Not posting "Claims" based on discrepancies in ERA - too many error payor ERA
+                        //These should be handled manually
 
-                // This is not an error. If we are not in error mode and not debugging,
-                // insert the service item into SL.  Then display it (in green if it
-                // was inserted, or in red if we are in error mode).
-                $description = "CPT4:$codekey Added by $inslabel $production_date";
-                if (!$error && !$debug) {
-          if ($INTEGRATED_AR) {
-            arPostCharge($pid, $encounter, 0, $svc['chg'], 1, $service_date,
-              $codekey, $description, $debug,'',$codetype);
-          } else {
-            slPostCharge($arrow['id'], $svc['chg'], 1, $service_date, $codekey,
-              $insurance_id, $description, $debug);
-          }
-                    $invoice_total += $svc['chg'];
-                }
-                $class = $error ? 'errdetail' : 'newdetail';
-                writeDetailLine($bgcolor, $class, $patient_name, $invnumber,
-                    $codekey, $production_date, $description,
-                    $svc['chg'], ($error ? '' : $invoice_total));
-
-            }
 
             $class = $error ? 'errdetail' : 'newdetail';
 
@@ -368,7 +348,7 @@ require_once("$srcdir/billing.inc");
                 // reflecting the allowed amount, others not.  So here we need to
                 // check if the adjustment exists, and if not then create it.  We
                 // assume that any nonzero CO (Contractual Obligation) or PI
-        // (Payer Initiated) adjustment is good enough.
+                // (Payer Initiated) adjustment is good enough.
                 $contract_adj = sprintf("%.2f", $svc['chg'] - $svc['allowed']);
                 foreach ($svc['adj'] as $adj) {
                     if (($adj['group_code'] == 'CO' || $adj['group_code'] == 'PI') && $adj['amount'] != 0)
@@ -391,10 +371,10 @@ require_once("$srcdir/billing.inc");
             // Post and report the payment for this service item from the ERA.
             // By the way a 'Claim' level payment is probably going to be negative,
             // i.e. a payment reversal.
-            if ($svc['paid']) {
+            if ($svc['paid'] OR $invdenied) {
                 if (!$error && !$debug) {
           if ($INTEGRATED_AR) {
-            arPostPayment($pid, $encounter,$InsertionId[$out['check_number']], $svc['paid'],//$InsertionId[$out['check_number']] gives the session id
+            arPostPayment($pid, $encounter,$InsertionId[$out['check_number']], $svc['paid'],
               $codekey, substr($inslabel,3), $out['check_number'], $debug,'',$codetype);
           } else {
             slPostPayment($arrow['id'], $svc['paid'], $check_date,
@@ -417,12 +397,6 @@ require_once("$srcdir/billing.inc");
                     // Group code PR is Patient Responsibility.  Enter these as zero
                     // adjustments to retain the note without crediting the claim.
                     if ($primary) {
-            /****
-                        $reason = 'Pt resp: '; // Reasons should be 25 chars or less.
-                        if ($adj['reason_code'] == '1') $reason = 'To deductible: ';
-                        else if ($adj['reason_code'] == '2') $reason = 'Coinsurance: ';
-                        else if ($adj['reason_code'] == '3') $reason = 'Co-pay: ';
-            ****/
                         $reason = "$inslabel ptresp: "; // Reasons should be 25 chars or less.
                         if ($adj['reason_code'] == '1') $reason = "$inslabel dedbl: ";
                         else if ($adj['reason_code'] == '2') $reason = "$inslabel coins: ";
@@ -433,17 +407,22 @@ require_once("$srcdir/billing.inc");
                     // but do not post any amounts.
                     else {
                         $reason = "$inslabel note " . $adj['reason_code'] . ': ';
-            /****
-                        $reason .= sprintf("%.2f", $adj['amount']);
-            ****/
                     }
                     $reason .= sprintf("%.2f", $adj['amount']);
                     // Post a zero-dollar adjustment just to save it as a comment.
                     if (!$error && !$debug) {
             if ($INTEGRATED_AR) {
-              arPostAdjustment($pid, $encounter, $InsertionId[$out['check_number']], 0, $codekey,//$InsertionId[$out['check_number']] gives the session id
-                substr($inslabel,3), $reason, $debug, '', $codetype);
-            } else {
+                //If claim denial post a zero-dollar adjustment to keep balance open
+                        if ($invdenied) {
+              arPostAdjustment($pid, $encounter, $InsertionId[$out['check_number']], 0, $codekey,
+                substr($inslabel,3), "Adjust code " . $adj['reason_code'], $debug);
+            }
+             else {
+                      arPostAdjustment($pid, $encounter, $InsertionId[$out['check_number']], $adj['amount'], $codekey,
+                        substr($inslabel,3), "Adjust code " . $adj['reason_code'], $debug);
+                        }
+            } 
+              else {
               slPostAdjustment($arrow['id'], 0, $production_date,
                 $out['check_number'], $codekey, $insurance_id,
                 $reason, $debug);

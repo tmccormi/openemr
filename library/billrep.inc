@@ -74,6 +74,10 @@
                {
                 $query_part .= ' AND '."(insurance_data.provider = '0' or insurance_data.date > form_encounter.date)";
                }
+               elseif($_POST['form_facility'])
+               {
+                 $billstring .= ' AND '."form_encounter.facility_id LIKE '$facility' ";
+               }
               //---------------------------------------------------------
               else
                {
@@ -83,7 +87,7 @@
          }
      }
     //date must be in nice format (e.g. 2002-07-11)
-    function getBillsBetween( $code_type,
+    function getBillsBetween( $code_type, $facility,
         $cols = "id,date,pid,code_type,code,user,authorized,x12_partner_id")
     {
         GenerateTheQueryPart();
@@ -93,7 +97,8 @@
         // which is the date in the form_encounter table.
         //
         $sql = "SELECT distinct form_encounter.date AS enc_date, form_encounter.pid AS enc_pid, " .
-            "form_encounter.encounter AS enc_encounter, form_encounter.provider_id AS enc_provider_id, billing.* " .
+            "form_encounter.encounter AS enc_encounter, form_encounter.provider_id AS enc_provider_id, billing.*, " .
+            "billing.justify AS bill_justify " .
             "FROM form_encounter " .
             "LEFT OUTER JOIN billing ON " .
             "billing.encounter = form_encounter.encounter AND " .
@@ -105,7 +110,6 @@
             "LEFT OUTER JOIN insurance_data on insurance_data.pid = form_encounter.pid and insurance_data.type = 'primary' ".
             "WHERE 1=1 $query_part  " . " $auth " ." $billstring " .
             "ORDER BY form_encounter.encounter, form_encounter.pid, billing.code_type, billing.code ASC";
-            //echo $sql;
         $res = sqlStatement($sql,array($code_type));
 
         for($iter=0; $row=sqlFetchArray($res); $iter++)
@@ -115,6 +119,7 @@
 
         return $all;
     }
+
     function getBillsBetweenReport( $code_type,
         $cols = "id,date,pid,code_type,code,user,authorized,x12_partner_id")
     {
@@ -155,6 +160,7 @@
 
         return $all;
     }
+
     function getBillsListBetween( $code_type,
         $cols = "billing.id, form_encounter.date, billing.pid, billing.code_type, billing.code, billing.user")
     {
@@ -212,8 +218,7 @@
           . "join insurance_data on insurance_data.pid = form_encounter.pid and insurance_data.type = 'primary' "
           . "where billed = '1' "
           . "$auth " 
-          . "$billstring  $query_part  " 
-          . "order by billing.pid,billing.encounter";
+          . "$billstring  $query_part  " ;
           
          return $sql;
      }

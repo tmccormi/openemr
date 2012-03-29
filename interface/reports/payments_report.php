@@ -60,15 +60,15 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
     $form_cb_err      = $_POST['form_cb_err']      ? true : false;
   }
 } else {
-  $form_cb_ssn      = true;
+  $form_cb_ssn      = false; //true
   $form_cb_dob      = false;
   $form_cb_pubpid   = false;
-  $form_cb_adate    = false;
+  $form_cb_adate    = true; //false
   $form_cb_policy   = false;
-  $form_cb_phone    = true;
+  $form_cb_phone    = false; // true
   $form_cb_city     = false;
-  $form_cb_ins1     = false;
-  $form_cb_referrer = false;
+  $form_cb_ins1     = true; //false
+  $form_cb_referrer = true; //false
   $form_cb_idays    = false;
   $form_cb_err      = false;
 }
@@ -246,7 +246,7 @@ else {
 <head>
 <?php if (function_exists('html_header_show')) html_header_show(); ?>
 <link rel=stylesheet href="<?php echo $css_header;?>" type="text/css">
-<title><?php xl('Collections Report','e')?></title>
+<title><?php xl('Payments Report','e')?></title>
 <style type="text/css">
 
 @media print {
@@ -290,9 +290,9 @@ function checkAll(checked) {
 
 <body class="body_top">
 
-<span class='title'><?php xl('Report','e'); ?> - <?php xl('Collections','e'); ?></span>
+<span class='title'><?php xl('Report','e'); ?> - <?php xl('Payments','e'); ?></span>
 
-<form method='post' action='collections_report.php' enctype='multipart/form-data' id='theform'>
+<form method='post' action='payments_report.php' enctype='multipart/form-data' id='theform'>
 
 <div id="report_parameters">
 
@@ -302,7 +302,7 @@ function checkAll(checked) {
 
 <table>
  <tr>
-  <td width='610px'>
+  <td width='80%'>
 	<div style='float:left'>
 
 	<table class='text'>
@@ -345,7 +345,7 @@ function checkAll(checked) {
 						</td>
 						<td>
 						   <input type='checkbox' name='form_cb_referrer'<?php if ($form_cb_referrer) echo ' checked'; ?>>
-						   <?php xl('Referrer','e') ?>&nbsp;
+						   <?php xl('Provider','e') ?>&nbsp;
 						</td>
 						<td>
 						   <input type='checkbox' name='form_cb_adate'<?php if ($form_cb_adate) echo ' checked'; ?>>
@@ -381,14 +381,14 @@ function checkAll(checked) {
 						<td class='label'>
 						   <?php xl('To','e'); ?>:
 						</td>
-						<td>
+						<td colspan='2'>
 						   <input type='text' name='form_to_date' id="form_to_date" size='10' value='<?php echo $form_to_date ?>'
 							onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)' title='yyyy-mm-dd'>
 						   <img src='../pic/show_calendar.gif' align='absbottom' width='24' height='22'
 							id='img_to_date' border='0' alt='[?]' style='cursor:pointer'
 							title='<?php xl('Click here to choose a date','e'); ?>'>
 						</td>
-						<td>
+						<td >
 						   <select name='form_category'>
 						<?php
 						 foreach (array('Open' => xl('Open'),'Due Pt' => xl('Due Pt'),'Due Ins' => xl('Due Ins'),'Ins Summary' => xl('Ins Summary'),'Credits' => xl('Credits'),'All' => xl('All')) as $key => $value) {
@@ -407,16 +407,14 @@ function checkAll(checked) {
 						<td class='label'>
 						   <?php xl('Facility','e'); ?>:
 						</td>
-						<td>
+						<td colspan="3">
 						<?php dropdown_facility(strip_escape_custom($form_facility), 'form_facility', false); ?>
 						</td>
-					</tr>
-
-					<tr>
+				
 						<td class='label'>
 						   <?php xl('Age By','e') ?>:
 						</td>
-						<td>
+						<td colspan="2">
 						   <select name='form_ageby'>
 						<?php
 						 foreach (array('Service Date', 'Last Activity Date') as $value) {
@@ -440,7 +438,10 @@ function checkAll(checked) {
 						</td>
 						<td>
 						   <input type='text' name='form_age_inc' size='3' value='<?php echo $form_age_inc; ?>' />
-						</td>
+						</td> 
+                                           <td>&nbsp;</td>
+ 			 		   <td>&nbsp;</td>
+                                           <td>&nbsp;</td>
 					</tr>
 
 
@@ -462,7 +463,7 @@ function checkAll(checked) {
 						<?php xl('Submit','e'); ?>
 					</span>
 					</a>
-
+						
 					<?php if ($_POST['form_refresh']) { ?>
 					<a href='#' class='css_button' onclick='window.print()'>
 						<span>
@@ -512,7 +513,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
     }
 
     $query = "SELECT f.id, f.date, f.pid, f.encounter, f.last_level_billed, " .
-      "f.last_level_closed, f.last_stmt_date, f.stmt_count, f.invoice_refno, " .
+      "f.last_level_closed, f.last_stmt_date, f.stmt_count, " .
       "p.fname, p.mname, p.lname, p.street, p.city, p.state, " .
       "p.postal_code, p.phone_home, p.ss, p.genericname2, p.genericval2, " .
       "p.pubpid, p.DOB, CONCAT(u.lname, ', ', u.fname) AS referrer, " .
@@ -527,12 +528,21 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
       "( SELECT SUM(a.pay_amount) FROM ar_activity AS a WHERE " .
       "a.pid = f.pid AND a.encounter = f.encounter ) AS payments, " .
       "( SELECT SUM(a.adj_amount) FROM ar_activity AS a WHERE " .
-      "a.pid = f.pid AND a.encounter = f.encounter ) AS adjustments " .
+      "a.pid = f.pid AND a.encounter = f.encounter ) AS adjustments, check_date " .
+      //"( SELECT DISTINCT check_date FROM ar_activity AS a JOIN ar_session AS ars JOIN form_encounter AS f ON " .
+      //"ars.reference = a.memo AND a.pid = f.pid AND a.encounter = f.encounter AND ars.reference != '') AS chkdate " .
+      //"ars.reference = a.memo ) AS chkdate " .
       "FROM form_encounter AS f " .
       "JOIN patient_data AS p ON p.pid = f.pid " .
-      "LEFT OUTER JOIN users AS u ON u.id = p.ref_providerID " .
-      "WHERE $where " .
-      "ORDER BY f.pid, f.encounter";
+      "LEFT JOIN billing AS b ON b.pid = f.pid AND b.encounter = f.encounter " .
+      //"LEFT OUTER JOIN users AS u ON u.id = p.providerID " . //Changed from referring to billing provider
+      "JOIN users AS u ON u.id = b.provider_id " .
+      "LEFT JOIN ar_activity AS a ON a.pid = f.pid AND a.encounter = f.encounter " .
+      //"JOIN ar_session AS ars ON ars.reference = a.memo AND ars.reference != '' " .
+      "LEFT JOIN ar_session AS ars ON ars.session_id = a.session_id AND ars.reference != '' " .
+      "WHERE $where AND b.x12_partner_id = 24605 " .
+      "ORDER BY p.lname, f.pid, f.date";
+
     $eres = sqlStatement($query);
 
     while ($erow = sqlFetchArray($eres)) {
@@ -869,7 +879,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
         "pd.genericname2, pd.genericval2, pd.pid, pd.pubpid, pd.DOB, " .
         "CONCAT(u.lname, ', ', u.fname) AS referrer FROM " .
         "integration_mapping AS im, patient_data AS pd " .
-        "LEFT OUTER JOIN users AS u ON u.id = pd.ref_providerID " .
+        "LEFT OUTER JOIN users AS u ON u.id = pd.providerID " .
         "WHERE im.foreign_id = " . $row['custid'] . " AND " .
         "im.foreign_table = 'customer' AND " .
         "pd.id = im.local_id");
@@ -909,7 +919,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
       echo '"Name",';
       echo '"Invoice",';
       echo '"DOS",';
-      echo '"Referrer",';
+      echo '"Provider",';
       echo '"Charge",';
       echo '"Adjust",';
       echo '"Paid",';
@@ -953,7 +963,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
   <th>&nbsp;<?php xl('Primary Ins','e')?></th>
 <?php } ?>
 <?php if ($form_cb_referrer) { ?>
-  <th>&nbsp;<?php xl('Referrer','e')?></th>
+  <th>&nbsp;<?php xl('Provider','e')?></th>
 <?php } ?>
 <?php if (!$is_ins_summary) { ?>
   <th>&nbsp;<?php xl('Invoice','e') ?></th>
@@ -1175,7 +1185,7 @@ if ($_POST['form_refresh'] || $_POST['form_export'] || $_POST['form_csvexport'])
 
   if ($_POST['form_export']) {
     echo "</textarea>\n";
-    $alertmsg .= "$export_patient_count patients with total of " .
+    $alertmsg .= "$export_patient_count patients representing $" .
       oeFormatMoney($export_dollars) . " have been exported ";
     if ($_POST['form_without']) {
       $alertmsg .= "but NOT flagged as in collections.";
@@ -1237,14 +1247,16 @@ if (!$_POST['form_csvexport']) {
 <a href='javascript:;' class='css_button' onclick='$("#form_csvexport").attr("value","true"); $("#theform").submit();'>
 	<span><?php xl('Export Selected as CSV','e'); ?></span>
 </a>
-<!--<a href='javascript:;' class='css_button' onclick='$("#form_export").attr("value","true"); $("#theform").submit();'>
+<!--
+<a href='javascript:;' class='css_button' onclick='$("#form_export").attr("value","true"); $("#theform").submit();'>
 	<span><?php xl('Export Selected to Collections','e'); ?></span>
-</a>-->
+</a>
 </div>
 
-<!--<div style='float:left'>
+<div style='float:left'>
 <input type='checkbox' name='form_without' value='1' /> <?php xl('Without Update','e') ?>
-</div>-->
+-->
+</div>
 
 <?php
   } // end not export

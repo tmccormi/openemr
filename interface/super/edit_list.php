@@ -161,7 +161,9 @@ function getCodeDescriptions($codes) {
     if ($codestring === '') continue;
     $arrcode = explode('|', $codestring);
     $code_type = $arrcode[0];
-    $code      = $arrcode[1];
+    $artmpcode = explode(':', $arrcode[1]);
+    $code      = $artmpcode[0];
+    $modifier  = $artmpcode[1];
     $selector  = $arrcode[2];
     $desc = '';
     if ($code_type == 'PROD') {
@@ -171,8 +173,8 @@ function getCodeDescriptions($codes) {
     else {
       $row = sqlQuery("SELECT code_text FROM codes WHERE " .
         "code_type = '" . $code_types[$code_type]['id'] . "' AND " .
-        "code = '$code' ORDER BY modifier LIMIT 1");
-      $desc = "$code_type:$code " . ucfirst(strtolower($row['code_text']));
+        "code = '$code' AND modifier = '$modifier' ORDER BY modifier LIMIT 1");
+      $desc = "$code_type:$code:$modifier " . ucfirst(strtolower($row['code_text']));
     }
     $desc = str_replace('~', ' ', $desc);
     if ($s) $s .= '~';

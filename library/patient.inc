@@ -620,6 +620,34 @@ function getPatientSSN($ss = "%", $given = "pid, id, lname, fname, mname, provid
     return $returnval;
 }
 
+//(WHC) Search for InPatient
+function getPatientInPatient($ss = "%", $given = "pid, id, lname, fname, mname, providerID", $orderby = "lname ASC, fname ASC", $limit="all", $start="0")
+{
+    $after_date = date('Y-m-d', mktime(0, 0, 0, date("m"), date("d")-7, date("Y")));
+    $last_four_days = date('Y-m-d', mktime(0, 0, 0, date("m"), date("d")-4, date("Y")));
+    $inpt = "(99221, 99222, 99223, 99231, 99232, 99233, 99234)";
+    $disch = "(99238, 99239)";
+    $del = "(59400, 59409, 59410, 59414, 59510, 59515, 59525, 59610, 59612, 59614, 59618, 59620, 59622)";
+
+    $sql="SELECT $given FROM patient_data WHERE pid IN
+     (SELECT pid FROM
+      (SELECT * FROM
+       (SELECT b.pid, code, fe.date FROM billing AS b JOIN form_encounter AS fe ON fe.pid = b.pid AND fe.encounter = b.encounter
+        WHERE (b.code IN $inpt OR b.code In $del OR b.code IN $disch) AND fe.date > '$after_date' ORDER BY fe.date DESC, code ASC) AS inpt
+       GROUP BY pid) AS lastenc
+      WHERE (code IN $inpt) OR (code IN $del AND date >= '$last_four_days')
+     )
+    ORDER BY $orderby";
+    if ($limit != "all") $sql .= " LIMIT $start, $limit";
+
+    $rez = sqlStatement($sql);
+    for($iter=0; $row=sqlFetchArray($rez); $iter++)
+        $returnval[$iter]=$row;
+
+    _set_patient_inc_count($limit, count($returnval), $where, $sqlBindArray);
+    return $returnval;
+}
+
 //(CHEMED) Search by phone number
 function getPatientPhone($phone = "%", $given = "pid, id, lname, fname, mname, providerID", $orderby = "lname ASC, fname ASC", $limit="all", $start="0")
 {

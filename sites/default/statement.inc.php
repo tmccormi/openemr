@@ -142,7 +142,7 @@ function create_statement($stmt) {
  $label_insinfo = xl('Insurance information on file');
  $label_totaldue = xl('Total amount due');
  $label_payby = xl('If paying by');
- $label_cards = xl('VISA/MC/AMEX/Dis');  
+ $label_cards = xl('VISA/MC/AMEX/Disc');  
  $label_cardnum = xl('Card');
  $label_expiry = xl('Exp');
  $label_sign = xl('Signature');
@@ -151,6 +151,7 @@ function create_statement($stmt) {
  $label_visit = xl('Visit Date');
  $label_desc = xl('Description');
  $label_amt = xl('Amount');
+ $label_amt_paid = xl('Amount Paid');
 
  // This is the text for the top part of the page, up to but not
  // including the detail lines.  Some examples of variable fields are:
@@ -163,7 +164,9 @@ function create_statement($stmt) {
 $out  = sprintf("%-30s %-23s %-s\n",$clinic_name,$stmt['patient'],$stmt['today']);
 $out .= sprintf("%-30s %s: %-s\n",$clinic_addr,$label_chartnum,$stmt['pid']);
 $out .= sprintf("%-30s %-s\n",$clinic_csz,$label_insinfo);
-$out .= sprintf("%-30s %s: %-s\n",null,$label_totaldue,null);
+$out .= sprintf("%-30s %s: %-s\n",null,$label_totaldue,$stmt['amount']);
+$out .= sprintf("%-30s %s:",null,$label_amt_paid);
+$out .= sprintf("_________");
 $out .= "\n\n";
 $out .= sprintf("%-30s %-s\n",$label_addressee,$label_remitto);
 $out .= sprintf("%-32s %s\n",$stmt['to'][0],$remit_name);
@@ -176,7 +179,7 @@ $out .= sprintf("_______________________________________________________________
 $out .= "\n";
 $out .= sprintf("%-32s\n",$label_payby.' '.$label_cards);
 $out .= "\n";
-$out .= sprintf("%s_____________________  %s______ %s___________________\n",
+$out .= sprintf("%s_____________________  %s______ %s___________________\n\n",
                 $label_cardnum,$label_expiry,$label_sign);
 $out .= sprintf("%-20s %s\n",null,$label_retpay);
 $out .= sprintf("-----------------------------------------------------------------\n");
@@ -241,7 +244,7 @@ $out .= "\n";
  $label_ptname = xl('Name');
  $label_today = xl('Date');
  $label_due = xl('Due');
- $label_thanks = xl('Thank you for choosing');
+ $label_thanks = xl('Thank you for choosing ');
  $label_call = xl('Please call if any of the above information is incorrect');
  $label_prompt = xl('We appreciate prompt payment of balances due');
  $label_dept = xl('Billing Department');
@@ -252,6 +255,8 @@ $out .= "\n";
                  $label_today,$stmt['today'],$label_due,$stmt['amount']);
  $out .= sprintf("__________________________________________________________________\n");
  $out .= "\n";
+ $out .= sprintf("%-s",$label_thanks);
+ $out .= sprintf("%-s\n",$clinic_name);
  $out .= sprintf("%-s\n",$label_call);
  $out .= sprintf("%-s\n",$label_prompt);
  $out .= "\n";
