@@ -190,7 +190,17 @@
         $primary_docs[$name][2] . "')\">" . $title . ($name == 'msg' ? ' <span id="reminderCountSpan" class="bold"></span>' : '')."</a></li>";
   }
  }
- function genMiscLink($frame, $name, $level, $title, $url, $mono=false) {
+ 
+ function genNewTab($title, $url) {
+
+// echo "<a href="javascript:void window.open(\"'"$url"\')" onclick="top.restoreSession()">' . htmlspecialchars(xl('"$title" 'ENT_QUOTES) . '</a>";
+
+ print '<a href="javascript:void window.open(\''. $url.'\')" onclick="top.restoreSession()">' . htmlspecialchars($title, ENT_QUOTES) . '</a>';
+
+ }
+
+
+function genMiscLink($frame, $name, $level, $title, $url, $mono=false) {
   global $disallowed;
   if (empty($disallowed[$name])) {
    $id = $name . $level;
@@ -222,7 +232,8 @@
         $primary_docs[$botname][2] . "')\">" . $title . "</a></li>";
   }
  }
-
+ 
+ 
 function genPopupsList($style='') {
   global $disallowed, $webserver_root;
 ?>
@@ -296,6 +307,12 @@ function genFindBlock() {
    <a href="javascript:initFilter();"  class="navitem"><?php xl('Filter', 'e'); ?></a>
   </td>
  </tr>
+  <tr>
+  <td class='smalltext'>&nbsp;</td>
+  <td class='smalltext'>
+   <a href="javascript:findPatient('InPatient');"  class="navitem"><?php xl('InPatient', 'e'); ?></a>
+  </td>
+</tr>
 </table>
 <?php
 } // End function genFindBlock()
@@ -1244,23 +1261,53 @@ if (!empty($reg)) {
     <ul>
       <li><a class="collapsed_lv2"><span><?php xl('Clients','e') ?></span></a>
         <ul>
+          <?php if ( $GLOBALS['report_newtab']) { ?>
+          <?php genNewTab(xl('List'),'../reports/patient_list.php'); ?>
+          <?php if (acl_check('patients', 'med') && !$GLOBALS['disable_prescriptions']) genNewTab(xl('Rx'),'../reports/prescriptions_report.php'); ?>
+          <?php if (acl_check('patients', 'med')) genNewTab(xl('Clinical'),'../reports/clinical_reports.php'); ?>
+          <?php genNewTab(xl('Referrals'),'../reports/referrals_report.php'); ?>
+          <?php genNewTab(xl('Immunization Registry'),'../reports/immunization_report.php'); ?>
+          <?php } else { ?>
 	  <?php genMiscLink('RTop','rep','0',xl('List'),'reports/patient_list.php'); ?>
           <?php if (acl_check('patients', 'med') && !$GLOBALS['disable_prescriptions']) genMiscLink('RTop','rep','0',xl('Rx'),'reports/prescriptions_report.php'); ?>
           <?php if (acl_check('patients', 'med')) genMiscLink('RTop','rep','0',xl('Clinical'),'reports/clinical_reports.php'); ?>
 	  <?php genMiscLink('RTop','rep','0',xl('Referrals'),'reports/referrals_report.php'); ?>
 	  <?php genMiscLink('RTop','rep','0',xl('Immunization Registry'),'reports/immunization_report.php'); ?>
+          <?php } ?>
         </ul>
       </li>
       <li><a class="collapsed_lv2"><span><?php xl('Clinic','e') ?></span></a>
         <ul>
+         <?php if ( $GLOBALS['report_newtab']) { ?>
+         <?php if ($GLOBALS['enable_cdr']) genNewTab(xl('Standard Measures'),'../reports/cqm.php?type=standard'); ?>
+          <?php if ($GLOBALS['enable_cqm']) genNewTab(xl('Quality Measures (CQM)'),'../reports/cqm.php?type=cqm'); ?>
+          <?php if ($GLOBALS['enable_amc']) genNewTab(xl('Automated Measures (AMC)'),'../reports/cqm.php?type=amc'); ?>
+          <?php if ($GLOBALS['enable_amc_tracking']) genNewTab(xl('AMC Tracking'),'../reports/amc_tracking.php'); ?>
+         <?php } else { ?>
           <?php if ($GLOBALS['enable_cdr']) genMiscLink('RTop','rep','0',xl('Standard Measures'),'reports/cqm.php?type=standard'); ?>
           <?php if ($GLOBALS['enable_cqm']) genMiscLink('RTop','rep','0',xl('Quality Measures (CQM)'),'reports/cqm.php?type=cqm'); ?>
           <?php if ($GLOBALS['enable_amc']) genMiscLink('RTop','rep','0',xl('Automated Measures (AMC)'),'reports/cqm.php?type=amc'); ?>
           <?php if ($GLOBALS['enable_amc_tracking']) genMiscLink('RTop','rep','0',xl('AMC Tracking'),'reports/amc_tracking.php'); ?>
+        <?php } ?>
         </ul>
       </li>
       <li class="open"><a class="expanded_lv2"><span><?php xl('Visits','e') ?></span></a>
         <ul>
+        <?php if ( $GLOBALS['report_newtab']) { ?>
+       <?php if (!$GLOBALS['disable_calendar']) genNewTab(xl('Appointments'),'../reports/appointments_report.php'); ?>
+          <?php  genNewTab(xl('Encounters'),'../reports/encounters_report.php'); ?>
+          <?php if (!$GLOBALS['disable_calendar']) genNewTab(xl('Appt-Enc'),'../reports/appt_encounter_report.php'); ?>
+<?php if (empty($GLOBALS['code_types']['IPPF'])) { ?>
+          <?php genNewTab(xl('Superbill'),'../reports/custom_report_range.php'); ?>
+<?php } ?>
+          <?php  genNewTab(xl('Eligibility'),'../reports/edi_270.php'); ?>
+          <?php  genNewTab(xl('Eligibility Response'),'../reports/edi_271.php'); ?>
+          <?php if (!$GLOBALS['disable_chart_tracker']) genNewTab(xl('Chart Activity'),'../reports/chart_location_activity.php'); ?>
+          <?php if (!$GLOBALS['disable_chart_tracker']) genNewTab(xl('Charts Out'),'../reports/charts_checked_out.php'); ?>
+          <?php genNewTab(xl('Services'), '../reports/services_by_category.php'); ?>
+          <?php genNewTab(xl('Syndromic Surveillance'),'../reports/non_reported.php'); ?>         
+
+        <?php } else { ?>
           <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appointments'),'reports/appointments_report.php'); ?>
           <?php  genMiscLink('RTop','rep','0',xl('Encounters'),'reports/encounters_report.php'); ?>
           <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appt-Enc'),'reports/appt_encounter_report.php'); ?>
@@ -1275,25 +1322,50 @@ if (!empty($reg)) {
           <?php if (!$GLOBALS['disable_chart_tracker']) genMiscLink('RTop','rep','0',xl('Charts Out'),'reports/charts_checked_out.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Services'), 'reports/services_by_category.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Syndromic Surveillance'),'reports/non_reported.php'); ?>
+          <?php } ?>
         </ul>
       </li>
 <?php if (acl_check('acct', 'rep_a')) { ?>
       <li><a class="collapsed_lv2"><span><?php xl('Financial','e') ?></span></a>
         <ul>
+         <?php if ( $GLOBALS['report_newtab']) { ?>
+          <?php genNewTab(xl('Sales'),'../reports/sales_by_item.php'); ?>
+          <?php genNewTab(xl('Cash Rec'), '../billing/sl_receipts_report.php'); ?>
+          <?php genNewTab(xl('Front Rec'), '../reports/front_receipts_report.php'); ?>
+          <?php genNewTab(xl('Pmt Method'), '../reports/receipts_by_method_report.php'); ?>
+          <?php genNewTab(xl('Collections'), '../reports/collections_report.php'); ?>
+         <?php genNewTab(xl('Billing by CPT'),'../reports/Billing_by_CPT.php'); ?>
+         <?php genNewTab(xl('Daily Billing'),'../reports/daily_billing_report.php'); ?>
+         <?php genNewTab(xl('Deposits'),'../reports/deposits_report.php'); ?>
+         <?php genNewTab(xl('Payments'),'../reports/payments_report.php'); ?>
+         <?php genNewTab(xl('Provider Income'),'../reports/providerincome_report.php'); ?>
+          <?php } else { ?>
           <?php genMiscLink('RTop','rep','0',xl('Sales'),'reports/sales_by_item.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Cash Rec'), 'billing/sl_receipts_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Front Rec'), 'reports/front_receipts_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Pmt Method'), 'reports/receipts_by_method_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Collections'), 'reports/collections_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Billing by CPT'),'reports/Billing_by_CPT.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Daily Billing'),'reports/daily_billing_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Deposits'),'reports/deposits_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Payments'),'reports/payments_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Provider Income'),'reports/providerincome_report.php'); ?>
+          <?php } ?>
         </ul>
       </li>
 <?php } ?>
 <?php if ($GLOBALS['inhouse_pharmacy']) { ?>
       <li><a class="collapsed_lv2"><span><?php xl('Inventory','e') ?></span></a>
         <ul>
+          <?php if ( $GLOBALS['report_newtab']) { ?>
+          <?php genNewTab(xl('List'),'../reports/inventory_list.php'); ?>
+          <?php genNewTab(xl('Activity'), '../reports/inventory_activity.php'); ?>
+          <?php genNewTab(xl('Transactions'), '../reports/inventory_transactions.php'); ?>
+          <?php } else { ?>
           <?php genMiscLink('RTop','rep','0',xl('List'),'reports/inventory_list.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Activity'),'reports/inventory_activity.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Transactions'),'reports/inventory_transactions.php'); ?>
+          <?php } ?>
         </ul>
       </li>
 <?php } ?>
@@ -1307,9 +1379,15 @@ if (!empty($reg)) {
 <?php if (! $GLOBALS['simplified_demographics']) { ?>
       <li><a class="collapsed_lv2"><span><?php xl('Insurance','e') ?></span></a>
         <ul>
+          <?php if ( $GLOBALS['report_newtab']) { ?>
+          <?php genNewTab(xl('Distribution'),'../reports/insurance_allocation_report.php'); ?>
+          <?php genNewTab(xl('Indigents'), '../billing/indigent_patients_report.php'); ?>
+          <?php genNewTab(xl('Unique SP'), '../reports/unique_seen_patients_report.php'); ?>
+          <?php } else { ?>
           <?php genMiscLink('RTop','rep','0',xl('Distribution'),'reports/insurance_allocation_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Indigents'),'billing/indigent_patients_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Unique SP'),'reports/unique_seen_patients_report.php'); ?>
+          <?php } ?>
         </ul>
       </li>
 <?php } ?>

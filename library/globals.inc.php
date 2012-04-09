@@ -221,7 +221,14 @@ $GLOBALS_METADATA = array(
       ),
       '20',
       xl('Number of encounters to display per page.')
-    )      
+    ),
+ 
+    'report_newtab' => array(
+      xl('Open Reports in New Tab'),
+      'bool',                           // data type
+      '0',                              // default = false
+      xl('Selection allows reports to open in new tab or window depending on your browser settings')
+    )
 
   ),
 
