@@ -12,10 +12,22 @@
 <?php html_header_show();?>
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 <link rel="stylesheet" href="batchcom.css" type="text/css">
+<style type="text/css">
+.pclist {
+       font-size:0.9em;
+       font-weight:bold;
+}
+body {
+ font-size: 0.8em;
+}
+</style>
 </head>
 <body class="body_top">
 <span class="title"><?php xl('Batch Communication Tool','e')?></span>
 <br><br>
+<span class="pclist" ><?php xl('Email Notification Report','e')?></span>
+<br><br>
+
 
 <?php
 $email_sender=$_POST['email_sender'];
@@ -41,9 +53,9 @@ while ($row=sqlFetchArray($res)) {
     $headers .= "X-Mailer: PHP mailer\r\n";
     if ( mail($pt_email,$email_subject,$email_body,$headers)) {
 
-        echo ("<br>Email sent to $pt_name at $pt_email");
-        $patient_id=$row['id'];
-        register_email($patient_id, $sent_by, $msg_type, $email_subject, $email_body );
+        echo ("<br>Email sent to $pt_name at $pt_email<br>");
+       // $patient_id=$row['id'];
+        //register_email($patient_id, $sent_by, $msg_type, $email_subject, $email_body );
 
     } else {
         $m_error=TRUE;
@@ -53,7 +65,8 @@ while ($row=sqlFetchArray($res)) {
 }
 
 if ($m_error) {
-    echo ("xl('Could not send email due to a server problem, ','','<br>). $m_error_count . xl(' emails not sent','','','<br>')");
+  //  echo ("<br>xl('Could not send email due to a server problem, ','','<br>). $m_error_count . xl(' emails not sent','','','<br>')");
+   echo (xl('Could not send email due to a server problem. ','','<br>'). $m_error_count . xl(' emails not sent','',''));
 }
 
 ?> 
