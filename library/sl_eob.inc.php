@@ -191,7 +191,8 @@
   // session already exists, then its ID is returned.  Otherwise a new session
   // is created.
   //
-  function arGetSession($payer_id, $reference, $check_date, $deposit_date='', $pay_total=0) {
+  function arGetSession($payer_id, $reference, $check_date, 
+            $deposit_date='', $pay_total=0, $payment_method='', $post_to_date='') {
     if (empty($deposit_date)) $deposit_date = $check_date;
     if ($payer_id) {
       $row = sqlQuery("SELECT session_id FROM ar_session WHERE " .
@@ -201,15 +202,17 @@
       if (!empty($row['session_id'])) return $row['session_id'];
     }
     return sqlInsert("INSERT INTO ar_session ( " .
-      "payer_id, user_id, reference, check_date, deposit_date, pay_total " .
+      "payer_id, user_id, reference, check_date, deposit_date, pay_total, payment_method, post_to_date " .
       ") VALUES ( " .
       "'$payer_id', " .
       "'" . $_SESSION['authUserID'] . "', " .
       "'$reference', " .
       "'$check_date', " .
       "'$deposit_date', " .
-      "'$pay_total' " .
-      ")");
+      "'$pay_total', " .
+      "'$payment_method', " .
+      "'$post_to_date' " .            
+            ")");
   }
 
   // Post a payment, SQL-Ledger style.

@@ -150,8 +150,7 @@ require_once("$srcdir/billing.inc");
         {
         $check_date=$out['check_date'.$check_count]?$out['check_date'.$check_count]:$_REQUEST['paydate'];
         $post_to_date=$_REQUEST['post_to_date']!=''?$_REQUEST['post_to_date']:date('Y-m-d');
-        $deposit_date=$_REQUEST['deposit_date']!=''?$_REQUEST['deposit_date']:date('Y-m-d');
-        $InsertionId[$out['check_number'.$check_count]]=arPostSession($_REQUEST['InsId'],$out['check_number'.$check_count],$out['check_date'.$check_count],$out['check_amount'.$check_count],$post_to_date,$deposit_date,$debug);
+        $deposit_date=$_REQUEST['deposit_date']!=''?$_REQUEST['deposit_date']:$out['check_date'.$check_count];
         
         
         }
@@ -243,6 +242,9 @@ require_once("$srcdir/billing.inc");
             // }
         }
 
+        $service_date = parse_date($out['dos']);
+        $payerid = ($_REQUEST['InsId'] != '') ? $_REQUEST['InsId'] : arGetPayerID($pid, $service_date, substr($inslabel,3));
+        
         if ($csc == '4') {//Denial case, code is stored in the claims table for display in the billing manager screen with reason explained.
             $inverror = true;
             if (!$debug) {
@@ -256,16 +258,19 @@ require_once("$srcdir/billing.inc");
                     $code_value = substr($code_value,0,-1);
                     //We store the reason code to display it with description in the billing manager screen.
                     //process_file is used as for the denial case file name will not be there, and extra field(to store reason) can be avoided.
-                    updateClaim(true, $pid, $encounter, $_REQUEST['InsId'], substr($inslabel,3),7,0,$code_value);
+                    updateClaim(true, $pid, $encounter, $payerid, substr($inslabel,3),7,0,$code_value);
                 }
             }
             writeMessageLine($bgcolor, 'errdetail',
-                "Not posting adjustments for denied claims, please follow up manually!");
+				"Posting denied claim, please follow up manually!");
         }
         else if ($csc == '22') {
-            $inverror = true;
+                        //We want to process reversals as negative payment and no adjustment 
+                        //in order to identify the EOB as being processed and crrect the patient balance.
+			//keep current state of $inverror eg. true in missing claim.
+			//$inverror = true;			
             writeMessageLine($bgcolor, 'errdetail',
-                "Payment reversals are not automated, please enter manually!");
+				"Payment reversal, please follow-up manually!");
         }
 
         if ($out['warnings']) {
@@ -276,6 +281,28 @@ require_once("$srcdir/billing.inc");
         $service_date = parse_date($out['dos']);
     $check_date      = $paydate ? $paydate : parse_date($out['check_date']);
     $production_date = $paydate ? $paydate : parse_date($out['production_date']);
+
+    if ($INTEGRATED_AR && !$error && !$debug) {
+
+    //Get PayerID from insurance_data
+        if (!$inverror) {
+        if (isset($_REQUEST['chk' . $chk_123])) {
+            $check_date = $out['check_date'] ? $out['check_date'] : $_REQUEST['paydate'];
+            $post_to_date = $_REQUEST['post_to_date'] != '' ? $_REQUEST['post_to_date'] : date('Y-m-d');
+            $deposit_date = $_REQUEST['deposit_date'] != '' ? $_REQUEST['deposit_date'] : $out['check_date'];
+        }
+        $payerid = arGetPayerID($pid, $service_date, substr($inslabel, 3));
+    }
+
+    //If PayerID is found get session_id (InsertionId in 4.1.1)
+    //else PayerID '0' means self/COPAY or not our claim likely different invoice number.
+        if ($payerid) {
+
+                //Get InsertionId if present or create one if new check/payer in ar_session
+                        $InsertionId[$out['check_number']] = arGetSession($payerid, $out['check_number'],
+                        $check_date, $deposit_date, $out['check_amount'], $out['payment_method'], $post_to_date);
+                     }
+        }
 
     if ($INTEGRATED_AR) {
       $insurance_id = arGetPayerID($pid, $service_date, substr($inslabel, 3));
@@ -343,7 +370,8 @@ require_once("$srcdir/billing.inc");
                 $description = "CPT4:$codekey Added by $inslabel $production_date";
                 if (!$error && !$debug) {
           if ($INTEGRATED_AR) {
-            arPostCharge($pid, $encounter, 0, $svc['chg'], 1, $service_date,
+
+            arPostCharge($pid, $encounter, $session_id, $svc['chg'], 1, $service_date,
               $codekey, $description, $debug);
           } else {
             slPostCharge($arrow['id'], $svc['chg'], 1, $service_date, $codekey,
@@ -402,6 +430,7 @@ require_once("$srcdir/billing.inc");
                 }
                 $description = "$inslabel/" . $out['check_number'] . ' payment';
                 if ($svc['paid'] < 0) $description .= ' reversal';
+		if ($svc['paid'] == 0) $description .= ' denial';
                 writeDetailLine($bgcolor, $class, $patient_name, $invnumber,
                     $codekey, $check_date, $description,
                     0 - $svc['paid'], ($error ? '' : $invoice_total));
@@ -454,9 +483,18 @@ require_once("$srcdir/billing.inc");
                 else {
                     if (!$error && !$debug) {
             if ($INTEGRATED_AR) {
-              arPostAdjustment($pid, $encounter, $InsertionId[$out['check_number']], $adj['amount'],//$InsertionId[$out['check_number']] gives the session id
-                $codekey, substr($inslabel,3),
+			//If claim denial post a zero-dollar adjustment to keep balance open
+			if ($invdenied) {
+	              arPostAdjustment($pid, $encounter, $InsertionId[$out['check_number']], 0, $codekey,
+        	        substr($inslabel,3),
                 "Adjust code " . $adj['reason_code'], $debug);
+            } else {
+	            $adj_amt = ($svc[chg]- abs($adj[amount])) ? $adj[amount] : 0;
+                    arPostAdjustment($pid, $encounter, $InsertionId[$out['check_number']], $adj_amt, $codekey,
+        	        substr($inslabel,3),
+                	"Adjust code " . $adj['reason_code'], $debug);
+			}
+
             } else {
               slPostAdjustment($arrow['id'], $adj['amount'], $production_date,
                 $out['check_number'], $codekey, $insurance_id,
