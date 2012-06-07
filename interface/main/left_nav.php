@@ -143,6 +143,12 @@
   $primary_docs['cod'] = array(xl('Charges'), 2, 'patient_file/encounter/encounter_bottom.php');
  }
 
+if ( $GLOBALS ['report_newtab'] ) {
+   $genlink = 'genNewTab';
+   } else {
+   $genlink = 'genMiscLink';
+}
+
  // This section decides which navigation items will not appear.
 
  $disallowed = array();
@@ -222,6 +228,11 @@
         $primary_docs[$botname][2] . "')\">" . $title . "</a></li>";
   }
  }
+// Open report in new tab or window
+function genNewTab($frame, $name, $level, $title, $url, $mono=false) {
+       echo '<a href="javascript:void window.open(\'../'. $url.'\')" onclick="top.restoreSession()">' .
+           htmlspecialchars($title, ENT_QUOTES) . '</a>';
+}
 
 function genPopupsList($style='') {
   global $disallowed, $webserver_root;
@@ -1264,8 +1275,8 @@ if (!empty($reg)) {
       </li>
       <li class="open"><a class="expanded_lv2"><span><?php xl('Visits','e') ?></span></a>
         <ul>
-          <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appointments'),'reports/appointments_report.php'); ?>
-          <?php  genMiscLink('RTop','rep','0',xl('Encounters'),'reports/encounters_report.php'); ?>
+          <?php if (!$GLOBALS['disable_calendar']) $genlink('RTop','rep','0',xl('Appointments'),'reports/appointments_report.php'); ?>
+          <?php  $genlink('RTop','rep','0',xl('Encounters'),'reports/encounters_report.php'); ?>
           <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appt-Enc'),'reports/appt_encounter_report.php'); ?>
 <?php if (empty($GLOBALS['code_types']['IPPF'])) { ?>
           <?php genMiscLink('RTop','rep','0',xl('Superbill'),'reports/custom_report_range.php'); ?>
