@@ -642,7 +642,10 @@ if ($_POST['newcodes']) {
   foreach ($arrcodes as $codestring) {
     if ($codestring === '') continue;
     $arrcode = explode('|', $codestring);
-    list($code, $modifier) = explode(":", $arrcode[1]);
+    $arrcodemods = preg_split("/[ :]+/",$newcode);
+    $code = $arrcodemods[0];
+    array_shift($arrcodemods);
+    $modifier = implode(" ",$arrcodemods);
     genDiagJS($arrcode[0], $code);
   }
 }
@@ -1096,7 +1099,10 @@ if ($_POST['newcodes']) {
       echoProdLine(++$prod_lino, $newcode, FALSE, $units, $fee);
     }
     else {
-      list($code, $modifier) = explode(":", $newcode);
+      $arrcodemods = preg_split("/[ :]+/",$newcode);
+      $code = $arrcodemods[0];
+      array_shift($arrcodemods);
+      $modifier = implode(" ",$arrcodemods);
       $ndc_info = '';
       // If HCPCS, find last NDC string used for this code.
       if ($newtype == 'HCPCS' && $ndc_applies) {
@@ -1234,7 +1240,7 @@ if (true) {
 <?php
 // TBD: If $alertmsg, display it with a JavaScript alert().
 ?>
-
+    
 <script language='JavaScript'>
 <?php echo $justinit; ?>
 </script>
