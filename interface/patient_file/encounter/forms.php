@@ -306,6 +306,14 @@ if (is_numeric($pid)) {
                 ?><a href='javascript:;' class='css_button_small' style='color:gray'><span><?php xl('Delete','e'); ?></span></a><?php
             }
         }
+				if (substr($formdir,0,3) == 'LAB') {
+					echo "<a target='".
+                    ($GLOBALS['concurrent_layout'] ? "_parent" : "Main") .
+                    "' href='$rootdir/forms/procedure_order/print.php?" .
+                    "formname=" . $formdir .
+                    "&id=" . $iter['form_id'] .
+                    "' class='css_button_small' title='" . xl('Print') . "' onclick='top.restoreSession()'><span>" . xl('Print') . "</span></a>";
+				}
 
         echo "<div class='form_header'>";
         echo "<a href='#' onclick='divtoggle(\"spanid_$divnos\",\"divid_$divnos\");' class='small' id='aid_$divnos'><b>$form_name</b> <span class='text'>by " . htmlspecialchars( $user['fname'] . "  " . $user['lname'] ) . "</span> (<span id=spanid_$divnos class=\"indicator\">" . xl('Collapse') . "</span>)</a></div>";
@@ -317,7 +325,7 @@ if (is_numeric($pid)) {
         // Use the form's report.php for display.  Forms with names starting with LBF
         // are list-based forms sharing a single collection of code.
         //
-        if (substr($formdir,0,3) == 'LBF') {
+        if (substr($formdir,0,3) == 'LBF' || substr($formdir,0,3) == 'LAB') {
           include_once($GLOBALS['incdir'] . "/forms/LBF/report.php");
           call_user_func("lbf_report", $pid, $encounter, 2, $iter['form_id'], $formdir);
         }

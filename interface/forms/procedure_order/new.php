@@ -49,51 +49,66 @@ $formid = formData('id', 'G') + 0;
 
 // If Save was clicked, save the info.
 //
-if ($_POST['bn_save']) {
-
-  $sets =
-    "procedure_type_id = " . (formData('form_proc_type') + 0)           . ", " .
-    "date_ordered = " . QuotedOrNull(formData('form_date_ordered'))     . ", " .
-    "provider_id = " . (formData('form_provider_id') + 0)               . ", " .
-    "date_collected = " . QuotedOrNull(formData('form_date_collected')) . ", " .
-    "order_priority = '" . formData('form_order_priority')              . "', " .
-    "order_status = '" . formData('form_order_status')                  . "', " .
-    "patient_instructions = '" . formData('form_patient_instructions')  . "', " .
-    "patient_id = '" . $pid                                             . "', " .
-    "encounter_id = '" . $encounter                                     . "'";
-
-  // If updating an existing form...
-  //
-  if ($formid) {
-    $query = "UPDATE procedure_order SET $sets "  .
-      "WHERE procedure_order_id = '$formid'";
-    sqlStatement($query);
-  }
-
-  // If adding a new form...
-  //
-  else {
-    $query = "INSERT INTO procedure_order SET $sets";
-    $newid = sqlInsert($query);
-    addForm($encounter, "Procedure Order", $newid, "procedure_order", $pid, $userauthorized);
-  }
-
-  formHeader("Redirecting....");
-  formJump();
-  formFooter();
-  exit;
-}
-
-if ($formid) {
-  $row = sqlQuery ("SELECT * FROM procedure_order WHERE " .
-    "procedure_order_id = '$formid' AND activity = '1'") ;
-}
-
+//if ($_POST['bn_save']) {
+//
+//  $sets =
+//    "procedure_type_id = " . (formData('form_proc_type') + 0)           . ", " .
+//    "date_ordered = " . QuotedOrNull(formData('form_date_ordered'))     . ", " .
+//    "provider_id = " . (formData('form_provider_id') + 0)               . ", " .
+//    "date_collected = " . QuotedOrNull(formData('form_date_collected')) . ", " .
+//    "order_priority = '" . formData('form_order_priority')              . "', " .
+//    "order_status = '" . formData('form_order_status')                  . "', " .
+//    "patient_instructions = '" . formData('form_patient_instructions')  . "', " .
+//    "patient_id = '" . $pid                                             . "', " .
+//    "encounter_id = '" . $encounter                                     . "'";
+//
+//  // If updating an existing form...
+//  //
+//  if ($formid) {
+//    $query = "UPDATE procedure_order SET $sets "  .
+//      "WHERE procedure_order_id = '$formid'";
+//    sqlStatement($query);
+//  }
+//
+//  // If adding a new form...
+//  //
+//  else {
+//    $query = "INSERT INTO procedure_order SET $sets";
+//    $newid = sqlInsert($query);
+//    addForm($encounter, "Procedure Order", $newid, "procedure_order", $pid, $userauthorized);
+//  }
+//
+//  formHeader("Redirecting....");
+//  formJump();
+//  formFooter();
+//  exit;
+//}
+//
+//if ($formid) {
+//  $row = sqlQuery ("SELECT * FROM procedure_order WHERE " .
+//    "procedure_order_id = '$formid' AND activity = '1'") ;
+//}
+//
 $enrow = sqlQuery("SELECT p.fname, p.mname, p.lname, fe.date FROM " .
   "form_encounter AS fe, forms AS f, patient_data AS p WHERE " .
   "p.pid = '$pid' AND f.pid = '$pid' AND f.encounter = '$encounter' AND " .
   "f.formdir = 'newpatient' AND f.deleted = 0 AND " .
   "fe.id = f.form_id LIMIT 1");
+
+if(formData('ajax_mode') == "list_tests"){
+  echo "<option value='select' >--select--</option>";
+  $labquer = sqlStatement("
+    SELECT 
+      option_id,title
+    FROM
+      list_options AS lo 
+    WHERE lo.list_id = ? ORDER BY lo.seq, lo.title
+  ",array(formData('lab')));
+  while ($labres = sqlFetchArray($labquer)) {
+    echo "<option value='".$labres['option_id']."' >".$labres['title']."</option>";
+  }
+  exit;
+}
 ?>
 <html>
 <head>
@@ -117,36 +132,68 @@ td {
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/dynarch_calendar.js"></script>
 <?php include_once("{$GLOBALS['srcdir']}/dynarch_calendar_en.inc.php"); ?>
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/dynarch_calendar_setup.js"></script>
-
+<script type="text/javascript" src="../../../library/js/jquery-1.4.3.min.js"></script>
 <script type="text/javascript" src="../../../library/dialog.js"></script>
 <script type="text/javascript" src="<?php echo $GLOBALS['webroot'] ?>/library/textformat.js"></script>
 
 <script language='JavaScript'>
-
-// This invokes the find-procedure-type popup.
-var ptvarname;
-function sel_proc_type(varname) {
- var f = document.forms[0];
- if (typeof varname == 'undefined') varname = 'form_proc_type';
- ptvarname = varname;
- dlgopen('../../orders/types.php?popup=1&order=' + f[ptvarname].value, '_blank', 800, 500);
+function load_tests(lab){
+  if(lab != 'select'){
+    document.getElementById('test_name_tr').style.display = '';
+    document.getElementById('formname').value = lab;
+    $.ajax({
+      type: "POST",
+      url: "../../forms/procedure_order/new.php",
+      dataType: "html",
+      data: {
+      ajax_mode: "list_tests",
+      lab: lab
+      },              
+      success: function(thedata){
+        //alert(thedata);
+        document.getElementById('test_name').innerHTML = thedata;
+      },
+      error: function (request, status, error) {
+        alert(request.responseText);
+      }
+    });
+  }else{
+    document.getElementById('test_name_tr').style.display = 'none';
+  }
+  load_template('select');
 }
-
-// This is for callback by the find-procedure-type popup.
-// Sets both the selected type ID and its descriptive name.
-function set_proc_type(typeid, typename) {
- var f = document.forms[0];
- f[ptvarname].value = typeid;
- f[ptvarname + '_desc'].value = typename;
+function load_template(test){
+  if(test != 'select'){
+    document.getElementById('template_div').style.display = '';
+    document.getElementById('formoption').value = test;
+    $.ajax({
+      type: "POST",
+      url: "../../forms/procedure_order/template.php",
+      dataType: "html",
+      data: {
+      ajax_mode: "get_template",
+      formname: document.getElementById('lab_name').value,
+      formoption: test
+      },              
+      success: function(thedata){
+        //alert(thedata);
+        document.getElementById('template_div').innerHTML = thedata;
+      },
+      error: function (request, status, error) {
+        alert(request.responseText);
+      }
+    });
+  }else{
+    document.getElementById('template_div').style.display = 'none';
+  }
 }
-
 </script>
 
 </head>
 
 <body class="body_top">
 
-<form method="post" action="<?php echo $rootdir ?>/forms/procedure_order/new.php?id=<?php echo $formid ?>" onsubmit="return top.restoreSession()">
+<form method="post" action="<?php echo $rootdir ?>/forms/procedure_order/template.php?id=<?php echo $formid ?>" onsubmit="return top.restoreSession()">
 
 <p class='title' style='margin-top:8px;margin-bottom:8px;text-align:center'>
 <?php
@@ -155,121 +202,34 @@ function set_proc_type(typeid, typename) {
   echo ' ' . xl('on') . ' ' . oeFormatShortDate(substr($enrow['date'], 0, 10));
 ?>
 </p>
-
 <center>
-
-<p>
-<table border='1' width='95%'>
-
 <?php
-$ptid = -1; // -1 means no order is selected yet
-$ptrow = array('name' => '');
-if (!empty($row['procedure_type_id'])) {
-  $ptid = $row['procedure_type_id'];
-  $ptrow = sqlQuery("SELECT name FROM procedure_type WHERE " .
-    "procedure_type_id = '$ptid'");
-}
+  $lab_query = sqlStatement("
+    SELECT 
+      lo.option_id,CONCAT(lname, ' ', fname) AS lab_name
+    FROM
+      users AS u 
+      LEFT JOIN list_options AS lo 
+        ON lo.title = CONCAT(lname, ' ', fname) 
+    WHERE u.abook_type = 'ord_lab'
+  ");
+  echo "<br/><table><tr><td>";
+  echo xl('Select Lab',e);
+  echo "</td><td><select name='lab_name' id='lab_name' onchange='load_tests(this.value);' >
+          <option value='select' >--select--</option>";
+  while($lab_result = sqlFetchArray($lab_query)){
+    echo "<option value='".$lab_result['option_id']."' >".$lab_result['lab_name']."</option>";
+  }
+  echo "</select></td></tr>";
+  echo "<tr><td>&nbsp;</td></tr><tr id='test_name_tr' style='display:none' ><td>";
+  echo xl('Select Test',e);
+  echo "</td><td><select name='test_name' id='test_name' onchange='load_template(this.value);' >";
+  echo "</select></td></tr>";
+  echo "<table><br/><div id='template_div' style='display:none' ></div>";
+  echo "<input type='hidden' name='formname' id='formname' value='' >";
+  echo "<input type='hidden' name='formoption' id='formoption' value='' >";
 ?>
- <tr>
-  <td width='1%' nowrap><b><?php xl('Order Type','e'); ?>:</b></td>
-  <td>
-   <input type='text' size='50' name='form_proc_type_desc'
-    value='<?php echo addslashes($ptrow['name']) ?>'
-    onclick='sel_proc_type()' onfocus='this.blur()'
-    title='<?php xl('Click to select the desired procedure','e'); ?>'
-    style='width:100%;cursor:pointer;cursor:hand' readonly />
-   <input type='hidden' name='form_proc_type' value='<?php echo $ptid ?>' />
-  </td>
- </tr>
-
- <tr>
-  <td width='1%' nowrap><b><?php xl('Ordering Provider','e'); ?>:</b></td>
-  <td>
-<?php
-generate_form_field(array('data_type'=>10,'field_id'=>'provider_id'),
-  $row['provider_id']);
-?>
-  </td>
- </tr>
-
- <tr>
-  <td width='1%' nowrap><b><?php xl('Date Ordered','e'); ?>:</b></td>
-  <td>
-<?php
-    echo "<input type='text' size='10' name='form_date_ordered' id='form_date_ordered'" .
-      " value='" . $row['date_ordered'] . "'" .
-      " title='" . xl('Date of this order') . "'" .
-      " onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)'" .
-      " />" .
-      "<img src='$rootdir/pic/show_calendar.gif' align='absbottom' width='24' height='22'" .
-      " id='img_date_ordered' border='0' alt='[?]' style='cursor:pointer'" .
-      " title='" . xl('Click here to choose a date') . "' />";
-?>
-  </td>
- </tr>
-
- <tr>
-  <td width='1%' nowrap><b><?php xl('Internal Time Collected','e'); ?>:</b></td>
-  <td>
-<?php
-    echo "<input type='text' size='16' name='form_date_collected' id='form_date_collected'" .
-      " value='" . $row['date_collected'] . "'" .
-      " title='" . xl('Date and time that the sample was collected') . "'" .
-      // " onkeyup='datekeyup(this,mypcc)' onblur='dateblur(this,mypcc)'" .
-      " />" .
-      "<img src='$rootdir/pic/show_calendar.gif' align='absbottom' width='24' height='22'" .
-      " id='img_date_collected' border='0' alt='[?]' style='cursor:pointer'" .
-      " title='" . xl('Click here to choose a date and time') . "' />";
-?>
-  </td>
- </tr>
-
- <tr>
-  <td width='1%' nowrap><b><?php xl('Priority','e'); ?>:</b></td>
-  <td>
-<?php
-generate_form_field(array('data_type'=>1,'field_id'=>'order_priority',
-  'list_id'=>'ord_priority'), $row['order_priority']);
-?>
-  </td>
- </tr>
-
- <tr>
-  <td width='1%' nowrap><b><?php xl('Status','e'); ?>:</b></td>
-  <td>
-<?php
-generate_form_field(array('data_type'=>1,'field_id'=>'order_status',
-  'list_id'=>'ord_status'), $row['order_status']);
-?>
-  </td>
- </tr>
-
- <tr>
-  <td width='1%' nowrap><b><?php xl('Patient Instructions','e'); ?>:</b></td>
-  <td>
-   <textarea rows='3' cols='40' name='form_patient_instructions' style='width:100%'
-    wrap='virtual' class='inputtext' /><?php echo $row['patient_instructions'] ?></textarea>
-  </td>
- </tr>
-
-</table>
-
-<p>
-<input type='submit' name='bn_save' value='<?php xl('Save','e'); ?>' />
-&nbsp;
-<input type='button' value='<?php xl('Cancel','e'); ?>' onclick="top.restoreSession();location='<?php echo $GLOBALS['form_exit_url']; ?>'" />
-</p>
-
 </center>
-
-<script language='JavaScript'>
-Calendar.setup({inputField:'form_date_ordered', ifFormat:'%Y-%m-%d',
- button:'img_date_ordered'});
-Calendar.setup({inputField:'form_date_collected', ifFormat:'%Y-%m-%d %H:%M',
- button:'img_date_collected', showsTime:true});
-</script>
-
 </form>
 </body>
 </html>
-

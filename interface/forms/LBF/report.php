@@ -23,7 +23,10 @@ function lbf_report($pid, $encounter, $cols, $id, $formname) {
     $arr[$frow['field_id']] = $frow['field_value'];
   }
   display_layout_rows($formname, $arr);
-
+  if(isset($arr['specimen_id']) && substr($formname,0,3) == 'LAB'){
+    $specimen_details = sqlQuery("SELECT field_value FROM lbf_data WHERE form_id = '$id' AND field_id = 'specimen_id' ");
+    echo "<tr><td valign='top'>&nbsp;</td><td class='label' >Specimen ID:</td><td class='text data'>".$specimen_details['field_value']."</td></tr>";
+  }
   echo "</table>\n";
 }
 ?>

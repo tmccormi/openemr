@@ -1,0 +1,6 @@
+insert into `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`) values('lists','Lab_Order_Fields','Lab Order Fields','1','1','0','','');
+insert into `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`) values('Lab_Order_Fields','patient_race','Patient Race','1','0','0','','');
+insert into `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`) values('Lab_Order_Fields','quantity','Quantity','2','0','0','','');
+insert into `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`) values('Lab_Order_Fields','source_of_specimen','Source of Specimen','3','0','0','','');
+insert into `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`) values('Lab_Order_Fields','history_of_down_syndrome','History of Down Syndrome','4','0','0','','');
+insert into `list_options` (`list_id`, `option_id`, `title`, `seq`, `is_default`, `option_value`, `mapping`, `notes`) values('Lab_Order_Fields','additional_information','Additional information','5','0','0','','');

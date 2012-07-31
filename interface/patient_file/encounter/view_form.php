@@ -9,12 +9,10 @@ include_once("../../globals.php");
 if (substr($_GET["formname"], 0, 3) === 'LBF') {
   // Use the List Based Forms engine for all LBFxxxxx forms.
   include_once("$incdir/forms/LBF/view.php");
+}elseif(substr($_GET["formname"], 0, 3) === 'LAB'){
+  include_once("$incdir/forms/procedure_order/edit.php");
 }
 else {
-
-  // ensure the path variable has no illegal characters
-  check_file_dir_name($_GET["formname"]);
-
   include_once("$incdir/forms/" . $_GET["formname"] . "/view.php");
 }
 

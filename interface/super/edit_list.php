@@ -12,6 +12,7 @@ require_once("$srcdir/formdata.inc.php");
 require_once("../../custom/code_types.inc.php");
 
 $list_id = empty($_REQUEST['list_id']) ? 'language' : $_REQUEST['list_id'];
+$source = empty($_REQUEST['source']) ? '' : $_REQUEST['source'];
 
 // Check authorization.
 $thisauth = acl_check('admin', 'super');
@@ -55,14 +56,9 @@ if ($_POST['formaction']=='save' && $list_id) {
         $ct_rel  = empty($iter['ct_rel' ]) ? 0 : 1;
         $ct_nofs = empty($iter['ct_nofs']) ? 0 : 1;
         $ct_diag = empty($iter['ct_diag']) ? 0 : 1;
-        $ct_active = empty($iter['ct_active' ]) ? 0 : 1;
-        $ct_label = formTrim($iter['ct_label']);
-        $ct_external = formTrim($iter['ct_external']) + 0;
-        $ct_claim = empty($iter['ct_claim']) ? 0 : 1;
-        $ct_proc = empty($iter['ct_proc']) ? 0 : 1;
         if (strlen($ct_key) > 0 && $ct_id > 0) {
           sqlInsert("INSERT INTO code_types ( " .
-            "ct_key, ct_id, ct_seq, ct_mod, ct_just, ct_mask, ct_fee, ct_rel, ct_nofs, ct_diag, ct_active, ct_label, ct_external, ct_claim, ct_proc " .
+            "ct_key, ct_id, ct_seq, ct_mod, ct_just, ct_mask, ct_fee, ct_rel, ct_nofs, ct_diag " .
             ") VALUES ( "   .
             "'$ct_key' , " .
             "'$ct_id'  , " .
@@ -73,12 +69,7 @@ if ($_POST['formaction']=='save' && $list_id) {
             "'$ct_fee' , " .
             "'$ct_rel' , " .
             "'$ct_nofs', " .
-            "'$ct_diag', " .
-            "'$ct_active', " .
-            "'$ct_label', " .
-            "'$ct_external', " .
-            "'$ct_claim', " .
-            "'$ct_proc' " .
+            "'$ct_diag' "  .
             ")");
         }
       }
@@ -149,7 +140,6 @@ $opt_line_no = 0;
 
 // Given a string of multiple instances of code_type|code|selector,
 // make a description for each.
-// @TODO Instead should use a function from custom/code_types.inc.php and need to remove casing functions
 function getCodeDescriptions($codes) {
   global $code_types;
   $arrcodes = explode('~', $codes);
@@ -367,21 +357,17 @@ function ctGenCbox($opt_line_no, $ct_array, $name, $title='') {
 // Write a form line as above but for the special case of Code Types.
 //
 function writeCTLine($ct_array) {
-  global $opt_line_no,$cd_external_options;
+  global $opt_line_no;
 
   ++$opt_line_no;
   $bgcolor = "#" . (($opt_line_no & 1) ? "ddddff" : "ffdddd");
 
   echo " <tr bgcolor='$bgcolor'>\n";
 
-  echo ctGenCBox($opt_line_no, $ct_array, 'ct_active',
-    xl('Is this code type active?'));
-  echo ctGenCell($opt_line_no, $ct_array, 'ct_key' , 6, 15,
+  echo ctGenCell($opt_line_no, $ct_array, 'ct_key' , 4, 15,
     xl('Unique human-readable identifier for this type'));
   echo ctGenCell($opt_line_no, $ct_array, 'ct_id'  , 2, 11,
     xl('Unique numeric identifier for this type'));
-  echo ctGenCell($opt_line_no, $ct_array, 'ct_label' , 6, 30,
-    xl('Label for this type'));
   echo ctGenCell($opt_line_no, $ct_array, 'ct_seq' , 2,  3,
     xl('Numeric display order'));
   echo ctGenCell($opt_line_no, $ct_array, 'ct_mod' , 1,  2,
@@ -390,29 +376,15 @@ function writeCTLine($ct_array) {
     xl('If billing justification is used enter the name of the diagnosis code type.'));
   echo ctGenCell($opt_line_no, $ct_array, 'ct_mask', 6,  9,
     xl('Specifies formatting for codes. # = digit, @ = alpha, * = any character. Empty if not used.'));
-  echo ctGenCBox($opt_line_no, $ct_array, 'ct_claim',
-    xl('Is this code type used in claims?'));
   echo ctGenCBox($opt_line_no, $ct_array, 'ct_fee',
     xl('Are fees charged for this type?'));
   echo ctGenCBox($opt_line_no, $ct_array, 'ct_rel',
     xl('Does this type allow related codes?'));
   echo ctGenCBox($opt_line_no, $ct_array, 'ct_nofs',
     xl('Is this type hidden in the fee sheet?'));
-  echo ctGenCBox($opt_line_no, $ct_array, 'ct_proc',
-    xl('Is this a procedure/service type?'));
   echo ctGenCBox($opt_line_no, $ct_array, 'ct_diag',
     xl('Is this a diagnosis type?'));
-  // Show the external code types selector
-  $value_ct_external = isset($ct_array['ct_external']) ? $ct_array['ct_external'] : '';
-  echo "  <td title='" . xla('Is this using external sql tables? If it is, then choose the format.') . "' align='center' class='optcell'>";
-  echo "<select name='opt[$opt_line_no][ct_external]' class='optin'>";
-  foreach ( $cd_external_options as $key => $desc) {
-    echo "<option value='" . attr($key) . "'";
-    if ($key == $value_ct_external) echo " selected";
-    echo ">" . text($desc) . "</option>";
-  }
-  echo "</select>";
-  echo "</td>\n";
+
   echo " </tr>\n";
 }
 ?>
@@ -514,44 +486,28 @@ function select_code(lino) {
 }
 
 // This is for callback by the find-code popup.
+// For Fee Sheet administration.
 function set_related(codetype, code, selector, codedesc) {
- if (typeof(current_sel_name) == 'undefined')
- {
- // Coming from Fee Sheet edit
-  var f = document.forms[0];
-  var celem = f['opt[' + current_lino + '][codes]'];
-  var delem = f['opt[' + current_lino + '][descs]'];
-  var i = 0;
-  while ((i = codedesc.indexOf('~')) >= 0) {
-   codedesc = codedesc.substring(0, i) + ' ' + codedesc.substring(i+1);
-  }
-  if (code) {
-   if (celem.value) {
-    celem.value += '~';
-    delem.value += '~';
-   }
-   celem.value += codetype + '|' + code + '|' + selector;
-   if (codetype == 'PROD') delem.value += code + ':' + selector + ' ' + codedesc;
-   else delem.value += codetype + ':' + code + ' ' + codedesc;
-  } else {
-   celem.value = '';
-   delem.value = '';
-  }
-  displayCodes(current_lino);
+ var f = document.forms[0];
+ var celem = f['opt[' + current_lino + '][codes]'];
+ var delem = f['opt[' + current_lino + '][descs]'];
+ var i = 0;
+ while ((i = codedesc.indexOf('~')) >= 0) {
+  codedesc = codedesc.substring(0, i) + ' ' + codedesc.substring(i+1);
  }
- else
- {
-  // Coming from Immunizations edit
-     var f = document.forms[0][current_sel_name];
-     var s = f.value;
-     if (code) {
-         s = code;
-     }
-     else {
-         s = '0';
-     }
-     f.value = s;
+ if (code) {
+  if (celem.value) {
+   celem.value += '~';
+   delem.value += '~';
+  }
+  celem.value += codetype + '|' + code + '|' + selector;
+  if (codetype == 'PROD') delem.value += code + ':' + selector + ' ' + codedesc;
+  else delem.value += codetype + ':' + code + ' ' + codedesc;
+ } else {
+  celem.value = '';
+  delem.value = '';
  }
+ displayCodes(current_lino);
 }
 
 // Called when a "default" checkbox is clicked.  Clears all the others.
@@ -591,6 +547,22 @@ function sel_cvxcode(e) {
  dlgopen('../patient_file/encounter/find_code_popup.php?codetype=CVX', '_blank', 500, 400);
 }
 
+//This is for callback by the find-code popup.
+//Appends to or erases the current list of diagnoses.
+function set_related(codetype, code, selector, codedesc) {
+	var f = document.forms[0][current_sel_name];
+	var s = f.value;
+	
+	if (code) {
+		s = code;
+	}
+	else {
+		s = '0';
+	}
+	
+	f.value = s;
+}
+
 </script>
 
 </head>
@@ -610,19 +582,35 @@ $lang_id = empty($_SESSION['language_choice']) ? '1' : $_SESSION['language_choic
 if (($lang_id == '1' && !empty($GLOBALS['skip_english_translation'])) ||
   !$GLOBALS['translate_lists'])
 {
-  $res = sqlStatement("SELECT option_id, title FROM list_options WHERE " .
-    "list_id = 'lists' ORDER BY title, seq");
+  if($source == 'laborder'){
+    $res = sqlStatement("SELECT option_id, title FROM list_options WHERE " .
+      "list_id = 'lists' AND option_id like 'ord_lab_%' ORDER BY title, seq");
+  }else{
+    $res = sqlStatement("SELECT option_id, title FROM list_options WHERE " .
+      "list_id = 'lists' ORDER BY title, seq");
+  }
 }
 else {
   // Use and sort by the translated list name.
-  $res = sqlStatement("SELECT lo.option_id, " .
-    "IF(LENGTH(ld.definition),ld.definition,lo.title) AS title " .
-    "FROM list_options AS lo " .
-    "LEFT JOIN lang_constants AS lc ON lc.constant_name = lo.title " .
-    "LEFT JOIN lang_definitions AS ld ON ld.cons_id = lc.cons_id AND " .
-    "ld.lang_id = '$lang_id' " .
-    "WHERE lo.list_id = 'lists' " .
-    "ORDER BY IF(LENGTH(ld.definition),ld.definition,lo.title), lo.seq");
+  if($source == 'laborder'){
+    $res = sqlStatement("SELECT lo.option_id, " .
+      "IF(LENGTH(ld.definition),ld.definition,lo.title) AS title " .
+      "FROM list_options AS lo " .
+      "LEFT JOIN lang_constants AS lc ON lc.constant_name = lo.title " .
+      "LEFT JOIN lang_definitions AS ld ON ld.cons_id = lc.cons_id AND " .
+      "ld.lang_id = '$lang_id' " .
+      "WHERE lo.list_id = 'lists' AND lo.option_id like 'ord_lab_%'" .
+      "ORDER BY IF(LENGTH(ld.definition),ld.definition,lo.title), lo.seq");
+  }else{
+    $res = sqlStatement("SELECT lo.option_id, " .
+      "IF(LENGTH(ld.definition),ld.definition,lo.title) AS title " .
+      "FROM list_options AS lo " .
+      "LEFT JOIN lang_constants AS lc ON lc.constant_name = lo.title " .
+      "LEFT JOIN lang_definitions AS ld ON ld.cons_id = lc.cons_id AND " .
+      "ld.lang_id = '$lang_id' " .
+      "WHERE lo.list_id = 'lists' " .
+      "ORDER BY IF(LENGTH(ld.definition),ld.definition,lo.title), lo.seq");
+  }
 }
 
 while ($row = sqlFetchArray($res)) {
@@ -634,8 +622,14 @@ while ($row = sqlFetchArray($res)) {
 
 ?>
 </select>
+<?php
+if($source != 'laborder'){
+?>
 <input type="button" id="<?php echo $list_id; ?>" class="deletelist" value=<?php xl('Delete List','e','\'','\''); ?>>
 <input type="button" id="newlist" class="newlist" value=<?php xl('New List','e','\'','\''); ?>>
+<?php
+}
+?>
 </p>
 
 <center>
@@ -647,21 +641,16 @@ while ($row = sqlFetchArray($res)) {
   <td><b><?php xl('Option'   ,'e'); ?></b></td>
   <td><b><?php xl('Generates','e'); ?></b></td>
 <?php } else if ($list_id == 'code_types') { ?>
-  <td><b><?php xl('Active'      ,'e'); ?></b></td>
-  <td><b><?php xl('Key'        ,'e'); ?></b></td>
+  <td><b><?php xl('Name'        ,'e'); ?></b></td>
   <td><b><?php xl('ID'          ,'e'); ?></b></td>
-  <td><b><?php xl('Label'       ,'e'); ?></b></td>
   <td><b><?php xl('Seq'         ,'e'); ?></b></td>
   <td><b><?php xl('ModLength'   ,'e'); ?></b></td>
   <td><b><?php xl('Justify'     ,'e'); ?></b></td>
   <td><b><?php xl('Mask'        ,'e'); ?></b></td>
-  <td><b><?php xl('Claims'      ,'e'); ?></b></td>
   <td><b><?php xl('Fees'        ,'e'); ?></b></td>
   <td><b><?php xl('Relations'   ,'e'); ?></b></td>
   <td><b><?php xl('Hide'        ,'e'); ?></b></td>
-  <td><b><?php xl('Procedure'   ,'e'); ?></b></td>
   <td><b><?php xl('Diagnosis'   ,'e'); ?></b></td>
-  <td><b><?php xl('External'    ,'e'); ?></b></td>
 <?php } else { ?>
   <td title=<?php xl('Click to edit','e','\'','\''); ?>><b><?php  xl('ID','e'); ?></b></td>
   <td><b><?php xl('Title'  ,'e'); ?></b></td>	
@@ -732,6 +721,14 @@ if ($list_id) {
 
 <p>
  <input type='button' name='form_save' id='form_save' value='<?php xl('Save','e'); ?>' />
+<?php
+if($source == 'laborder'){
+  echo "<input type='button' name='back' id='back' onclick='javascript:location.href=\"../orders/types.php\"' value='";
+  echo xl('Back','e');
+  echo "' />";
+  echo "<input type='hidden' name='source' id='source' value='laborder' >";
+}
+?>
 </p>
 </center>
 
