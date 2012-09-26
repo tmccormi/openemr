@@ -106,7 +106,7 @@
   'prf' => array(xl('Preferences')  , 0, 'super/edit_globals.php?mode=user'),
   'adm' => array(xl('Admin')     , 0, 'usergroup/admin_frameset.php'),
   'rep' => array(xl('Reports')   , 0, 'reports/index.php'),
-  'ono' => array(xl('Ofc Notes') , 0, 'main/onotes/office_comments.php'),
+  'ono' => array(xl('Ofc Notes') , 0, 'forum/index.php?username='.$_SESSION['authUser']),
   'fax' => array(xl('Fax/Scan')  , 0, 'fax/faxq.php'),
   'adb' => array(xl('Addr Bk')   , 0, 'usergroup/addrbook_list.php'),
   'ort' => array(xl('Proc Cat')  , 0, 'orders/types.php'),
