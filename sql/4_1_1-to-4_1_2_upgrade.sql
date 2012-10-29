@@ -82,3 +82,16 @@ ALTER TABLE `documents_legal_detail` ADD COLUMN `dld_patient_comments` text COMM
 #IfMissingColumn documents_legal_master dlm_upload_type
 ALTER TABLE `documents_legal_master` ADD COLUMN `dlm_upload_type` tinyint(4) DEFAULT '0' COMMENT '0-Provider Uploaded,1-Patient Uploaded';
 #EndIf
+
+#IfNotTable eSignatures
+CREATE TABLE `eSignatures` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tid` int(11) NOT NULL COMMENT 'Table row ID for signature',
+  `table` varchar(255) NOT NULL COMMENT 'table name for the signature',
+  `uid` int(11) NOT NULL COMMENT 'user id for the signing user',
+  `datetime` datetime NOT NULL COMMENT 'datetime of the signature action',
+  `signed` int(11) NOT NULL DEFAULT '0' COMMENT '0 or not 0 - reflects signature record signed/not signed/ or signed with some exception to be determined. ',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+#EndIf
+
