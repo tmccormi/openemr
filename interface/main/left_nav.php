@@ -8,66 +8,7 @@ use ESign\Api;
  * of the License, or (at your option) any later version.
  */
 
- // This provides the left navigation frame when $GLOBALS['concurrent_layout']
- // is true.  Following are notes as to what else was changed for this feature:
- //
- // * interface/main/main_screen.php: the top-level frameset.
- // * interface/main/finder/patient_select.php: loads stuff when a new patient
- //   is selected.
- // * interface/patient_file/summary/demographics.php: this is the first frame
- //   loaded when a new patient is chosen, and in turn sets the current pid and
- //   then loads the initial bottom frame.
- // * interface/patient_file/summary/demographics_full.php: added support for
- //   setting a new pid, needed for going to demographics from billing.
- // * interface/patient_file/summary/demographics_save.php: redisplay
- //   demographics.php and not the frameset.
- // * interface/patient_file/summary/summary_bottom.php: new frameset for the
- //   summary, prescriptions and notes for a selected patient, cloned from
- //   patient_summary.php.
- // * interface/patient_file/encounter/encounter_bottom.php: new frameset for
- //   the selected encounter, mosting coding/billing stuff, cloned from
- //   patient_encounter.php.  This will also self-load the superbill pages
- //   as requested.
- // * interface/usergroup/user_info.php: removed Back link.
- // * interface/usergroup/admin_frameset.php: new frameset for Admin pages,
- //   cloned from usergroup.php.
- // * interface/main/onotes/office_comments.php: removed Back link target.
- // * interface/main/onotes/office_comments_full.php: changed Back link.
- // * interface/billing/billing_report.php: removed Back link; added logic
- //   to properly go to demographics or to an encounter when requested.
- // * interface/new/new.php: removed Back link and revised form target.
- // * interface/new/new_patient_save.php: modified to load the demographics
- //   page to the current frame instead of loading a new frameset.
- // * interface/patient_file/history/history.php: target change.
- // * interface/patient_file/history/history_full.php: target changes.
- // * interface/patient_file/history/history_save.php: target change.
- // * interface/patient_file/history/encounters.php: link/target changes.
- // * interface/patient_file/encounter/encounter_top.php: another new frameset
- //   cloned from patient_encounter.php.
- // * interface/patient_file/encounter/forms.php: link target removal.
- // * interface/patient_file/encounter/new_form.php: target change.
- // * interface/forms/newpatient/new.php, view.php, save.php: link/target
- //   changes.
- // * interface/patient_file/summary/immunizations.php: removed back link.
- // * interface/patient_file/summary/pnotes.php: changed link targets.
- // * interface/patient_file/summary/pnotes_full.php: changed back link and
- //   added set_pid logic.
- // * interface/patient_file/transaction/transactions.php: various changes.
- // * interface/patient_file/transaction/add_transaction.php: new return js.
- // * interface/patient_file/encounter/superbill_codes.php: target and link
- //   changes.
- // * interface/patient_file/encounter/superbill_custom_full.php: target and
- //   link changes.
- // * interface/patient_file/encounter/diagnosis.php: target changes.
- // * interface/patient_file/encounter/diagnosis_full.php: target and link
- //   changes.
- // * interface/main/authorizations/authorizations.php: link and target changes.
- // * library/api.inc: url change.
- // * interface/patient_file/summary/rx_frameset.php: new frameset.
- // * interface/patient_file/summary/rx_left.php: new for prescriptions.
- // * all encounter forms: remove all instances of "target=Main" and change
- //   all instances of "patient_encounter.php" to "encounter_top.php".
-
+ // Notes:
  // Our find_patient form, when submitted, invokes patient_select.php in the
  // upper frame. When the patient is selected, demographics.php is invoked
  // with the set_pid parameter, which establishes the new session pid and also
@@ -219,6 +160,16 @@ use ESign\Api;
   echo "onclick=\"return repPopup('$url')\"" .
        ">" . $title . "</a></li>";
  }
+
+ 
+ function genURLLink($title, $url, $linkid='') {
+  echo "<li><a href='' ";
+  if ($linkid) echo "id='$linkid' ";
+  echo "onclick=\"return PopupURL('$url')\"" .
+       ">" . $title . "</a></li>";
+ }
+ 
+ 
  function genDualLink($topname, $botname, $title) {
   global $primary_docs, $disallowed;
   if (empty($disallowed[$topname]) && empty($disallowed[$botname])) {
@@ -912,6 +863,13 @@ function removeOptionSelected(EncounterId)
   return true;
  }
 
+ // Pop Up ANY URL (full paths accepted)
+ function PopupURL(url) {
+  top.restoreSession();
+  window.open(url, '_blank');
+  return false;
+ }
+ 
  // Pop up a report.
  function repPopup(aurl) {
   top.restoreSession();
@@ -1154,7 +1112,7 @@ if ($GLOBALS['athletic_team']) {
           <?php if (acl_check('admin', 'forms'   )) genMiscLink('RTop','adm','0',xl('Forms'),'forms_admin/forms_admin.php'); ?>
           <?php if (acl_check('admin', 'calendar') && !$GLOBALS['disable_calendar']) genMiscLink('RTop','adm','0',xl('Calendar'),'main/calendar/index.php?module=PostCalendar&type=admin&func=modifyconfig'); ?>
           <?php if (acl_check('admin', 'users'   )) genMiscLink('RTop','adm','0',xl('Logs'),'logview/logview.php'); ?>
-          <?php if ( (!$GLOBALS['disable_phpmyadmin_link']) && (acl_check('admin', 'database')) ) genMiscLink('RTop','adm','0',xl('Database'),'../phpmyadmin/index.php'); ?>
+          <?php if ( (!$GLOBALS['disable_phpmyadmin_link']) && (acl_check('admin', 'database')) ) genURLLink(xl('Database'),$GLOBALS['sql_admin_tool_url']); ?>
           <?php if (acl_check('admin', 'super'   )) genMiscLink('RTop','adm','0',xl('Files'),'super/manage_site_files.php'); ?>
           <?php if (acl_check('admin', 'super'   )) genMiscLink('RTop','adm','0',xl('Backup'),'main/backup.php'); ?>
           <?php if (acl_check('admin', 'users'   )) genMiscLink('RTop','adm','0',xl('Certificates'),'usergroup/ssl_certificates_admin.php'); ?>
@@ -1326,7 +1284,10 @@ if (!empty($reg)) {
             if (acl_check('admin', 'users'   )) genMiscLink('RTop','adm','0',xl('eRx Logs'),'logview/erx_logview.php');
           }
           ?>
-          <?php if ( (!$GLOBALS['disable_phpmyadmin_link']) && (acl_check('admin', 'database')) ) genMiscLink('RTop','adm','0',xl('Database'),'../phpmyadmin/index.php'); ?>
+          <?php if ( (!$GLOBALS['disable_sql_admin_link']) 
+                   && (acl_check('admin', 'database'))) {
+                   genURLLink(xl('Database'),$GLOBALS['sql_admin_tool_url']);
+		} ?>
           <?php if (acl_check('admin', 'users'   )) genMiscLink('RTop','adm','0',xl('Certificates'),'usergroup/ssl_certificates_admin.php'); ?>
           <?php if (acl_check('admin', 'super'   )) genMiscLink('RTop','adm','0',xl('External Data Loads'),'../interface/code_systems/dataloads_ajax.php'); ?>
           <?php if (acl_check('admin', 'super'   )) genMiscLink('RTop','adm','0',xl('Merge Patients'),'patient_file/merge_patients.php'); ?>

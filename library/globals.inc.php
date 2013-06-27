@@ -60,16 +60,20 @@ if (stristr(PHP_OS, 'WIN')) {
   // MS Windows
   $mysql_bin_dir       = 'C:/xampp/mysql/bin';
   $perl_bin_dir        = 'C:/xampp/perl/bin';
+  $sql_admin_tool_url  = 'http://localhost/xampp/phpmyadmin'; 
   $temporary_files_dir = 'C:/windows/temp';
   $backup_log_dir      = 'C:/windows/temp';
+
 }
 else {
   // Everything else
   $mysql_bin_dir       = '/usr/bin';
   $perl_bin_dir        = '/usr/bin';
+  $sql_admin_tool_url  = 'http://localhost/phpmyadmin';
   $temporary_files_dir = '/tmp';
   $backup_log_dir      = '/tmp';
 }
+
 
 // Language constant declarations:
 // xl('Appearance')
@@ -226,7 +230,7 @@ $GLOBALS_METADATA = array(
     ),
     //
     'online_support_link' => array(
-      xl('Online Support Link'),
+      xl('Online Community Support Link'),
       'text',                           // data type
       'http://open-emr.org/',
       xl('URL for OpenEMR support.')
@@ -499,11 +503,11 @@ $GLOBALS_METADATA = array(
       xl('Removes the Chart Tracker feature')
     ),
 
-    'disable_phpmyadmin_link' => array(
-     xl('Disable phpMyAdmin'),
+    'disable_sql_admin_link' => array(
+     xl('Disable SQL Admin Tool Link'),
      'bool',                            // data type
      '0',                               // default = false
-     xl('Removes support for phpMyAdmin')
+     xl('Removes Menu selection for SQL Admin Tool')
     ),
 
     'disable_immunizations' => array(
@@ -1336,6 +1340,13 @@ $GLOBALS_METADATA = array(
       'text',                           // data type
       $backup_log_dir,                  // default
       xl('Full path to directory for event log backup.')
+    ),
+
+    'sql_admin_tool_url' => array(
+      xl('URL Path to SQL Admin Tool'),
+      'text',                           // data type
+      $sql_admin_tool_url,              // default
+      xl('URL for SQL Admin tool such as PHPMyAdmin.')
     ),
 
     'state_data_type' => array(
