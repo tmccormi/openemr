@@ -1,0 +1,175 @@
+Options:
+1) Sign ALL forms from "newpatient" encounter (globals setting)
+2) Lock ALL forms from "newpatient" encounter (globals setting, requires #1)
+3) Sign each form individually
+4) Lock individual forms after signing
+5) Add amendment(s) to forms (newpatient/encounter level only if #1/2)
+6) amendments require a eSign password to save
+7) amendment text shown below signature log on summary page (and on form? how?)
+8) "View" versus "Edit" button on locked forms
+
+Added features:
+1) signature needs to be visible on forms.php view
+2) signature status (at least) needs to be visible on "summary view"
+3) signature needs to print on "report" of encounters, if global sign show encounter sig on all forms
+
+Notes:
+1) Amendment textarea column will be needed on any form that allows amendment
+   -or-
+   create a table (like eSignature) that just has amendment textarea, formid, datestamp, uid
+
+Pseudo code / Flow:
+
+in forms.php
+
+    IF ("form" NOT signed)
+        {
+            display button "Edit" on form
+            if ( IS sign_individual OR (IS sign_all and form IS newpatient) )
+            {
+                display button "eSign" on form
+                }
+         }    
+
+    else { // "form signed"
+            if (lock_individual || lock_all) {
+                replace button "Edit" form with "View"      
+                if (   (NOT lock_all AND form has amendment column in table)
+                    OR (IS lock_all and form IS newpatient) ) 
+                {            
+                     display button "Amend" on "form";
+                }
+                              
+            } // lock option off
+                display button "Edit" on form
+   }
+
+
+edit CLICKED, normal behavior 
+
+if (eSign CLICKED) {
+    open fancybox eSign with password
+      if (password good){ add esignature to to eSignature table for form}
+       refresh forms.php page to show signature completed
+       else { error }  ** multiple signing is allowed
+}
+
+If (Amend CLICKED) {
+    open fancybox ammendment.php
+        user enters notes and uses password to sign and save amendment text to form
+        cancel exits
+
+
+
+// CODE Snippets from CCI implementation and from Medasko
+
+require_once("$srcdir/ESign.class.php");
+include_once("$srcdir/sha1.js");
+
+$esign = new ESign();
+$esign->init($id, "form_eye_exam");
+
+$newest_sig = $esign->getNewestSignedSignature();
+$signing_user = null;
+
+if(isset($newest_sig))
+{
+    $signing_user = sqlQuery("select * from users where id = '" . $newest_sig->getUid() ."'");
+}
+
+<script>
+    $(document).ready(function() {
+        var status = "";
+        
+	$("#tip5").fancybox({
+	'scrolling'		: 'no',
+	'titleShow'		: false,
+	'onClosed'		: function() {
+	    $("#login_error").hide();
+	}
+        });
+
+        $("#login_form").bind("submit", function() {
+
+            document.getElementById("login_pass").value = SHA1(document.getElementById("login_pass").value);
+            
+            if ($("#login_pass").val().length < 1) {
+                $("#login_error").show();
+                $.fancybox.resize();
+                return false;
+            }
+
+            $.fancybox.showActivity();
+
+            $.ajax({
+		type		: "POST",
+		cache	: false,
+		url		: "<?php echo $GLOBALS['rootdir'] . '/forms/va_eye_exam/sign.php'?>",
+		data		: $(this).serializeArray(),
+		success: function(data) {
+			$.fancybox(data);
+		}
+            });
+
+            
+            return false;
+        });
+    });
+</script>
+
+** FORM **
+
+$userManager = new MI2_API_User_UserManager();
+$user = $userManager->find($_SESSION['authUserID']);
+$sig_id = 0;
+
+foreach($esign->getUnsignedSignatures() as $sig)
+{
+    if ($user->hasRole($sig->getRole())) 
+    {
+        $sig_id = $sig->getId();
+    }
+}
+
+?>
+                    <div id="signature_log" name="signature_log">
+                        <?php $esign->getDefaultSignatureLog(true);?>
+                    </div>
+                </td></tr>
+            </table>
+        </center>
+    </body>
+    <div style="display:none">
+	<form id="login_form" method="post" action="">
+	    	<p id="login_error">To sign, please enter your password:</p>
+                        <input type="hidden" id="tid" name="tid" value="<?php echo $id;?>"/>
+                        <input type="hidden" id="table_name" name="table_name" value="form_eye_exam"/>
+			<input type="hidden" id="signature_uid" name="signature_uid" value="<?php echo $_SESSION['authUserID'];?>"/>
+                        <input type="hidden" id="signature_id" name="signature_id" value="<?php echo $sig_id;?>" />
+		<p>
+			<label for="login_pass">Password: </label>
+			<input type="password" id="login_pass" name="login_pass" size="10" />
+		</p>
+		<p>
+			<input type="submit" value="Sign" />
+		</p>
+	</form>
+</div>
+
+// MEDAKSKO amendment code
+
+                 } else {
+                        $res = sqlFetchArray(sqlStatement("select amendments from forms_" . $formdir . " where id=" . $iter['form_id']));
+                        $button = "<a href='$rootdir/patient_file/encounter/amendments.php?" .
+                                "formname=" . $formdir . "&id=" . $iter['form_id'] .
+                                "&action=amend";
+                        if ($res['amendments'] != '') {
+                            $button.="&mode=edit";
+                        } else {
+                            $button.="&mode=new";
+                        }
+                        $button.= "' class='css_button_small iframe' ><span>"
+                                . xl('Amend Form') . "</span></a>";
+                        echo $button;
+                    }
+
