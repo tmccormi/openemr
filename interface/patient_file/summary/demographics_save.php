@@ -82,7 +82,8 @@ newInsuranceData(
   formData('form_i1subscriber_sex'),
   $i1date,
   formData('i1accept_assignment'),
-  formData('i1policy_type')
+  formData('i1policy_type'),
+  formData('ilcal_child_services')
 );
 
 $i2dob = fixDate(formData("i2subscriber_DOB"));
@@ -117,7 +118,8 @@ newInsuranceData(
   formData('form_i2subscriber_sex'),
   $i2date,
   formData('i2accept_assignment'),
-  formData('i2policy_type')
+  formData('i2policy_type'),
+  formData('ilcal_child_services')
 );
 
 $i3dob  = fixDate(formData("i3subscriber_DOB"));
@@ -152,7 +154,8 @@ newInsuranceData(
   formData('form_i3subscriber_sex'),
   $i3date,
   formData('i3accept_assignment'),
-  formData('i3policy_type')
+  formData('i3policy_type'),
+  formData('ilcal_child_services')
 );
 
 if ($GLOBALS['concurrent_layout']) {

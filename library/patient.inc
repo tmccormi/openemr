@@ -962,7 +962,8 @@ function newInsuranceData(
   $subscriber_sex = "",
   $effective_date = "0000-00-00",
   $accept_assignment = "TRUE",
-  $policy_type = "")
+  $policy_type = "",
+  $cal_child_services = "FALSE")
 {
   if (strlen($type) <= 0) return FALSE;
 
@@ -1037,6 +1038,7 @@ function newInsuranceData(
     $data['date'] = $effective_date;
     $data['accept_assignment'] = $accept_assignment;
     $data['policy_type'] = $policy_type;
+    $data['cal_child_services'] = $cal_child_services;
     updateInsuranceData($idrow['id'], $data);
     return $idrow['id'];
   }
@@ -1070,7 +1072,8 @@ function newInsuranceData(
       pid = '$pid',
       date = '$effective_date',
       accept_assignment = '$accept_assignment',
-      policy_type = '$policy_type'
+      policy_type = '$policy_type',
+      cal_child_services = '$cal_child_services'
     ");
   }
 }

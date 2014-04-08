@@ -689,6 +689,16 @@ $group_seq=0; // this gives the DIV blocks unique IDs
           </select>
         </td>
       </tr>
+      <tr>
+	<td colspan=0><span class='bold'><?php xl('California Children\'s Services','e'); ?></span></td>
+	<td class=bold>:</td>
+	<td colspan=2>
+	<select name=i<?php echo $i?>cal_child_services>
+		<option value="TRUE" <?php if (strtoupper($result3{"cal_child_services"}) == "TRUE") echo "selected"?>><?php xl('YES','e'); ?></option>
+		<option value="FALSE" <?php if (strtoupper($result3{"cal_child_services"}) == "FALSE") echo "selected"?>><?php xl('NO','e'); ?></option>
+	</select>
+	</td>
+     </tr>     
 		</table>
 
 		  </td>
