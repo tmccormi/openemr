@@ -70,7 +70,13 @@ function jsWaitForDelay(delay) {
     &nbsp;&nbsp;{xl t='For Encounter Claims'}:
 		<input type="text" size="15" name="alt_cms_id" value="{$insurancecompany->get_alt_cms_id()}" onKeyDown="PreventIt(event)" />
 {php} } {/php}
+</tr>
+<tr>
 	</td>
+       	<td VALIGN="MIDDLE" >{xl t='Payer Assigned Claims ID'}</td>
+	<td VALIGN="MIDDLE" >
+            <input title='Overides ETIN in loop 1000A of electronic claims' type="text" size="15" name="payer_assigned_id" value="{$insurancecompany->get_payer_assigned_id()}" onKeyDown="PreventIt(event) " />
+        </td>
 </tr>
 <tr>
 	<td VALIGN="MIDDLE">{xl t='Payer Type'}</td>

@@ -99,6 +99,8 @@ function gen_x12_837($pid, $encounter, &$log, $encounter_claim=false) {
     "*46";
    if (trim($claim->x12gsreceiverid()) == '470819582') { // if ECLAIMS EDI
     $out  .=  "*" . $claim->clearingHouseETIN();
+   } else if ( $claim->payerAssignedID(0) !== '' ) {
+    $out .= "*" . $claim->payerAssignedID(0);
    } else {
     $out  .=  "*" . $claim->billingFacilityETIN();
    }
@@ -677,6 +679,8 @@ function gen_x12_837($pid, $encounter, &$log, $encounter_claim=false) {
   //
   // 5010 spec says nothing here if NPI was specified.
   //
+  // THIS LOGIC IS FAILING due to ECLAIMS leftover code from 4010
+  
   if (($CMS_5010 && !$claim->providerNPI() && in_array($claim->providerNumberType(), array('0B','1G','G2','LU')))
       || (!$CMS_5010 && trim($claim->x12gsreceiverid()) != '470819582')) // if NOT ECLAIMS EDI
   {

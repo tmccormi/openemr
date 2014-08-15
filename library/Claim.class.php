@@ -924,6 +924,10 @@ class Claim {
     return x12clean(trim($this->payers[$ins]['company']['alt_cms_id']));
   }
 
+   function payerAssignedID($ins=0) {
+    return x12clean(trim($this->payers[$ins]['company']['payer_assigned_id']));
+  }
+  
   function patientLastName() {
     return x12clean(trim($this->patient_data['lname']));
   }

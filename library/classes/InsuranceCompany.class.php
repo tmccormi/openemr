@@ -50,6 +50,7 @@ class InsuranceCompany extends ORDataObject{
 	var $phone;
 	var $attn;
 	var $cms_id;
+        var $payer_assigned_id;
 	var $alt_cms_id;
 	//this is now deprecated use new x12 partners instead
 	var $x12_receiver_id;
@@ -199,6 +200,12 @@ class InsuranceCompany extends ORDataObject{
 	}
 	function get_cms_id() {
 		return $this->cms_id;
+	}
+       	function set_payer_assigned_id($id) {
+		$this->payer_assigned_id = $id;
+	}
+	function get_payer_assigned_id() {
+		return $this->payer_assigned_id;
 	}
 	function set_alt_cms_id($id) {
 		$this->alt_cms_id = $id;
