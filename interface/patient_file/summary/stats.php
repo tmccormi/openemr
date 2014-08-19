@@ -461,4 +461,50 @@ if($erx_upload_complete == 1){
 ?>
 </table> <!-- end patient_stats_prescriptions -->
 </div>
+
+<!-- For amendments -->
+<?php if ($GLOBALS['amendments']) { ?>
+<div>
+<table id="patient_amendments">
+<tr>
+<?php if ($_POST['embeddedScreen']) {
+    echo "<td>";
+    // Issues expand collapse widget
+    $widgetTitle = xl('Amendments');
+    $widgetLabel = "amendments";
+    $widgetButtonLabel = xl("Edit");
+	$widgetButtonLink = $GLOBALS['webroot'] . "/interface/patient_file/summary/main_frameset.php?feature=amendment";
+	$widgetButtonClass = "iframe rx_modal";
+    $linkMethod = "html";
+    $bodyClass = "summary_item small";
+    $widgetAuth = true;
+    $fixedWidth = false;
+    expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel , $widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass, $widgetAuth, $fixedWidth);
+} ?>
+<?php
+  $sql = "SELECT * FROM amendments WHERE pid = ? ORDER BY amendment_date DESC";
+  $result = sqlStatement($sql, array($pid) );
+
+  if (sqlNumRows($result) == 0) {
+    echo " <table><tr>\n";
+    echo "  <td colspan='$numcols' class='text'>&nbsp;&nbsp;" . htmlspecialchars( xl('None'), ENT_NOQUOTES) . "</td>\n";
+    echo " </tr></table>\n";
+  }
+  
+  while ($row=sqlFetchArray($result)){
+    echo "&nbsp;&nbsp;";
+    echo "<a class= '" . $widgetButtonClass . "' href='" . $widgetButtonLink . "&id=" . $row['amendment_id'] . "' onclick='top.restoreSession()'>" . htmlspecialchars($row['amendment_date'],ENT_NOQUOTES);
+	echo "&nbsp; " . stripslashes(htmlspecialchars($row['amendment_desc']));
+
+    /*echo "&nbsp;By " . generate_display_field(array('data_type'=>'1','list_id'=>'amendment_from'), $row['amendment_by']);
+    echo generate_display_field(array('data_type'=>'1','list_id'=>'amendment_status'), $row['amendment_status']); */
+    echo "</a><br>\n";
+  }
+?>
+</tr>
+</table> <!-- end patient_amendments -->	
+</div>
+
+<?php } ?>
+
 </div> <!-- end patient_stats_summary -->

@@ -94,13 +94,19 @@ $N=15;
 $offset = $_REQUEST['offset'];
 if (!isset($offset)) $offset = 0;
 
-
-$r2= sqlStatement("select id,event,recipient,description,date from extended_log where patient_id=? AND event in (select option_id from list_options where list_id='disclosure_type') order by date desc ", array($pid) );
+$disclQry = " SELECT el.id, el.event, el.recipient, el.description, el.date, CONCAT(u.fname, ' ', u.lname) as user_fullname FROM extended_log el ".
+		   " LEFT JOIN users u ON u.username = el.user ".
+		   " WHERE el.patient_id=? AND el.event IN (SELECT option_id FROM list_options WHERE list_id='disclosure_type') ORDER BY el.date DESC ";
+$r2= sqlStatement($disclQry, array($pid) );
 $totalRecords=sqlNumRows($r2);
 
 //echo "select id,event,recipient,description,date from extended_log where patient_id=$pid AND event in (select option_id from list_options where list_id='disclosure_type') order by date desc limit $offset ,$N";
 //display all of the disclosures for the day, as well as others that are active from previous dates, up to a certain number, $N
-$r1= sqlStatement("select id,event,recipient,description,date from extended_log where patient_id=? AND event in (select option_id from list_options where list_id='disclosure_type') order by date desc limit $offset,$N", array($pid) );
+$disclInnerQry = " SELECT el.id, el.event, el.recipient, el.description, el.date, CONCAT(u.fname, ' ', u.lname) as user_fullname FROM extended_log el ".
+				" LEFT JOIN users u ON u.username = el.user ".
+				" WHERE patient_id=? AND event IN (SELECT option_id FROM list_options WHERE list_id='disclosure_type') ORDER BY date DESC LIMIT $offset,$N";
+
+$r1= sqlStatement($disclInnerQry, array($pid) );
 $n=sqlNumRows($r1);
 $noOfRecordsLeft=($totalRecords - $offset);
 if ($n>0){?>
@@ -116,11 +122,13 @@ if ($n>0){?>
 			<th style="border-style: 1px solid #000" width="140px"><?php echo htmlspecialchars(xl('Recipient Name'),ENT_NOQUOTES); ?></th>
 			<th style="border-style: 1px solid #000" width="140px"><?php echo htmlspecialchars(xl('Disclosure Type'),ENT_NOQUOTES); ?></th>
 			<th style="border-style: 1px solid #000"><?php echo htmlspecialchars(xl('Description'),ENT_NOQUOTES); ?></th>
+			<th style="border-style: 1px solid #000"><?php echo htmlspecialchars(xl('Provider'),ENT_NOQUOTES); ?></th>
 		</tr>
 	<?php
 	$result2 = array();
 	for ($iter = 0;$frow = sqlFetchArray($r1);$iter++)
 		$result2[$iter] = $frow;
+	
 	foreach($result2 as $iter)
 	{
 		$app_event=$iter{event};
@@ -137,6 +145,7 @@ if ($n>0){?>
 			<td class="text" valign='top'><?php echo htmlspecialchars($iter{recipient},ENT_NOQUOTES);?>&nbsp;</td>
 			<td class='text' valign='top'><?php if($event[1]=='healthcareoperations'){ echo htmlspecialchars(xl('health care operations'),ENT_NOQUOTES); } else echo htmlspecialchars($event[1],ENT_NOQUOTES); ?>&nbsp;</td>
 			<td class='text'><?php echo htmlspecialchars($iter{date},ENT_NOQUOTES)." ".$description;?>&nbsp;</td>
+			<td class='text'><?php echo htmlspecialchars($iter{user_fullname},ENT_NOQUOTES);?></td>
 		</tr>
 		<?php
 	}
