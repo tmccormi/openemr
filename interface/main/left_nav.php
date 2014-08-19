@@ -1499,6 +1499,7 @@ if (!empty($reg)) {
           <?php if ($GLOBALS['enable_cqm']) genMiscLink('RTop','rep','0',xl('Quality Measures (CQM)'),'reports/cqm.php?type=cqm'); ?>
           <?php if ($GLOBALS['enable_amc']) genMiscLink('RTop','rep','0',xl('Automated Measures (AMC)'),'reports/cqm.php?type=amc'); ?>
           <?php if ($GLOBALS['enable_amc_tracking']) genMiscLink('RTop','rep','0',xl('AMC Tracking'),'reports/amc_tracking.php'); ?>
+		  <?php if ($GLOBALS['enable_auditlog_encryption']) genMiscLink('RTop','rep','0',xl('Audit Log Tamper'),'reports/audit_log_tamper_report.php'); ?>
         </ul>
       </li>
       <li><a class="collapsed_lv2"><span><?php xl('Visits','e') ?></span></a>

@@ -1,4 +1,33 @@
 <?php
+/**
+ * Audit Log Tamper Report.
+ *
+ * Copyright (C) 2014 Ensoftek
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Anil N <aniln@ensoftek.com>
+ * @link    http://www.open-emr.org
+ */
+
+//SANITIZE ALL ESCAPES
+$sanitize_all_escapes=true;
+//
+
+//STOP FAKE REGISTER GLOBALS
+$fake_register_globals=false;
+//
+
 include_once("../globals.php");
 include_once("$srcdir/log.inc");
 include_once("$srcdir/formdata.inc.php");
@@ -42,6 +71,9 @@ require_once("$srcdir/formatting.inc.php");
     background-color: #336699;
     color: #336699;
 }
+.tamperColor{
+	color:red;
+}
 </style>
 <script>
 //function to disable the event type field if the event name is disclosure
@@ -70,7 +102,7 @@ function eventTypeChange(eventname)
 </script>
 </head>
 <body class="body_top">
-<font class="title"><?php  xl('Logs Viewer','e'); ?></font>
+<font class="title"><?php  xl('Audit Log Tamper Report','e'); ?></font>
 <br>
 <?php 
 $err_message=0;
@@ -101,24 +133,10 @@ $form_user = formData('form_user','R');
 $form_pid = formData('form_pid','R');
 if ($form_patient == '' ) $form_pid = '';
 
-$res = sqlStatement("select distinct LEFT(date,10) as date from log order by date desc limit 30");
-for($iter=0;$row=sqlFetchArray($res);$iter++) {
-  $ret[$iter] = $row;
-}
-
-// Get the users list.
-$sqlQuery = "SELECT username, fname, lname FROM users " .
-  "WHERE active = 1 AND ( info IS NULL OR info NOT LIKE '%Inactive%' ) ";
-
-$ures = sqlStatement($sqlQuery);
-?>
-
-<?php 
 $get_sdate=$start_date ? $start_date : date("Y-m-d");
 $get_edate=$end_date ? $end_date : date("Y-m-d");
 
 ?>
-
 <br>
 <FORM METHOD="GET" name="theform" id="theform">
 <?php
@@ -149,97 +167,7 @@ $sortby = formData('sortby','G') ;
 <input type='hidden' name='form_pid' value='<?php echo $form_pid; ?>' />
 </td>
 </tr>
-<tr><td>
-<span class='text'><?php  xl('User','e'); ?>: </span>
-</td>
-<td>
-<?php
-echo "<select name='form_user'>\n";
-echo " <option value=''>" . xl('All') . "</option>\n";
-while ($urow = sqlFetchArray($ures)) {
-  if (!trim($urow['username'])) continue;
-  echo " <option value='" . $urow['username'] . "'";
-  if ($urow['username'] == $form_user) echo " selected";
-  echo ">" . $urow['lname'];
-  if ($urow['fname']) echo ", " . $urow['fname'];
-  echo "</option>\n";
-}
-echo "</select>\n";
-?>
-</td>
-<td>
-<!-- list of events name -->
-<span class='text'><?php  xl('Name of Events','e'); ?>: </span>
-</td>
-<td>
-<?php 
-$res = sqlStatement("select distinct event from log order by event ASC");
-$ename_list=array(); $j=0;
-while ($erow = sqlFetchArray($res)) {
-	 if (!trim($erow['event'])) continue;
-	 $data = explode('-', $erow['event']);
-	 $data_c = count($data);
-	 $ename=$data[0];
-	 for($i=1;$i<($data_c-1);$i++)
-	 {
-	 	$ename.="-".$data[$i];
-	}
-	$ename_list[$j]=$ename;
-	$j=$j+1;
-}
-$res1 = sqlStatement("select distinct event from  extended_log order by event ASC");
-// $j=0; // This can't be right!  -- Rod 2013-08-23
-while ($row = sqlFetchArray($res1)) {
-         if (!trim($row['event'])) continue;
-         $new_event = explode('-', $row['event']);
-         $no = count($new_event);
-         $events=$new_event[0];
-         for($i=1;$i<($no-1);$i++)
-         {
-                $events.="-".$new_event[$i];
-        }
-        if ($events=="disclosure")
-        $ename_list[$j]=$events;
-        $j=$j+1;
-}
-$ename_list=array_unique($ename_list);
-$ename_list=array_merge($ename_list);
-$ecount=count($ename_list);
-echo "<select name='eventname' onchange='eventTypeChange(this.options[this.selectedIndex].value);'>\n";
-echo " <option value=''>" . xl('All') . "</option>\n";
-for($k=0;$k<$ecount;$k++) {
-echo " <option value='" .$ename_list[$k]. "'";
-  if ($ename_list[$k] == $eventname && $ename_list[$k]!= "") echo " selected";
-  echo ">" . $ename_list[$k];
-  echo "</option>\n";
-}
-echo "</select>\n"; 
-?>
-</td>
-<!-- type of events ends  -->
-<td>
-&nbsp;&nbsp;<span class='text'><?php  xl('Type of Events','e'); ?>: </span>
-</td><td>
-<?php 
-$event_types=array("select", "update", "insert", "delete", "replace");
-$lcount=count($event_types);
-if($eventname=="disclosure"){
- echo "<select name='type_event' disabled='disabled'>\n";
- echo " <option value=''>" . xl('All') . "</option>\n";
- echo "</option>\n";
-}
-else{
-  echo "<select name='type_event'>\n";}
-  echo " <option value=''>" . xl('All') . "</option>\n";
-  for($k=0;$k<$lcount;$k++) {
-  echo " <option value='" .$event_types[$k]. "'";
-  if ($event_types[$k] == $type_event && $event_types[$k]!= "") echo " selected";
-  echo ">" . $event_types[$k];
-  echo "</option>\n";
-}
-echo "</select>\n";
-?>
-</td>
+
 <tr><td>
 <span class='text'><?php xl('Include Checksum','e'); ?>: </span>
 </td><td>
@@ -260,19 +188,16 @@ $check_sum = formData('check_sum','G');
 
 <?php if ($start_date && $end_date && $err_message!=1) { ?>
 <div id="logview">
+<span class="text" id="display_tamper" style="display:none;"><?php  xl('Following rows in the audit log have been tampered','e'); ?></span>
 <table>
  <tr>
-  <!-- <TH><?php  xl('Date', 'e'); ?><TD> -->
-  <th id="sortby_date" class="text" title="<?php xl('Sort by date/time','e'); ?>"><?php xl('Date','e'); ?></th>
-  <th id="sortby_event" class="text" title="<?php xl('Sort by Event','e'); ?>"><?php  xl('Event','e'); ?></th>
+  <th id="sortby_date" class="text" title="<?php xl('Sort by Tamper date/time','e'); ?>"><?php xl('Tamper Date','e'); ?></th>
   <th id="sortby_user" class="text" title="<?php xl('Sort by User','e'); ?>"><?php  xl('User','e'); ?></th>
-  <th id="sortby_cuser" class="text" title="<?php xl('Sort by Crt User','e'); ?>"><?php  xl('Certificate User','e'); ?></th>
-  <th id="sortby_group" class="text" title="<?php xl('Sort by Group','e'); ?>"><?php  xl('Group','e'); ?></th>
   <th id="sortby_pid" class="text" title="<?php xl('Sort by PatientID','e'); ?>"><?php  xl('PatientID','e'); ?></th>
-  <th id="sortby_success" class="text" title="<?php xl('Sort by Success','e'); ?>"><?php  xl('Success','e'); ?></th>
   <th id="sortby_comments" class="text" title="<?php xl('Sort by Comments','e'); ?>"><?php  xl('Comments','e'); ?></th>
  <?php  if($check_sum) {?>
-  <th id="sortby_checksum" class="text" title="<?php xl('Sort by Checksum','e'); ?>"><?php  xl('Checksum','e'); ?></th>
+  <th id="sortby_newchecksum" class="text" title="<?php xl('Sort by New Checksum','e'); ?>"><?php  xl('Tampered Checksum','e'); ?></th>
+  <th id="sortby_oldchecksum" class="text" title="<?php xl('Sort by Old Checksum','e'); ?>"><?php  xl('Original Checksum','e'); ?></th>
   <?php } ?>
  </tr>
 <?php
@@ -282,94 +207,98 @@ $type_event = formData('type_event','G');
 ?>
 <input type=hidden name=event value=<?php echo $eventname."-".$type_event ?>>
 <?php
-
-$tevent=""; $gev="";
-if($eventname != "" && $type_event != "")
-{
+$type_event = "update";
+$tevent=""; 
+$gev="";
+if($eventname != "" && $type_event != ""){
 	$getevent=$eventname."-".$type_event;
 }
       
-	if(($eventname == "") && ($type_event != ""))
-    {	$tevent=$type_event;   	
-    }
-	else if($type_event =="" && $eventname != "")
-    {$gev=$eventname;}
-    else if ($eventname == "")
- 	{$gev = "";}
- else 
-    {$gev = $getevent;}
-    
+if(($eventname == "") && ($type_event != "")){	
+	$tevent=$type_event;   	
+}else if($type_event =="" && $eventname != ""){
+	$gev=$eventname;
+}else if ($eventname == ""){
+	$gev = "";
+}else{
+	$gev = $getevent;
+}
+
+$dispArr = array();
+$icnt = 1;
 if ($ret = getEvents(array('sdate' => $get_sdate,'edate' => $get_edate, 'user' => $form_user, 'patient' => $form_pid, 'sortby' => $_GET['sortby'], 'levent' =>$gev, 'tevent' =>$tevent))) {
   foreach ($ret as $iter) {
     //translate comments
     $patterns = array ('/^success/','/^failure/','/ encounter/');
 	$replace = array ( xl('success'), xl('failure'), xl('encounter','',' '));
 	
+	$dispCheck = false;
 	$log_id = $iter['id'];
 	$commentEncrStatus = "No";
 	$logEncryptData = logCommentEncryptData($log_id);
+	
 	if(count($logEncryptData) > 0){
 		$commentEncrStatus = $logEncryptData['encrypt'];
-	}
-	
-	//July 1, 2014: Ensoftek: Decrypt comment data if encrypted
-	if($commentEncrStatus == "Yes"){
-		$trans_comments = preg_replace($patterns, $replace, aes256Decrypt($iter["comments"]));
+		$checkSumOld = $logEncryptData['checksum'];
+		$concatLogColumns = $iter['date'].$iter['event'].$iter['user'].$iter['groupname'].$iter['comments'].$iter['patient_id'].$iter['success'].$iter['checksum'].$iter['crt_user'];
+		$checkSumNew = sha1($concatLogColumns);
+		
+		if($checkSumOld != $checkSumNew){
+			$dispCheck = true;
+		}else{
+			$dispCheck = false;
+			continue;
+		}
 	}else{
-		$trans_comments = preg_replace($patterns, $replace, $iter["comments"]);
+		continue;
 	}
 	
+	if($commentEncrStatus == "Yes"){
+		$decrypt_comment =  trim(aes256Decrypt($iter["comments"]));
+		$trans_comments = preg_replace($patterns, $replace, $decrypt_comment);
+	}else{
+		$comments = trim($iter["comments"]);
+		$trans_comments = preg_replace($patterns, $replace, $comments);
+	}
+	
+	//Alter Checksum value records only display here
+	if($dispCheck){
+		$dispArr[] = $icnt++;
 ?>
- <TR class="oneresult">
-  <TD class="text"><?php echo oeFormatShortDate(substr($iter["date"], 0, 10)) . substr($iter["date"], 10) ?></TD>
-  <TD class="text"><?php echo xl($iter["event"])?></TD>
-  <TD class="text"><?php echo $iter["user"]?></TD>
-  <TD class="text"><?php echo $iter["crt_user"]?></TD>
-  <TD class="text"><?php echo $iter["groupname"]?></TD>
-  <TD class="text"><?php echo $iter["patient_id"]?></TD>
-  <TD class="text"><?php echo $iter["success"]?></TD>
-  <TD class="text"><?php echo $trans_comments?></TD>
-  <?php  if($check_sum) { ?>
-  <TD class="text"><?php echo $iter["checksum"]?></TD>
-  <?php } ?>
- </TR>
-
+	 <TR class="oneresult">
+		  <TD class="text tamperColor"><?php echo oeFormatShortDate(substr($iter["date"], 0, 10)) . substr($iter["date"], 10) ?></TD>
+		  <TD class="text tamperColor"><?php echo $iter["user"]?></TD>
+		  <TD class="text tamperColor"><?php echo $iter["patient_id"]?></TD>
+		  <TD class="text tamperColor"><?php echo $trans_comments?></TD>
+		  <?php  if($check_sum) { ?>
+		  <TD class="text tamperColor"><?php echo $checkSumNew;?></TD>
+		  <TD class="text tamperColor"><?php echo $checkSumOld;?></TD>
+		  <?php } ?>
+	 </TR>
 <?php
-      
+      }
     }
   }
-if (($eventname=="disclosure") || ($gev == ""))
-{
-$eventname="disclosure";
-if ($ret = getEvents(array('sdate' => $get_sdate,'edate' => $get_edate, 'user' => $form_user, 'patient' => $form_pid, 'sortby' => $_GET['sortby'], 'event' =>$eventname))) {
-foreach ($ret as $iter) {
-        $comments=xl('Recipient Name').":".$iter["recipient"].";".xl('Disclosure Info').":".$iter["description"];
-?>
-<TR class="oneresult">
-  <TD class="text"><?php echo htmlspecialchars(oeFormatShortDate(substr($iter["date"], 0, 10)) . substr($iter["date"], 10),ENT_NOQUOTES); ?></TD>
-  <TD class="text"><?php echo htmlspecialchars(xl($iter["event"]),ENT_NOQUOTES);?></TD>
-  <TD class="text"><?php echo htmlspecialchars($iter["user"],ENT_NOQUOTES);?></TD>
-  <TD class="text"><?php echo htmlspecialchars($iter["crt_user"],ENT_NOQUOTES);?></TD>
-  <TD class="text"><?php echo htmlspecialchars($iter["groupname"],ENT_NOQUOTES);?></TD>
-  <TD class="text"><?php echo htmlspecialchars($iter["patient_id"],ENT_NOQUOTES);?></TD>
-  <TD class="text"><?php echo htmlspecialchars($iter["success"],ENT_NOQUOTES);?></TD>
-  <TD class="text"><?php echo htmlspecialchars($comments,ENT_NOQUOTES);?></TD>
-  <?php  if($check_sum) { ?>
-  <TD class="text"><?php echo htmlspecialchars($iter["checksum"],ENT_NOQUOTES);?></TD>
-  <?php } ?>
- </TR>
+  
+  if( count($dispArr) == 0 ){?>
+	 <TR class="oneresult">
+		 <?php 
+			$colspan = 4;
+			if($check_sum) $colspan=6;
+		 ?>
+		<TD class="text" colspan="<?php echo $colspan;?>" align="center"><?php xl('No audit log tampering detected in the selected date range.','e'); ?></TD>
+	 </TR>
 <?php
-    }
+  }else{?>
+	<script type="text/javascript">$('#display_tamper').css('display', 'block');</script>
+  <?php
   }
-}
+  
 ?>
 </table>
 </div>
-
 <?php } ?>
-
 </body>
-
 <script language="javascript">
 
 // jQuery stuff to make the page a little easier to use
@@ -393,7 +322,8 @@ $(document).ready(function(){
     $("#sortby_pid").click(function() { $("#sortby").val("patient_id"); $("#theform").submit(); });
     $("#sortby_success").click(function() { $("#sortby").val("success"); $("#theform").submit(); });
     $("#sortby_comments").click(function() { $("#sortby").val("comments"); $("#theform").submit(); });
-    $("#sortby_checksum").click(function() { $("#sortby").val("checksum"); $("#theform").submit(); });
+    $("#sortby_oldchecksum").click(function() { $("#sortby").val("checksum"); $("#theform").submit(); });
+	$("#sortby_newchecksum").click(function() { $("#sortby").val("checksum"); $("#theform").submit(); });
 });
 
 
