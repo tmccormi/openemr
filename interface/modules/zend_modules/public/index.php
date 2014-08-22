@@ -24,18 +24,37 @@
  * This makes our life easier when dealing with paths. Everything is relative
  * to the application root now.
  */
-//SANITIZE ALL ESCAPES
-$sanitize_all_escapes=true;
-//
-//STOP FAKE REGISTER GLOBALS
-$fake_register_globals=false;
-//
-require_once(dirname(__FILE__)."/../../../globals.php");
-require_once(dirname(__FILE__)."/../../../../library/forms.inc");
-require_once(dirname(__FILE__)."/../../../../library/options.inc.php");
-require_once(dirname(__FILE__)."/../../../../library/acl.inc");
-require_once(dirname(__FILE__)."/../../../../library/log.inc");
+$urlArray = explode('/', $_SERVER['REQUEST_URI']);
+$countUrlArray = count($urlArray);
+$actionName = isset($urlArray[$countUrlArray-1]) ? $urlArray[$countUrlArray-1] : '';
+$controllerName = isset($urlArray[$countUrlArray-2]) ? $urlArray[$countUrlArray-2] : '';
 
+if(strtolower($controllerName) == 'notification') {
+	$_SESSION['notification_action'] = 1;	
+}
+$urlSplit = explode('zend_modules/public/', $_SERVER['REQUEST_URI']);
+$zendPath = $urlSplit[1];
+$zendPathArray = explode('/', $zendPath);
+
+if(strtolower($actionName) == 'soap' &&  strtolower($controllerName) == 'document') {        
+	$_SESSION['user_webservice_flag'] = 0;
+} else{
+	if(isset($zendPathArray[1]) && strtolower($zendPathArray[1]) == 'soap') {
+        $ignoreAuth = true;
+    }
+	require_once(dirname(__FILE__)."/../../../globals.php");
+	require_once(dirname(__FILE__)."/../../../../library/forms.inc");
+	require_once(dirname(__FILE__)."/../../../../library/options.inc.php");
+	require_once(dirname(__FILE__)."/../../../../library/acl.inc");
+	if (isset ($phpgacl_location)) {
+		include_once("$phpgacl_location/gacl_api.class.php");
+		$gacl = new gacl_api();
+	}
+	else {
+		die("You must first set up library/acl.inc to use phpGACL!");
+	}
+	require_once("$srcdir/acl_upgrade_fx.php");
+}
 chdir(dirname(__DIR__));
 
 // Setup autoloading

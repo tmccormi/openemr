@@ -179,7 +179,7 @@ if ($_POST['formaction']=='save' && $list_id) {
 
               // Insert the list item
               sqlInsert("INSERT INTO list_options ( " .
-                "list_id, option_id, title, seq, is_default, option_value, mapping, notes, codes " .
+                "list_id, option_id, title, seq, is_default, option_value, mapping, notes, codes, activity " .
                 ") VALUES ( " .
                 "'$list_id', "                       .
                 "'" . $id                        . "', " .
@@ -189,7 +189,8 @@ if ($_POST['formaction']=='save' && $list_id) {
                 "'" . $value                     . "', " .
                 "'" . formTrim($iter['mapping']) . "', " .
                 "'" . formTrim($iter['notes'])   . "', " .
-                "'" . formTrim($iter['codes'])   . "' " .
+                "'" . formTrim($iter['codes'])   . "', " .
+                "'" . formTrim($iter['activity'])   . "' " .
                 ")");
             }
         }
@@ -256,12 +257,13 @@ function getCodeDescriptions($codes) {
 
 // Write one option line to the form.
 //
-function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping='', $notes='', $codes='') {
+function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping='', $notes='', $codes='', $active='') {
   global $opt_line_no, $list_id;
   ++$opt_line_no;
   $bgcolor = "#" . (($opt_line_no & 1) ? "ddddff" : "ffdddd");
   $checked = $default ? " checked" : "";
-
+  $checked_active = $active ? " checked" : "";
+  
   echo " <tr bgcolor='$bgcolor'>\n";
 
   echo "  <td align='center' class='optcell'>";
@@ -289,6 +291,11 @@ function writeOptionLine($option_id, $title, $seq, $default, $value, $mapping=''
     "onclick='defClicked($opt_line_no)' class='optin'$checked />";
   echo "</td>\n";
 
+    echo "  <td align='center' class='optcell'>";
+    echo "<input type='checkbox' name='opt[$opt_line_no][activity]' value='1' " .
+        " class='optin'$checked_active />";
+    echo "</td>\n";
+  
   // Tax rates, contraceptive methods and LBF names have an additional attribute.
   //
   if ($list_id == 'taxrate' || $list_id == 'contrameth' || $list_id == 'lbfnames') {
@@ -849,6 +856,7 @@ while ($row = sqlFetchArray($res)) {
   } ?>  
   <td><b><?php xl('Order'  ,'e'); ?></b></td>
   <td><b><?php xl('Default','e'); ?></b></td>
+  <td><b><?php xl('Active','e'); ?></b></td>
 <?php if ($list_id == 'taxrate') { ?>
   <td><b><?php xl('Rate'   ,'e'); ?></b></td>
 <?php } else if ($list_id == 'contrameth') { ?>
@@ -908,7 +916,7 @@ if ($list_id) {
     while ($row = sqlFetchArray($res)) {
       writeOptionLine($row['option_id'], $row['title'], $row['seq'],
         $row['is_default'], $row['option_value'], $row['mapping'],
-        $row['notes'],$row['codes']);
+        $row['notes'],$row['codes'],$row['activity']);
     }
     for ($i = 0; $i < 3; ++$i) {
       writeOptionLine('', '', '', '', 0);

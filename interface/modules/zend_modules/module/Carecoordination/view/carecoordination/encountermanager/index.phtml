@@ -1,0 +1,355 @@
+<?php
+/* +-----------------------------------------------------------------------------+
+*    OpenEMR - Open Source Electronic Medical Record
+*    Copyright (C) 2014 Z&H Consultancy Services Private Limited <sam@zhservices.com>
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU Affero General Public License as
+*    published by the Free Software Foundation, either version 3 of the
+*    License, or (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU Affero General Public License for more details.
+*
+*    You should have received a copy of the GNU Affero General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*    @author  Vinish K <vinish@zhservices.com>
+* +------------------------------------------------------------------------------+
+*/
+$status_title   = array('0' => 'Pending', '1' => 'Completed', '3' => 'View');
+$status_details = array();
+foreach($this->status_details as $row_status){
+        $status_details[$row_status['pid']][] = $row_status;
+}
+?>
+<script>
+      $(function(){
+        
+        $('.sendto').on("click",function(){
+          $('.new_wrapper').toggle().css({
+            "margin-left" :"30%"
+          });
+        });
+        
+        /* Main tab click function **/
+        $('.main-tab-head li').on("click",function(){
+          $('.main-tab-head li').removeClass("main_active");
+          $(this).addClass("main_active");
+          $('.child-all').hide(); $('.child-tab-1').show();
+          var mainIndex = $(this).index() + 1;
+          $('.main-all').hide();
+          $('.main-tab-'+mainIndex).fadeIn();
+        });
+        
+        /* Child tab Click function */
+        $('.child-tab-head li').not('.disabled_child').click(function(){
+          $('.child-tab-head li').removeClass("child_active");
+          $(this).addClass("child_active");
+          var mainIndex = $(this).index() + 1;
+          $('.child-all').hide();
+          $('.child-tab-'+mainIndex).fadeIn();
+        });
+        
+        /* Import tab Click function */
+        $('.child-tab-head-import li').not('.disabled_child').click(function(){
+          $('.child-tab-head-import li').removeClass("child_active");
+          $(this).addClass("child_active");
+          var mainIndex = $(this).index() + 1;
+          $('.child-all-import').hide();
+          $('.import-child-tab-'+mainIndex).fadeIn();
+        });
+      });
+    </script>
+<div class="new_wrapper">
+        <ul class="main-tab-head">
+          <li class="main_active"><?php echo $this->listenerObject->z_xlt('Export');?></li>
+          <li class=""><?php echo $this->listenerObject->z_xlt('Import');?></li>
+          <li class=""><?php echo $this->listenerObject->z_xlt('MyHealth');?></li>
+        </ul>
+        <div class="clear"></div>
+        <div class="main-tab-1 main-all" style="display: block;">
+          <ul class="child-tab-head">
+            <li class="child_active"><?php echo $this->listenerObject->z_xlt('Transition Of Care');?></li>
+            <li><?php echo $this->listenerObject->z_xlt('Cancer');?></li>
+            <li><?php echo $this->listenerObject->z_xlt('Immunization');?></li>            
+            <li><?php echo $this->listenerObject->z_xlt('Syndromic Surveillance');?></li>
+          </ul>
+          <div class="clear"></div>
+          <div class="child-tab-1 child-all">
+            <!-- -->
+            <div>
+        <form method="post" id="theform" style="font-size: 12px;">
+        <div class="se_in_15 se_in_16">
+                <table>
+                    <tr>
+                        <td class="se_in_16_label"><label><?php echo $this->listenerObject->z_xlt('Date'); ?></label></td>
+                        <td nowrap>
+                                <input readonly maxlength="10" style="width: 42%" type="text" name="form_date_from" id="form_date_from" class="dateClass"/>
+                                <input readonly maxlength="10" style="width: 42%" type="text" name="form_date_to" id="form_date_to" class="dateClass"/>
+                                <script type="text/javascript">
+                                        $(document).ready(function(){
+                                                $( "#form_date_from" ).datepicker("setDate", '<?php echo $this->commonplugin->date_format($this->form_data['from_date'], $GLOBALS['date_display_format'], 'yyyy-mm-dd');?>' );
+                                                $( "#form_date_to" ).datepicker("setDate", '<?php echo $this->commonplugin->date_format($this->form_data['to_date'], $GLOBALS['date_display_format'], 'yyyy-mm-dd');?>');
+                                        });
+                                </script>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td nowrap><label><?php echo $this->listenerObject->z_xlt('Patient Name/ID'); ?></label></td>
+                        <td><input maxlength="25" type="text" name="form_pid" value="<?php echo $this->escapeHtml($this->form_data['pid']);?>" /><br/></td>
+                    </tr>
+                    <tr>
+                        <td><label><?php echo $this->listenerObject->z_xlt('Encounter'); ?></label></td>
+                        <td><input maxlength="10" type="text" onkeypress="return isNumber(event)" name="form_encounter" value="<?php echo $this->escapeHtml($this->form_data['encounter']);?>" /><br/></td>
+                    </tr>
+                    <tr>
+                        <td><label><?php echo $this->listenerObject->z_xlt('Status'); ?></label></td>
+                        <td>
+                            <select name="form_status" class="selectRight" <?php if($GLOBALS['encounter_summary_screen'] !=1) echo "disabled"; ?>>
+                                    <option value=""><?php echo $this->listenerObject->z_xlt('Select'); ?></option>
+                                    <option value="signed" <?php if($this->form_data['status'] == "signed") echo "selected"; ?>><?php echo $this->listenerObject->z_xlt('Signed'); ?></option>
+                                    <option value="unsigned" <?php if($this->form_data['status'] == "unsigned") echo "selected"; ?>><?php echo $this->listenerObject->z_xlt('Unsigned'); ?></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" onclick="clearCount();return validate_search();"  value="<?php echo $this->listenerObject->z_xlt('SEARCH'); ?>" name="search" id="search_encounter" /></td>
+                    </tr>
+                </table> <!-- table -->
+        </div><!-- se in 15 -->
+        
+        <div class="body_inner_wrapper">
+            <div class="header_wrap">
+                <div class="header_wrap_left">
+                    <div class="search_button" title="Search"><?php echo $this->listenerObject->z_xlt('SEARCH'); ?></div>&nbsp;&nbsp;
+                    <?php
+                    $arr = $this->getVariables('Application\Controller\SendtoController','sendAction');
+                    $arr['required_butons'] = array('hie','emr_direct');
+                    $arr['send_via']        = 'hie';
+                    $this->layout('carecoordination/layout/encountermanager');
+                    echo $this->partial("application/sendto/send",$arr);
+                    ?>
+                    <div class="se_in_3" title="<?php echo $this->listenerObject->z_xlt('Reload');?>" onclick="javascript:clearCount();document.getElementById('theform').submit();"></div>
+                </div><!-- header_wrap_left -->
+                <div class="header_wrap_right" style="<?php if(count($this->details) == 0){ ?>display: none;<?php } ?>">
+                    <div class="se_in_4">
+                        <label><?php echo $this->listenerObject->z_xlt('Show');?>&nbsp;</label>&nbsp;<input maxlength="3" type="text" onkeypress="return isNumber(event)" name="form_results" value="<?php echo htmlspecialchars($this->form_data['results']);?>" />&nbsp;<label>&nbsp;<?php echo $this->listenerObject->z_xlt('Encounters'); ?></label>
+                    </div>
+                    <div class="se_in_6">
+                        <div class="se_in_5">
+                            <div class="se_in_5-1" onclick="pagination('first');"></div>
+                            <div class="se_in_5-2" onclick="<?php if($this->form_data['current_page']>1) {?>pagination('previous');<?php }?>"></div>
+                            <div class="se_in_5-3" onclick="<?php if($this->form_data['current_page']<$this->form_data['total_pages']) {?>pagination('next');<?php }?>"></div>
+                            <div class="se_in_5-4" onclick="pagination('last');"></div>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="se_in_7">
+                            <label><?php echo $this->listenerObject->z_xlt('Page');?> <?php echo $this->escapeHtml($this->form_data['current_page']);?> - <?php echo $this->listenerObject->z_xlt('of');?> <?php echo $this->escapeHtml($this->form_data['total_pages']);?></label>
+                        </div><!-- se_in_7 -->
+                    </div><!-- se_in_6 -->
+                </div>
+            </div><!-- header_wrap  -->
+            <!-- body content  -->
+            <div class="clear"></div>
+            <div class="se_in_8">
+                <style type="text/css">
+                select{
+                        line-height: 17px !important;
+                }
+                </style>
+                <script type="text/javascript">                
+                $(document).ready(function(){
+                        $('.expand_details').click(function(){
+                                var arr = (this.id).split('_');
+                                
+                                if($('#'+this.id).hasClass('se_in_23')){
+                                        $('#'+this.id).addClass("se_in_24");
+                                        $('#'+this.id).removeClass("se_in_23");
+                                        $('#hide_'+arr[arr.length-1]).show('slow');
+                                }
+                                else if($('#'+this.id).hasClass('se_in_24')){
+                                        $('#'+this.id).addClass("se_in_23");
+                                        $('#'+this.id).removeClass("se_in_24");
+                                        $('#hide_'+arr[arr.length-1]).hide('slow');
+                                }
+                        });
+                        $('#expand_all').click(function(){
+                                if($('#expand_all').hasClass('se_in_23')){                                        
+                                        $('.expand_details').addClass("se_in_24");
+                                        $('.expand_details').removeClass("se_in_23");                                        
+                                        $('.expand_all').addClass("se_in_24");
+                                        $('.expand_all').removeClass("se_in_23");                                        
+                                        $('.ccda_details').show('slow');
+                                }
+                                else if($('#expand_all').hasClass('se_in_24')){
+                                        $('.expand_details').addClass("se_in_23");
+                                        $('.expand_details').removeClass("se_in_24");                                        
+                                        $('.expand_all').addClass("se_in_23");
+                                        $('.expand_all').removeClass("se_in_24");                                        
+                                        $('.ccda_details').hide('slow');
+                                }
+                        });
+                });
+                function iframeLoaded(height_offset, frame_id) {
+                        var iFrameID = document.getElementById(frame_id);
+                        if(iFrameID) {
+                                if(height_offset > 0) {
+                                        iFrameID.height = height_offset + "px";
+                                }
+                                else{
+                                        iFrameID.height = iFrameID.contentWindow.document.body.scrollHeight + "px";
+                                }
+                        }
+                }
+                </script>
+                <table class="responsive" style="<?php if(count($this->details) == 0){ ?>display: none; <?php } ?>">
+                    <tr class="se_in_9">
+                        <th width="1%" id="expand_all" class="expand_all se_in_23">&nbsp;</th>
+                        <th width="3%"><label><?php echo $this->escapeHtml('#'); ?></label></th>
+                        <th width="5%"><label><?php echo $this->listenerObject->z_xlt('PID'); ?></label></th>
+                        <th><label><?php echo $this->listenerObject->z_xlt('Name'); ?></label></th>
+                        <th><label><?php echo $this->listenerObject->z_xlt('Encounter Count'); ?></label></th>
+                        <th><label><?php echo $this->listenerObject->z_xlt('Total Transfers'); ?></label></th>
+                        <th><label><?php echo $this->listenerObject->z_xlt('Successful Transfers'); ?></label></th>
+                        <th><label><?php echo $this->listenerObject->z_xlt('Last Visit'); ?></label></th>
+                        <th width="3%"><input type="checkbox" value="1" name="form_select_all" id="form_select_all" <?php if($this->form_data['select_all'] == 1) echo "checked"; ?> /></th>
+                        <th width="3%">&nbsp;</th>
+                    </tr>
+                    <?php
+                    $slno       = ($this->form_data['current_page'] - 1) * $this->form_data['results'];                    
+                    foreach($this->details as $row){
+                        $slno++;
+                        ?>
+                            <tr>
+                                <td id="expand_details_<?php echo $row['pid'];?>" class="expand_details se_in_23" style="cursor: pointer;"></td>
+                                <td><label><?php echo $this->escapeHtml($slno);?>)</label></td>
+                                <td><label><?php echo $this->escapeHtml($row['pid']);?></label></td>
+                                <td><label><?php echo $this->listenerObject->z_xlt($row['fname']." ".$row['mname']." ".$row['lname']); ?></label></td>
+                                <td><label><?php echo $this->listenerObject->z_xlt($row['enc_count']);?></label></td>
+                                <td><label><?php echo $this->escapeHtml($row['ccda_transfer_count']);?></label></td>
+                                <td><label><?php echo $this->escapeHtml($row['ccda_successfull_transfer_count']);?></label></td>
+                                <td><label><?php echo $this->listenerObject->z_xlt($this->commonplugin->date_format($row['last_visit_date'], $GLOBALS['date_display_format'], 'yyyy-mm-dd'));?></label></td>
+                                <td nowrap>                                        
+                                        <input class="check_pid check_pid_<?php echo $row['pid'];?>" type="checkbox" name="ccda_pid" value="<?php echo $this->escapeHtml($row['pid']);?>" <?php if($this->form_data['select_all'] ==1) echo "checked"; ?>>                                        
+                                </td>
+                                <td style="padding: 5px;">
+                                        <a href="<?php echo $this->basePath();?>/encounterccdadispatch/index?combination=<?php echo $this->escapeHtml($row['pid']);?>&view=1" target="_blank" style="text-decoration: none;">
+                                                <img style="height:20px; cursor: pointer;" src="<?php echo $this->basePath();?>/css/icons/view.png" title="<?php echo $this->listenerObject->z_xlt('View CCDA');?>">
+                                        </a>
+                                </td>
+                            </tr>
+                        <?php
+                                ?>
+                                <tr>
+                                        <td colspan="9" id="hide_<?php echo $row['pid'];?>" class="ccda_details" style="display: none;">
+                                                <table style="width: 85% !important; margin-left: auto !important; margin-right: auto !important;">
+                                                        <tr class="se_in_9">
+                                                                <th width="1%"><?php echo $this->escapeHtml('#'); ?></th>
+                                                                <th><label><?php echo $this->listenerObject->z_xlt('Encounter'); ?></label></th>
+                                                                <th><label><?php echo $this->listenerObject->z_xlt('DOS'); ?></label></th>
+                                                                <th><label><?php echo $this->listenerObject->z_xlt('Transfered Date'); ?></label></th>
+                                                                <th><label><?php echo $this->listenerObject->z_xlt('Transfered By'); ?></label></th>
+                                                                <th><label><?php echo $this->listenerObject->z_xlt('Status'); ?></label></th>
+                                                                <th><label>&nbsp;</label></th>
+                                                        </tr>
+                                                        <?php
+                                                        $slno_sub   = 0;
+                                                        foreach($status_details[$row['pid']] as $row_status){
+                                                                $slno_sub++;
+                                                                ?>
+                                                                <tr>
+                                                                        <td><?php echo $this->escapeHtml($slno_sub);?>)</td>
+                                                                        <td><?php echo $this->escapeHtml($row_status['encounter']);?></td>
+                                                                        <td><?php echo $this->commonplugin->date_format($row_status['dos'], $GLOBALS['date_display_format'], 'yyyy-mm-dd');?></td>
+                                                                        <td><?php echo $this->commonplugin->date_format(date('Y-m-d H:i:s',$row_status['time']), $GLOBALS['date_display_format'], 'yyyy-mm-dd');?></td>
+                                                                        <td><?php echo ($row_status['user_id'] == 'Scheduler' ? $this->listenerObject->z_xlt('Auto Transfer') : $this->listenerObject->z_xlt($row_status['user_name']));?></td>
+                                                                        <td>
+                                                                                <?php
+                                                                                if($row_status['view'] == 1)
+                                                                                        echo $this->listenerObject->z_xlt($status_title[3]);
+                                                                                else
+                                                                                        echo $this->listenerObject->z_xlt($status_title[$row_status['status']]);
+                                                                                ?>
+                                                                                </td>
+                                                                        <td title="<?php echo $this->listenerObject->z_xlt('Download CCDA file');?>">
+                                                                                <a target="_blank" href="<?php echo $this->basePath();?>/encountermanager/download?id=<?php echo $this->escapeHtml($row_status['id']);?>">
+                                                                                        <img src="<?php echo $this->basePath();?>/css/icons/request.png" width="17px">
+                                                                                </a>
+                                                                        </td>
+                                                                </tr>
+                                                                <?php                                                        
+                                                        }
+                                                        ?>
+                                                </table>
+                                        </td>
+                                </tr>
+                                        <?php                                
+                    }
+                    ?>
+                </table>
+                <div style="width: 60%; margin-left: auto; margin-right: auto; border: 1px solid #CCCCCC; text-align:center; padding: 30px; font-size: 15px; font-weight: bold; background: #f7f7f7;<?php if(count($this->details) > 0){ ?>display: none; <?php } ?>">
+                        <?php echo $this->listenerObject->z_xlt('Nothing to display');?>
+                </div>
+            </div>   
+            <!-- body contents  -->
+        </div><!-- body_inner_wrapper -->
+        <input type="hidden" name="form_current_page" id="form_current_page" value="<?php echo $this->escapeHtml($this->form_data['current_page']);?>" />
+        <input type="hidden" name="form_total_pages" id="form_total_pages" value="<?php echo $this->escapeHtml($this->form_data['total_pages']);?>" />
+        <input type="hidden" name="form_count" id="form_count" value="<?php echo $this->escapeHtml($this->form_data['res_count']);?>" />
+        <input type="hidden" name="form_expand_all" id="form_expand_all" value="<?php echo $this->escapeHtml($this->form_data['expand_all']);?>" />
+        <input type="hidden" name="form_sl_no" id="form_sl_no" value="<?php echo $this->escapeHtml($slno);?>" />
+        <input type="hidden" name="form_new_search" id="form_new_search" value="" />
+        </form>
+      </div>
+            <!-- --> 
+          </div>
+          </div><!-- Cancer Tab -->
+          <div class="child-tab-2 child-all">
+           <div class="under_construction">
+                <span><?php echo $this->escapeHtml(1);?>) <a target="_blank" href="http://www.open-emr.org/wiki/index.php/Cancer_case_information_(MU2))"><?php echo $this->listenerObject->z_xlt('Cancer Care Information');?></a></span><br/><br/>
+                <span><?php echo $this->escapeHtml(2);?>) <a target="_blank" href="http://www.open-emr.org/wiki/index.php/Transmission_to_cancer_registries_(MU2))"><?php echo $this->listenerObject->z_xlt('Transmission to Cancer Registries');?></a></span>
+           </div>
+          </div><!-- Immunization Tab -->
+          <div class="child-tab-3 child-all">
+                <iframe id="immunization_iframe" border="0" width="100%" src="<?php echo $GLOBALS['web_root']?>/interface/modules/zend_modules/public/immunization/index"></iframe>               
+          </div><!-- Syndromic Surveillance Tab -->
+          <div class="child-tab-4 child-all">
+                <iframe id="syndromicsurveillance_iframe" border="0" width="100%" src="<?php echo $GLOBALS['web_root']?>/interface/modules/zend_modules/public/syndromicsurveillance/index"></iframe>
+            </div><!-- third tab -->
+        <div class="main-tab-2 main-all" style="display: none;">
+            <ul class="child-tab-head-import">
+                <li class="child_active"><?php echo $this->listenerObject->z_xlt('CCD');?></li>
+                <li><?php echo $this->listenerObject->z_xlt('CCR');?></li>
+                <li><?php echo $this->listenerObject->z_xlt('CCDA');?></li>
+                <li><?php echo $this->listenerObject->z_xlt('Documents');?></li>
+          </ul><div class="clear"></div>
+                <!--CCD Tab-->
+          <div class="import-child-tab-1 child-all-import">
+               <div class="under_construction">
+                <?php echo $this->listenerObject->z_xlt('CCD Under Construction');?>
+               </div>
+           </div>
+                <!--CCR Tab-->
+          <div class="import-child-tab-2 child-all-import">
+                <iframe id="ccr_iframe" border="0" width="100%" src="<?php echo $GLOBALS['web_root']?>/interface/modules/zend_modules/public/ccr/index"></iframe>
+          </div>
+                <!--CCDA Tab-->
+          <div class="import-child-tab-3 child-all-import">
+                <iframe id="ccda_iframe" border="0" width="100%" src="<?php echo $GLOBALS['web_root']?>/interface/modules/zend_modules/public/carecoordination/upload?id=1"></iframe>
+           </div>
+                <!--Documents Tab-->
+          <div class="import-child-tab-4 child-all-import">
+               <div class="under_construction">
+                <?php echo $this->listenerObject->z_xlt('Document View/Uploads');?>
+               </div>
+           </div>           
+        </div>
+        <div class="main-tab-3 main-all" style="display: none;">
+                <iframe border="0" style="width: 100%; height: 600px" src="https://sso.myhealthaccessnetwork.healthcare.covisint.com/login.do?host=https://myhealthaccessnetwork.healthcare.covisint.com&CT_ORIG_URL=%2F&ct_orig_uri=%2F"></iframe>
+        </div>
+        <div class="clear"></div>
+    </div> <!-- New Wrapper ends-->
+

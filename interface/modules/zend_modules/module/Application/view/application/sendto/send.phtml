@@ -1,0 +1,185 @@
+<?php
+/* +-----------------------------------------------------------------------------+
+*    OpenEMR - Open Source Electronic Medical Record
+*    Copyright (C) 2014 Z&H Consultancy Services Private Limited <sam@zhservices.com>
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU Affero General Public License as
+*    published by the Free Software Foundation, either version 3 of the
+*    License, or (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU Affero General Public License for more details.
+*
+*    You should have received a copy of the GNU Affero General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*    @author  BASIL PT <basil@zhservices.com>
+* +------------------------------------------------------------------------------+
+*/
+
+
+$combinationFormData 	= $this->combinationFormData;
+$faxRecievers			= $this->faxRecievers;
+$required_buttons		= $this->required_butons;
+$download_format		= $this->download_format;
+?>
+ <!--<div class="header_wrap_left">-->
+		<div class="send-to" title="<?php echo $this->listenerObject->z_xlt('Send To');?>"><?php echo $this->listenerObject->z_xlt('SEND TO');?></div>
+ <!--</div>--><!-- header_wrap_left --> 
+<div class="ap-st-st-12">
+	<div class="ap-st-st-2">
+		<div class="ap-st-st-1" style="<?php if(!in_array('hie',$required_buttons)) echo "display:none;"?>"><input class="ap-st-st-3" type="radio" name="send_to" id="send_to_hie" value="<?php echo $this->escapeHtml('hie');?>" <?php if($this->send_via == "hie") echo "checked"; ?>>&nbsp;<span><?php echo $this->listenerObject->z_xlt('HIE')?></span></div>
+		<div class="ap-st-st-1" style="<?php if(!in_array('printer',$required_buttons)) echo "display:none;"?>"><input class="ap-st-st-3" type="radio" name="send_to" id="send_to_printer" value="<?php echo $this->escapeHtml('printer');?>" <?php if($this->send_via == "printer") echo "checked"; ?>>&nbsp;<span><?php echo $this->listenerObject->z_xlt('Printer')?></span></div>
+		<div class="ap-st-st-1" style="<?php if(!in_array('fax',$required_buttons)) echo "display:none;"?>"><input class="ap-st-st-3" type="radio" name="send_to" id="send_to_fax" value="<?php echo $this->escapeHtml('fax');?>" <?php if($this->send_via == "fax") echo "checked"; ?>>&nbsp;<span><?php echo $this->listenerObject->z_xlt('Fax')?></span></div>
+		<div class="ap-st-st-1" style="<?php if(!in_array('emr_direct',$required_buttons)) echo "display:none;"?>"><input class="ap-st-st-3" type="radio" name="send_to" id="send_to_emrdirect" value="<?php echo $this->escapeHtml('emr_direct');?>" <?php if($this->send_via == "emr_direct") echo "checked"; ?>>&nbsp;<span><?php echo $this->listenerObject->z_xlt('EMR Direct')?></span></div>
+		<div class="ap-st-st-1" style="<?php if(!in_array('download',$required_buttons)) echo "display:none;"?>"><input class="ap-st-st-3" type="radio" name="send_to" id="download" value="<?php echo $this->escapeHtml('download');?>" <?php if($this->send_via == "download") echo "checked"; ?>>&nbsp;<span><?php echo $this->listenerObject->z_xlt('Print To')?></span></div>
+	</div>
+	
+	<!--HIE-->
+	<div id="hie_div" <?php if($this->send_via == "hie") echo "class='display_block'"; ?>>
+	       <div class="ap-st-st-13">
+			      <table width="50%">
+					     <tr>
+							    <td nowrap>
+									   <input type="checkbox" name="hie_myhealthaccess" id="hie_myhealthaccess" checked disabled><label class="hie_label" for="hie_myhealthaccess"><?php echo $this->listenerObject->z_xlt('My Health');?></label>
+							    </td>
+							    <td nowrap>
+									   <input type="checkbox" name="myhealthaccess_ccda" id="myhealthaccess_ccda" checked disabled><label class="hie_label" for="myhealthaccess_ccda"><?php echo $this->listenerObject->z_xlt('CCDA');?></label>
+							    </td>
+					     </tr>
+			      </table>
+			      <table style="display: none;">
+			      <?php
+			      foreach($this->ccda_components as $key_ccda => $value_ccda){
+			      ?>
+			      <tr>
+					     <td width="5%">
+							    <input checked type="checkbox" name="ccda" id="<?php echo $key_ccda; ?>" value="<?php echo $this->escapeHtml($key_ccda); ?>">
+					     </td>
+					     <td>							    
+							    <label for="<?php echo $key_ccda; ?>"><?php echo $this->listenerObject->z_xlt($value_ccda); ?></label>
+					     </td>
+			      </tr>
+			      <?php
+			      }
+			      ?>
+			      </table>
+	       </div>
+	</div>
+	<!--End HIE-->
+	
+	<!--Printer/fax-->
+	<div id="combination_form_div" <?php if($this->send_via == "printer" || $this->send_via == "fax") echo "class='display_block'"; ?>>
+			<!--Fax Section-->
+		<div class="ap-st-st-8">
+			<table>
+				<tr>
+					<td><span><?php echo $this->listenerObject->z_xlt('Attention To');?></span></td>
+					<td><textarea id="attention_to" name="attention_to"></textarea></td>
+				</tr>
+				
+				<tr>
+					<td><span><?php echo $this->listenerObject->z_xlt('Send To');?></span></td>
+					<td>
+						<select name="fax_reciever" id="fax_reciever" class="styled_select" >
+						<option value='' >-<?php echo $this->listenerObject->z_xlt('Select'); ?>-</option>
+						<option value='<?php echo $this->escapeHtml('facility');?>' ><?php echo $this->listenerObject->z_xlt('Facility'); ?></option>
+						<?php foreach($faxRecievers as $faxReciever) :?>
+							<option value='<?php echo $this->escapeHtml($faxReciever['option_id'])?>' ><?php echo $this->listenerObject->z_xlt($faxReciever['title']); ?></option>
+						<?php endforeach; ?>
+						<option value='<?php echo $this->escapeHtml('other');?>' ><?php echo $this->listenerObject->z_xlt('Other Fax Number'); ?></option>
+						</select>
+					</td>
+				</tr>
+				
+				<tr id="facility_tr" class="ap-st-st-9">
+					<td>&nbsp;</td>
+					<td>
+						<select id="facility_fax_no" name="facility_fax_no" class="styled_select">
+							<option value='' >-<?php echo $this->listenerObject->z_xlt('Select'); ?>-</option>
+						</select>
+					</td>
+				</tr>
+				
+				<tr id="fax_no_tr" class="ap-st-st-9">
+					<td>&nbsp;</td>
+					<td><input id="fax_no" type="text" name="fax_no"></td>
+				</tr>
+				
+			</table>
+		</div>
+		<!--End Fax Section-->
+		
+		<div class="ap-st-st-11">
+			<select onchange="getComponents(this.value);" id="selected_cform" class="styled_select">
+				<option value=""></option>
+				<?php foreach($combinationFormData as $combinationForm) : ?>
+					<option value="<?php echo $this->escapeHtml($combinationForm['cl_list_slno']);?>" <?php if($this->selected_form == $combinationForm['cl_list_slno']) echo "selected"; ?>>
+					<?php echo $this->listenerObject->z_xlt($combinationForm['cl_list_item_short']); ?>
+					</option>
+				<?php endforeach; ?>
+		</select>
+			<input class="ap-st-st-4" type="checkbox" value="<?php echo $this->escapeHtml('check_all');?>" <?php if($this->selected_form != "") echo "checked"; ?> ><span><?php echo $this->listenerObject->z_xlt('Check All');?></span>
+			<input id="include_coverletter" name="include_coverletter" class="ap-st-st-10" type="checkbox" value="<?php echo $this->escapeHtml('selected');?>" ><span><?php echo $this->listenerObject->z_xlt('Include Covering Letter');?></span>
+			<?php if($GLOBALS['encounter_timer']) : ?>
+			<input type="checkbox" class="ap-st-st-10" value="<?php echo $this->escapeHtml('selected');?>" name="include_visitduration" id="include_visitduration" checked="checked" /><span><?php echo $this->listenerObject->z_xlt('Include Visit Duration');?></span>
+			<?php endif; ?>
+		</div>
+		<div class="ap-st-st-5 ap-st-st-11">
+			<?php
+			$componentsCheck = json_decode($this->selected_componets);
+			foreach($componentsCheck as $formId => $component):
+				echo "<div class='option_wrap'><input checked name='componentcheckbox[]' class='check_component' type='checkbox' value='" . $this->escapeHtml($formId) . "' ref='".$component."' >&nbsp;&nbsp;" . $this->listenerObject->z_xlt($component) . "</div>";
+			endforeach;
+			?>
+		<div class="clear"></div>
+		</div>
+	</div>
+	<!--End Printer/fax-->
+	
+	<!--EMR Direct-->
+	<div id="emrDirect_div" <?php if($this->send_via == "emr_direct") echo "class='display_block'"; ?>>
+		<div class="ap-st-st-13">
+			<table width="50%">
+				<tr>
+					<td><?php echo $this->listenerObject->z_xlt('EMR DIRECT');?></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!--End EMR Direct-->
+	
+	<!--Download-->
+	<div id="download_div" <?php if($this->send_via == "download") echo "class='display_block'"; ?>>
+		<div class="ap-st-st-13">
+			<table width="50%">
+				<tr>
+					<td width="10px;">
+						<input <?php if(!in_array('pdf_format', $download_format)) echo "disabled"?> type="radio" name="download_format" id="pdf_format" style="margin: 0; clear: right; float: left;">
+						<label for="pdf_format"><?php echo $this->listenerObject->z_xlt('PDF');?></label>
+					</td>
+					<td width="10px;">
+						<input <?php if(!in_array('doc_format', $download_format)) echo "disabled"?> type="radio" name="download_format" id="doc_format" style="margin: 0; clear: right; float: left;">
+						<label for="doc_format"><?php echo $this->listenerObject->z_xlt('DOC');?></label>
+					</td>
+					<td width="10px;">
+						<input <?php if(!in_array('hl7_format', $download_format)) echo "disabled"?> type="radio" name="download_format" id="hl7_format" style="margin: 0; clear: right; float: left;">
+						<label for="hl7_format"><?php echo $this->listenerObject->z_xlt('HL7');?></label>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!--Download-->
+	
+	<div class="ap-st-st-6">
+	        <div class="activity_indicator"><img src="<?php echo $this->basePath(); ?>/css/images/gl.gif" alt="" /></div>
+		<div class="ap-st-st-7" onclick="send();"><?php echo $this->listenerObject->z_xlt('SEND');?></div>
+	</div>
+</div>
+<?php $this->headScript()->captureStart() ?>
+	var APP_URL 	= "<?php echo $this->basePath(); ?>";
+	var WEB_ROOT	= "<?php echo $GLOBALS['webroot']; ?>";
+<?php $this->headScript()->captureEnd() ?>

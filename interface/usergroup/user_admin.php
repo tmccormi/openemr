@@ -312,7 +312,11 @@ function authorized_clicked() {
 }
 
 </script>
-
+<style type="text/css">
+  .physician_type_class{
+    width: 150px !important;
+  }
+</style>
 </head>
 <body class="body_top">
 <table><tr><td>
@@ -491,6 +495,10 @@ foreach($result as $iter2) {
 </td>
 </tr>
 
+<tr>
+  <td><span class="text"><?php xl('Provider Type','e'); ?>: </span></td>
+  <td><?php echo generate_select_list("physician_type", "physician_type", $iter['physician_type'],'','--Select Type--','physician_type_class','','',''); ?></td>
+</tr>
 <?php if ($GLOBALS['inhouse_pharmacy']) { ?>
 <tr>
  <td class="text"><?php xl('Default Warehouse','e'); ?>: </td>
