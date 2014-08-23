@@ -175,10 +175,9 @@ if ($_POST['form_download']) {
 // If we are saving main globals.
 //
 if ($_POST['form_save'] && $_GET['mode'] != "user") {
-  // July 1, 2014: Ensoftek: For Auditable events and tamper-resistance (MU2)
+  // Aug 22, 2014: Ensoftek: For Auditable events and tamper-resistance (MU2)
   // Check the current status of Audit Logging
-  $auditLogStatusOld = sqlQuery("SELECT gl_value FROM globals WHERE gl_name = 'enable_auditlog'");
-  $auditLogStatusFieldOld = $auditLogStatusOld['gl_value'];
+  $auditLogStatusFieldOld = $GLOBALS['enable_auditlog'];
 
   $i = 0;
   foreach ($GLOBALS_METADATA as $grpname => $grparr) {

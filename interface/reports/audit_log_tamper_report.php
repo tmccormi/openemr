@@ -102,18 +102,18 @@ function eventTypeChange(eventname)
 </script>
 </head>
 <body class="body_top">
-<font class="title"><?php  xl('Audit Log Tamper Report','e'); ?></font>
+<font class="title"><?php echo xlt('Audit Log Tamper Report'); ?></font>
 <br>
 <?php 
 $err_message=0;
 if ($_GET["start_date"])
-$start_date = formData('start_date','G');
+$start_date = $_GET['start_date'];
 
 if ($_GET["end_date"])
-$end_date = formData('end_date','G');
+$end_date = $_GET['end_date'];
 
 if ($_GET["form_patient"])
-$form_patient = formData('form_patient','G');
+$form_patient = add_escape_custom($_GET['form_patient']);
 
 /*
  * Start date should not be greater than end date - Date Validation
@@ -121,7 +121,7 @@ $form_patient = formData('form_patient','G');
 if ($start_date && $end_date)
 {
 	if($start_date > $end_date){
-		echo "<table><tr class='alert'><td colspan=7>"; xl('Start Date should not be greater than End Date',e);
+		echo "<table><tr class='alert'><td colspan=7>"; echo xlt('Start Date should not be greater than End Date');
 		echo "</td></tr></table>"; 
 		$err_message=1;	
 	}
@@ -129,8 +129,8 @@ if ($start_date && $end_date)
 
 ?>
 <?php
-$form_user = formData('form_user','R');
-$form_pid = formData('form_pid','R');
+$form_user = add_escape_custom($_REQUEST['form_user']);
+$form_pid = add_escape_custom($_REQUEST['form_pid']);
 if ($form_patient == '' ) $form_pid = '';
 
 $get_sdate=$start_date ? $start_date : date("Y-m-d");
@@ -138,48 +138,48 @@ $get_edate=$end_date ? $end_date : date("Y-m-d");
 
 ?>
 <br>
-<FORM METHOD="GET" name="theform" id="theform">
+<FORM METHOD="GET" name="theform" id="theform" onSubmit='top.restoreSession()'>
 <?php
 
-$sortby = formData('sortby','G') ;
+$sortby = add_escape_custom($_GET['sortby']);
 ?>
-<input type="hidden" name="sortby" id="sortby" value="<?php echo $sortby; ?>">
+<input type="hidden" name="sortby" id="sortby" value="<?php echo attr($sortby); ?>">
 <input type=hidden name=csum value="">
 <table>
 <tr><td>
-<span class="text"><?php  xl('Start Date','e'); ?>: </span>
+<span class="text"><?php echo xlt('Start Date'); ?>: </span>
 </td><td>
-<input type="text" size="10" name="start_date" id="start_date" value="<?php echo $start_date ? substr($start_date, 0, 10) : date('Y-m-d'); ?>" title="<?php  xl('yyyy-mm-dd Date of service','e'); ?>" onkeyup="datekeyup(this,mypcc)" onblur="dateblur(this,mypcc)" />
-<img src="../pic/show_calendar.gif" align="absbottom" width="24" height="22" id="img_begin_date" border="0" alt="[?]" style="cursor: pointer; cursor: hand" title="<?php  xl('Click here to choose a date','e'); ?>">&nbsp;
+<input type="text" size="10" name="start_date" id="start_date" value="<?php echo $start_date ? substr($start_date, 0, 10) : date('Y-m-d'); ?>" title="<?php echo xla('yyyy-mm-dd Date of service'); ?>" onkeyup="datekeyup(this,mypcc)" onblur="dateblur(this,mypcc)" />
+<img src="../pic/show_calendar.gif" align="absbottom" width="24" height="22" id="img_begin_date" border="0" alt="[?]" style="cursor: pointer; cursor: hand" title="<?php echo xla('Click here to choose a date'); ?>">&nbsp;
 </td>
 <td>
-<span class="text"><?php  xl('End Date','e'); ?>: </span>
+<span class="text"><?php echo xlt('End Date'); ?>: </span>
 </td><td>
-<input type="text" size="10" name="end_date" id="end_date" value="<?php echo $end_date ? substr($end_date, 0, 10) : date('Y-m-d'); ?>" title="<?php  xl('yyyy-mm-dd Date of service','e'); ?>" onkeyup="datekeyup(this,mypcc)" onblur="dateblur(this,mypcc)" />
-<img src="../pic/show_calendar.gif" align="absbottom" width="24" height="22" id="img_end_date" border="0" alt="[?]" style="cursor: pointer; cursor: hand" title="<?php  xl('Click here to choose a date','e'); ?>">&nbsp;
+<input type="text" size="10" name="end_date" id="end_date" value="<?php echo $end_date ? substr($end_date, 0, 10) : date('Y-m-d'); ?>" title="<?php echo xla('yyyy-mm-dd Date of service'); ?>" onkeyup="datekeyup(this,mypcc)" onblur="dateblur(this,mypcc)" />
+<img src="../pic/show_calendar.gif" align="absbottom" width="24" height="22" id="img_end_date" border="0" alt="[?]" style="cursor: pointer; cursor: hand" title="<?php echo xla('Click here to choose a date'); ?>">&nbsp;
 </td>
 <!--VicarePlus :: Feature For Generating Log For The Selected Patient --!>
 <td>
-&nbsp;&nbsp;<span class='text'><?php echo htmlspecialchars(xl('Patient'),ENT_NOQUOTES); ?>: </span>
+&nbsp;&nbsp;<span class='text'><?php echo xlt('Patient'); ?>: </span>
 </td>
 <td>
-<input type='text' size='20' name='form_patient' style='width:100%;cursor:pointer;cursor:hand' value='<?php echo $form_patient ? $form_patient : htmlspecialchars(xl('Click To Select'),ENT_QUOTES); ?>' onclick='sel_patient()' title='<?php echo htmlspecialchars(xl('Click to select patient'),ENT_QUOTES); ?>' />
-<input type='hidden' name='form_pid' value='<?php echo $form_pid; ?>' />
+<input type='text' size='20' name='form_patient' style='width:100%;cursor:pointer;cursor:hand' value='<?php echo attr($form_patient) ? attr($form_patient) : xlt('Click To Select'); ?>' onclick='sel_patient()' title='<?php echo xlt('Click to select patient'); ?>' />
+<input type='hidden' name='form_pid' value='<?php echo attr($form_pid); ?>' />
 </td>
 </tr>
 
 <tr><td>
-<span class='text'><?php xl('Include Checksum','e'); ?>: </span>
+<span class='text'><?php echo xlt('Include Checksum'); ?>: </span>
 </td><td>
 <?php
 
-$check_sum = formData('check_sum','G');
+$check_sum = add_escape_custom($_GET['check_sum']);
 ?>
 <input type="checkbox" name="check_sum" " <?php if ($check_sum == 'on') echo "checked";  ?>"></input>
 </td>
 <td>
-<input type=hidden name="event" value=<?php echo $event ; ?>>
-<a href="javascript:document.theform.submit();" class='link_submit'>[<?php  xl('Refresh','e'); ?>]</a>
+<input type=hidden name="event" value=<?php echo attr($event) ; ?>>
+<a href="javascript:document.theform.submit();" class='link_submit'>[<?php echo xlt('Refresh'); ?>]</a>
 </td>
 </tr>
 </table>
@@ -188,24 +188,24 @@ $check_sum = formData('check_sum','G');
 
 <?php if ($start_date && $end_date && $err_message!=1) { ?>
 <div id="logview">
-<span class="text" id="display_tamper" style="display:none;"><?php  xl('Following rows in the audit log have been tampered','e'); ?></span>
+<span class="text" id="display_tamper" style="display:none;"><?php echo xlt('Following rows in the audit log have been tampered'); ?></span>
 <table>
  <tr>
-  <th id="sortby_date" class="text" title="<?php xl('Sort by Tamper date/time','e'); ?>"><?php xl('Tamper Date','e'); ?></th>
-  <th id="sortby_user" class="text" title="<?php xl('Sort by User','e'); ?>"><?php  xl('User','e'); ?></th>
-  <th id="sortby_pid" class="text" title="<?php xl('Sort by PatientID','e'); ?>"><?php  xl('PatientID','e'); ?></th>
-  <th id="sortby_comments" class="text" title="<?php xl('Sort by Comments','e'); ?>"><?php  xl('Comments','e'); ?></th>
+  <th id="sortby_date" class="text" title="<?php echo xlt('Sort by Tamper date/time'); ?>"><?php echo xlt('Tamper Date'); ?></th>
+  <th id="sortby_user" class="text" title="<?php echo xla('Sort by User'); ?>"><?php echo xlt('User'); ?></th>
+  <th id="sortby_pid" class="text" title="<?php echo xla('Sort by PatientID'); ?>"><?php echo xlt('PatientID'); ?></th>
+  <th id="sortby_comments" class="text" title="<?php echo  xla('Sort by Comments'); ?>"><?php echo xlt('Comments'); ?></th>
  <?php  if($check_sum) {?>
-  <th id="sortby_newchecksum" class="text" title="<?php xl('Sort by New Checksum','e'); ?>"><?php  xl('Tampered Checksum','e'); ?></th>
-  <th id="sortby_oldchecksum" class="text" title="<?php xl('Sort by Old Checksum','e'); ?>"><?php  xl('Original Checksum','e'); ?></th>
+  <th id="sortby_newchecksum" class="text" title="<?php xla('Sort by New Checksum'); ?>"><?php  xlt('Tampered Checksum'); ?></th>
+  <th id="sortby_oldchecksum" class="text" title="<?php xla('Sort by Old Checksum'); ?>"><?php  xlt('Original Checksum'); ?></th>
   <?php } ?>
  </tr>
 <?php
 
-$eventname = formData('eventname','G');
-$type_event = formData('type_event','G');
+$eventname = add_escape_custom($_GET['eventname']);
+$type_event = add_escape_custom($_GET['type_event']);
 ?>
-<input type=hidden name=event value=<?php echo $eventname."-".$type_event ?>>
+<input type=hidden name=event value=<?php echo attr($eventname)."-".attr($type_event) ?>>
 <?php
 $type_event = "update";
 $tevent=""; 
@@ -267,12 +267,12 @@ if ($ret = getEvents(array('sdate' => $get_sdate,'edate' => $get_edate, 'user' =
 ?>
 	 <TR class="oneresult">
 		  <TD class="text tamperColor"><?php echo oeFormatShortDate(substr($iter["date"], 0, 10)) . substr($iter["date"], 10) ?></TD>
-		  <TD class="text tamperColor"><?php echo $iter["user"]?></TD>
-		  <TD class="text tamperColor"><?php echo $iter["patient_id"]?></TD>
-		  <TD class="text tamperColor"><?php echo $trans_comments?></TD>
+		  <TD class="text tamperColor"><?php echo text($iter["user"]); ?></TD>
+		  <TD class="text tamperColor"><?php echo text($iter["patient_id"]);?></TD>
+		  <TD class="text tamperColor"><?php echo text($trans_comments);?></TD>
 		  <?php  if($check_sum) { ?>
-		  <TD class="text tamperColor"><?php echo $checkSumNew;?></TD>
-		  <TD class="text tamperColor"><?php echo $checkSumOld;?></TD>
+		  <TD class="text tamperColor"><?php echo text($checkSumNew);?></TD>
+		  <TD class="text tamperColor"><?php echo text($checkSumOld);?></TD>
 		  <?php } ?>
 	 </TR>
 <?php
@@ -286,7 +286,7 @@ if ($ret = getEvents(array('sdate' => $get_sdate,'edate' => $get_edate, 'user' =
 			$colspan = 4;
 			if($check_sum) $colspan=6;
 		 ?>
-		<TD class="text" colspan="<?php echo $colspan;?>" align="center"><?php xl('No audit log tampering detected in the selected date range.','e'); ?></TD>
+		<TD class="text" colspan="<?php echo $colspan;?>" align="center"><?php echo xlt('No audit log tampering detected in the selected date range.'); ?></TD>
 	 </TR>
 <?php
   }else{?>

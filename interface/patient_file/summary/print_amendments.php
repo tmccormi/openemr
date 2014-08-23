@@ -1,4 +1,24 @@
 <?php
+/**
+ * Print Amendments
+ *
+ * Copyright (C) 2014 Ensoftek
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Hema Bandaru <hemab@drcloudemr.com>
+ * @link    http://www.open-emr.org
+ */
 
 //SANITIZE ALL ESCAPES
 $sanitize_all_escapes=true;
@@ -12,7 +32,7 @@ include_once("../../globals.php");
 include_once("$srcdir/sql.inc");
 include_once("$srcdir/options.inc.php");
 
-$amendments = formData("ids",'R');
+$amendments = add_escape_custom($_REQUEST["ids"]);
 $amendments = rtrim($amendments,",");
 $amendmentsList = explode(",",$amendments);
 
@@ -27,35 +47,35 @@ function printAmendment($amendmentID,$lastAmendment) {
 	$resultSet = sqlQuery($query,array($amendmentID));
 	echo "<table>";
 	echo "<tr class=text>";
-	echo "<td class=bold>" . xl("Requested Date") . ":"  . "</td>";
+	echo "<td class=bold>" . xlt("Requested Date") . ":"  . "</td>";
 	echo "<td>". oeFormatShortDate($resultSet['amendment_date']) . "</td>";
 	echo "</tr>";
 
 	echo "<tr class=text>";
-	echo "<td class=bold>" . xl("Requested By") . ":"  . "</td>";
+	echo "<td class=bold>" . xlt("Requested By") . ":"  . "</td>";
 	echo "<td>". generate_display_field(array('data_type'=>'1','list_id'=>'amendment_from'),$resultSet['amendment_by']) . "</td>";
 	echo "</tr>";
 
 	echo "<tr class=text>";
-	echo "<td class=bold>" . xl("Request Status") . ":"  . "</td>";
+	echo "<td class=bold>" . xlt("Request Status") . ":"  . "</td>";
 	echo "<td>". generate_display_field(array('data_type'=>'1','list_id'=>'amendment_status'),$resultSet['amendment_status']) . "</td>";
 	echo "</tr>";
 
 	echo "<tr class=text>";
-	echo "<td class=bold>" . xl("Request Description") . ":"  . "</td>";
-	echo "<td>". stripslashes($resultSet['amendment_desc']) . "</td>";
+	echo "<td class=bold>" . xlt("Request Description") . ":"  . "</td>";
+	echo "<td>". text($resultSet['amendment_desc']) . "</td>";
 	echo "</tr>";	
 
 	echo "</table>";
 	
 	echo "<hr>";
-	echo "<span class='bold'>" . xl("History") . "</span><br>";
+	echo "<span class='bold'>" . xlt("History") . "</span><br>";
 	$pageBreak = ( $lastAmendment ) ? "" : "page-break-after:always";
 	echo "<table border='1' cellspacing=0 cellpadding=3 style='width:75%;margin-top:10px;margin-bottom:20px;" . $pageBreak . "'>";
 	echo "<tr class='text bold'>";
-	echo "<th align=left style='width:10%'>" . xl("Date") . "</th>";
-	echo "<th align=left style='width:20%'>" . xl("By") . "</th>";
-	echo "<th align=left >" . xl("Comments") . "</th>";
+	echo "<th align=left style='width:10%'>" . xlt("Date") . "</th>";
+	echo "<th align=left style='width:20%'>" . xlt("By") . "</th>";
+	echo "<th align=left >" . xlt("Comments") . "</th>";
 	echo "</tr>";
 	
 	$query = "SELECT u.fname,u.lname,ah.* FROM amendments_history ah INNER JOIN users u ON ah.created_by = u.id WHERE ah.amendment_id = ?";
@@ -64,8 +84,8 @@ function printAmendment($amendmentID,$lastAmendment) {
 		echo "<tr class=text>";
 		$created_date = date('Y-m-d', strtotime($row['created_time']));
 		echo "<td>" . oeFormatShortDate($created_date) . "</td>";
-		echo "<td>" . $row['lname'] . ", " . $row['fname'] . "</td>";
-		echo "<td>" . stripslashes($row['amendment_note']) . "</td>";
+		echo "<td>" . text($row['lname']) . ", " . text($row['fname']) . "</td>";
+		echo "<td>" . text($row['amendment_note']) . "</td>";
 		echo "</tr>";
 	}
 	echo "</table>";
@@ -89,7 +109,7 @@ function printAmendment($amendmentID,$lastAmendment) {
 </head>
 
 <body class="body_top">
-	<span class='title'><?php echo xl("Amendments for ") . xl($patientName); ?></span>
+	<span class='title'><?php echo xlt("Amendments for ") . text($patientName); ?></span>
 	<p></p>
 
 	<?php

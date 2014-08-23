@@ -697,7 +697,7 @@ $GLOBALS_METADATA = array(
 	'amendments' => array (
 		xl('Amendments'),
 		'bool',                           // data type
-		'0',                              // default = true
+		'1',                              // default = true
 		xl('Enable amendments feature')
 	),
 
@@ -1533,37 +1533,6 @@ $GLOBALS_METADATA = array(
       'text',                           // data type
       'https://ssh.mydocsportal.com',
       xl('Offsite Https link for the Patient Portal.(Patient Link)')
-    ),
-
-    // Currently the "CMS Portal" supports WordPress.  Other Content Management
-    // Systems may be supported in the future.
-
-    'gbl_portal_cms_enable' => array(
-      xl('Enable CMS Portal'),
-      'bool',                           // data type
-      '0',
-      xl('Enable support for the open source WordPress Portal by Sunset Systems')
-    ),
-
-    'gbl_portal_cms_address' => array(
-      xl('CMS Portal Site Address'),
-      'text',                           // data type
-      'https://your_cms_site.com/',
-      xl('URL for the WordPress site that supports the portal')
-    ),
-
-    'gbl_portal_cms_username' => array(
-      xl('CMS Portal Username'),
-      'text',                           // data type
-      '',
-      xl('Login name of WordPress user for portal access')
-    ),
-
-    'gbl_portal_cms_password' => array(
-      xl('CMS Portal Password'),
-      'text',                           // data type
-      '',
-      xl('Password for the above user')
     ),
 
   ),
