@@ -575,47 +575,8 @@ if ($GLOBALS['patient_id_category_name']) {
 |
 <a href="stats_full.php?active=all" onclick='top.restoreSession()'>
 <?php echo htmlspecialchars(xl('Issues'),ENT_NOQUOTES); ?></a>
-
-<!-- DISPLAYING HOOKS STARTS HERE -->
-<?php
-	$module_query = sqlStatement("SELECT msh.*,ms.menu_name,ms.path,m.mod_ui_name,m.type FROM modules_hooks_settings AS msh
-					LEFT OUTER JOIN modules_settings AS ms ON obj_name=enabled_hooks AND ms.mod_id=msh.mod_id
-					LEFT OUTER JOIN modules AS m ON m.mod_id=ms.mod_id 
-					WHERE fld_type=3 AND mod_active=1 AND sql_run=1 AND attached_to='demographics' ORDER BY mod_id");
-	$DivId = 'mod_installer';
-	if (sqlNumRows($module_query)) {
-		$jid 	= 0;
-		$modid 	= '';
-		while ($modulerow = sqlFetchArray($module_query)) {
-			$DivId 		= 'mod_'.$modulerow['mod_id'];
-			$new_category 	= $modulerow['mod_ui_name'];
-			$modulePath 	= "";
-			$added      	= "";
-			if($modulerow['type'] == 0) {
-				$modulePath 	= $GLOBALS['customModDir'];
-				$added		= "";
-			}
-			else{ 	
-				$added		= "index";
-				$modulePath 	= $GLOBALS['zendModDir'];
-			}
-			$relative_link 	= "../../modules/".$modulePath."/".$modulerow['path'];
-			$nickname 	= $modulerow['menu_name'] ? $modulerow['menu_name'] : 'Noname';
-			$jid++;
-			$modid = $modulerow['mod_id'];			
-			?>
-			|
-			<a href="<?php echo $relative_link; ?>" onclick='top.restoreSession()'>
-			<?php echo htmlspecialchars($nickname,ENT_NOQUOTES); ?></a>
-		<?php	
-		}
-	}
-	?>
-<!-- DISPLAYING HOOKS ENDS HERE -->
-
   </td>
  </tr>
- 
 </table> <!-- end header -->
 
 <div style='margin-top:10px'> <!-- start main content div -->
@@ -994,8 +955,39 @@ expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel,
                 </div>
      </td>
     </tr>		
+<?php if ($GLOBALS['amendments']) { ?>
+  <tr>
+       <td width='650px'>
+       	<?php // Amendments widget
+       	$widgetTitle = xlt('Amendments');
+    $widgetLabel = "amendments";
+    $widgetButtonLabel = xlt("Edit");
+	$widgetButtonLink = $GLOBALS['webroot'] . "/interface/patient_file/summary/main_frameset.php?feature=amendment";
+	$widgetButtonClass = "iframe rx_modal";
+    $linkMethod = "html";
+    $bodyClass = "summary_item small";
+    $widgetAuth = true;
+    $fixedWidth = false;
+    expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel , $widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass, $widgetAuth, $fixedWidth);
+       	$sql = "SELECT * FROM amendments WHERE pid = ? ORDER BY amendment_date DESC";
+  $result = sqlStatement($sql, array($pid) );
 
+  if (sqlNumRows($result) == 0) {
+    echo " <table><tr>\n";
+    echo "  <td colspan='$numcols' class='text'>&nbsp;&nbsp;" . xlt('None') . "</td>\n";
+    echo " </tr></table>\n";
+  }
+  
+  while ($row=sqlFetchArray($result)){
+    echo "&nbsp;&nbsp;";
+    echo "<a class= '" . $widgetButtonClass . "' href='" . $widgetButtonLink . "&id=" . attr($row['amendment_id']) . "' onclick='top.restoreSession()'>" . $row['amendment_date'];
+	echo "&nbsp; " . text($row['amendment_desc']);
 
+    echo "</a><br>\n";
+  } ?>
+  </td>
+    </tr>
+<?php } ?>    		
  <?php // labdata ?>
     <tr>
      <td width='650px'>

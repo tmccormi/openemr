@@ -163,112 +163,7 @@ UPDATE `layout_options` SET `list_backup_id` = 'ethrace' WHERE `layout_options`.
 UPDATE `layout_options` SET `data_type` = '36' WHERE `layout_options`.`form_id` = 'DEM' AND `layout_options`.`field_id` = 'race';
 UPDATE `layout_options` SET `data_type` = '1', `datacols` = '3' WHERE `layout_options`.`form_id` = 'DEM' AND `layout_options`.`field_id` = 'language';
 
-#IfNotTable modules
-CREATE TABLE `modules` (
-  `mod_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `mod_name` VARCHAR(64) NOT NULL DEFAULT '0',
-  `mod_directory` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_parent` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_type` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_active` INT(1) UNSIGNED NOT NULL DEFAULT '0',
-  `mod_ui_name` VARCHAR(20) NOT NULL DEFAULT '''',
-  `mod_relative_link` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_ui_order` TINYINT(3) NOT NULL DEFAULT '0',
-  `mod_ui_active` INT(1) UNSIGNED NOT NULL DEFAULT '0',
-  `mod_description` VARCHAR(255) NOT NULL DEFAULT '',
-  `mod_nick_name` VARCHAR(25) NOT NULL DEFAULT '',
-  `mod_enc_menu` VARCHAR(10) NOT NULL DEFAULT 'no',
-  `permissions_item_table` CHAR(100) DEFAULT NULL,
-  `directory` VARCHAR(255) NOT NULL,
-  `date` DATETIME NOT NULL,
-  `sql_run` TINYINT(4) DEFAULT '0',
-  `type` TINYINT(4) DEFAULT '0',
-  PRIMARY KEY (`mod_id`,`mod_directory`)
-) ENGINE=InnoDB;
-#EndIf
-
-#IfNotTable module_acl_group_settings
-CREATE TABLE `module_acl_group_settings` (
-  `module_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  `section_id` int(11) NOT NULL,
-  `allowed` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`module_id`,`group_id`,`section_id`)
-) ENGINE=InnoDB;
-#EndIf
-
-#IfNotTable module_acl_sections
-CREATE TABLE `module_acl_sections` (
-  `section_id` int(11) DEFAULT NULL,
-  `section_name` varchar(255) DEFAULT NULL,
-  `parent_section` int(11) DEFAULT NULL,
-  `section_identifier` varchar(50) DEFAULT NULL,
-  `module_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB;
-#EndIf
-
-#IfNotTable module_acl_user_settings
-CREATE TABLE `module_acl_user_settings` (
-  `module_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `section_id` int(11) NOT NULL,
-  `allowed` int(1) DEFAULT NULL,
-  PRIMARY KEY (`module_id`,`user_id`,`section_id`)
-) ENGINE=InnoDB;
-#EndIf
-
-#IfNotTable module_configuration
-CREATE TABLE `module_configuration` (
-  `module_config_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `module_id` int(10) unsigned NOT NULL,
-  `field_name` varchar(45) NOT NULL,
-  `field_value` varchar(255) NOT NULL,
-  PRIMARY KEY (`module_config_id`)
-) ENGINE=InnoDB;
-#EndIf
-
-#IfNotTable modules_hooks_settings
-CREATE TABLE `modules_hooks_settings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `mod_id` int(11) DEFAULT NULL,
-  `enabled_hooks` varchar(255) DEFAULT NULL,
-  `attached_to` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-#EndIf
-
-#IfNotTable modules_settings
-CREATE TABLE `modules_settings` (
-  `mod_id` INT(11) DEFAULT NULL,
-  `fld_type` SMALLINT(6) DEFAULT NULL COMMENT '1=>ACL,2=>preferences,3=>hooks',
-  `obj_name` VARCHAR(255) DEFAULT NULL,
-  `menu_name` VARCHAR(255) DEFAULT NULL,
-  `path` VARCHAR(255) DEFAULT NULL
-) ENGINE=InnoDB;
-#EndIf
-
-#IfNotRow2D list_options list_id lists option_id insurance_types
-INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`) VALUES ('lists','insurance_types','Insurance Types',1);
-INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`) VALUES ('insurance_types','primary'  ,'Primary'  ,10);
-INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`) VALUES ('insurance_types','secondary','Secondary',20);
-INSERT INTO `list_options` (`list_id`, `option_id`, `title`, `seq`) VALUES ('insurance_types','tertiary' ,'Tertiary' ,30);
-#EndIf
-
-#IfMissingColumn patient_data cmsportal_login
-ALTER TABLE `patient_data` ADD COLUMN `cmsportal_login` varchar(60) NOT NULL default '';
-INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`, `fld_rows`) VALUES
-  ('DEM', 'cmsportal_login', '3Choices', 'CMS Portal Login', 15, 2, 1, 30, 60, '', 1, 1, '', '', 'Login ID for the CMS Patient Portal', 0);
-#EndIf
-
-#IfNotColumnType procedure_order control_id varchar(255)
-ALTER TABLE `procedure_order` CHANGE `control_id`
-  `control_id` varchar(255) NOT NULL DEFAULT '' COMMENT 'This is the CONTROL ID that is sent back from lab';
-#EndIf
-
-#IfMissingColumn procedure_providers direction
-ALTER TABLE `procedure_providers`
-ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Results-only';
-
+--Added new Fields for MUOII_3
 #IfMissingColumn history_data dc_father
 	ALTER TABLE `history_data` ADD `dc_father` text NOT NULL DEFAULT '';
 #EndIf
@@ -304,28 +199,26 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 	INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`, `fld_rows`, `list_backup_id`) VALUES ('HIS', 'dc_offspring', '2Family History', 'Diagnosis Code', 10, 15, 1, 0, 255, '', 1, 3, '', '', '', 0, '');
 #EndIf
 
-#IfNotRow globals gl_name amendments
-	INSERT INTO globals ( gl_name, gl_index, gl_value ) VALUES ( 'amendments', 0, '0' );
-#EndIf
-
 #IfNotRow2D list_options list_id lists option_id amendment_status
 	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) 
 	VALUES ('lists' ,'amendment_status','Amendment Status', 102, 0);
 
 	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES
-	('amendment_status' ,'1','Approved', 1, 0),
-	('amendment_status' ,'2','Rejected', 2, 0);
-	
+	('amendment_status' ,'approved','Approved', 10, 0),
+	('amendment_status' ,'rejected','Rejected', 20, 0);
+#EndIf
+
+#IfNotRow2D list_options list_id lists option_id amendment_from	
 	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) 
 	VALUES ('lists' ,'amendment_from','Amendment From', 102, 0);
 
 	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES
-	('amendment_from' ,'1','Patient', 1, 0),
-	('amendment_from' ,'2','Insurance', 2, 0);
+	('amendment_from' ,'patient','Patient', 10, 0),
+	('amendment_from' ,'insurance','Insurance', 20, 0);
 #EndIf
 
 #IfNotTable amendments
-	CREATE TABLE IF NOT EXISTS `amendments` (
+	CREATE TABLE `amendments` (
 		`amendment_id`	int(11)			NOT NULL AUTO_INCREMENT COMMENT 'Amendment ID',
 		`amendment_date` date			NOT NULL	COMMENT 'Amendement request date',
 		`amendment_by`	varchar(50)		NOT NULL	COMMENT 'Amendment requested from',
@@ -334,7 +227,7 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 		`amendment_desc` text			NOT NULL	COMMENT 'Amendment Details',
 		`created_by`	int(11)			NOT NULL	COMMENT 'references users.id for session owner',
 		`modified_by`	int(11)			NULL		COMMENT 'references users.id for session owner',
-		`created_time`	timestamp		NOT NULL	COMMENT 'created time',
+		`created_time`	timestamp		NOT NULL DEFAULT '0000-00-00 00:00:00'	COMMENT 'created time',
 		`modified_time`	timestamp		NULL		COMMENT 'modified time',
 		PRIMARY KEY amendments_id(`amendment_id`),
 		KEY amendment_pid(`pid`)
@@ -342,21 +235,18 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 #EndIf
 
 #IfNotTable amendments_history
-	CREATE TABLE IF NOT EXISTS `amendments_history` (
+	CREATE TABLE `amendments_history` (
 		`amendment_id`	int(11)			NOT NULL AUTO_INCREMENT COMMENT 'Amendment ID',
 		`amendment_note` text			NOT NULL	COMMENT 'Amendment requested from',
+		`amendment_status` VARCHAR(50)  NULL 		COMMENT 'Amendment Request Status'
 		`created_by`	int(11)			NOT NULL	COMMENT 'references users.id for session owner',
-		`created_time`	timestamp		NOT NULL	COMMENT 'created time',
+		`created_time`	timestamp		NOT NULL DEFAULT '0000-00-00 00:00:00'	COMMENT 'created time',
 		KEY amendment_history_id(`amendment_id`)
 	) ENGINE = MyISAM;
 #EndIf
 
-#IfMissingColumn amendments_history amendment_status
-	ALTER TABLE `amendments_history` ADD `amendment_status` VARCHAR(50) NULL COMMENT 'Amendment Request Status' AFTER  `amendment_note`;
-#EndIf
-
 #IfNotTable log_comment_encrypt
-	CREATE TABLE IF NOT EXISTS `log_comment_encrypt` (
+	CREATE TABLE `log_comment_encrypt` (
 	  `id` int(11) NOT NULL AUTO_INCREMENT,
 	  `log_id` int(11) NOT NULL,
 	  `encrypt` enum('Yes','No') NOT NULL DEFAULT 'No',
@@ -364,4 +254,3 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 	  PRIMARY KEY (`id`)
 	) ENGINE=InnoDB;
 #EndIf
-

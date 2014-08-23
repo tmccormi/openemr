@@ -32,7 +32,6 @@ require_once("$srcdir/patient.inc");
 require_once("history.inc.php");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/options.inc.php");
-require_once("$srcdir/htmlspecialchars.inc.php");
 $CPR = 4; // cells per row
 
 // Check authorization.
@@ -122,8 +121,7 @@ function submit_history() {
 //function for selecting the smoking status in radio button based on the selection of drop down list.
 function radioChange(rbutton)
 {
-    
-     if (rbutton == 1 || rbutton == 2 || rbutton == 15 || rbutton == 16)
+    if (rbutton == 1 || rbutton == 2 || rbutton == 15 || rbutton == 16)
      {
      document.getElementById('radio_tobacco[current]').checked = true;
      }
@@ -176,6 +174,7 @@ function smoking_statusClicked(cb)
      {
      document.getElementById('form_tobacco').selectedIndex = 6;
      }
+	 radioChange(document.getElementById('form_tobacco').value);	 
 }
 
 // The ID of the input element to receive a found code.

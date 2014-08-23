@@ -1,5 +1,24 @@
 <?php
-
+/**
+ * Patient Portal Amendments
+ *
+ * Copyright (C) 2014 Ensoftek
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://opensource.org/licenses/gpl-license.php>;.
+ *
+ * @package OpenEMR
+ * @author  Hema Bandaru <hemab@drcloudemr.com>
+ * @link    http://www.open-emr.org
+ */
 require_once("verify_session.php");
 
 $query = "SELECT a.*,lo.title AS AmendmentBy,lo1.title AS AmendmentStatus FROM amendments a 
@@ -11,10 +30,10 @@ if ( sqlNumRows($res) > 0 ) { ?>
 
 	<table class="class1">
 		<tr class="header">
-			<th><?php echo htmlspecialchars( xl('Date'),ENT_NOQUOTES); ?></th>
-			<th><?php echo htmlspecialchars( xl('Requested By'),ENT_NOQUOTES); ?></th>
-			<th><?php echo htmlspecialchars( xl('Description'),ENT_NOQUOTES); ?></th>
-			<th><?php echo htmlspecialchars( xl('Status'),ENT_NOQUOTES); ?></th>
+			<th><?php echo xlt('Date'); ?></th>
+			<th><?php echo xlt('Requested By'); ?></th>
+			<th><?php echo xlt('Description'); ?></th>
+			<th><?php echo xlt('Status'); ?></th>
 		</tr>
 	<?php
   		$even = false;
@@ -26,17 +45,17 @@ if ( sqlNumRows($res) > 0 ) { ?>
   				$class="class1_odd";
   				$even=true;
 			}
-			echo "<tr class='".htmlspecialchars($class,ENT_QUOTES)."'>";
-			echo "<td>".htmlspecialchars($row['amendment_date'],ENT_NOQUOTES)."</td>";
-			echo "<td>".htmlspecialchars($row['AmendmentBy'],ENT_NOQUOTES)."</td>";
-			echo "<td>".htmlspecialchars($row['amendment_desc'],ENT_NOQUOTES)."</td>";
-			echo "<td>".htmlspecialchars($row['AmendmentStatus'],ENT_NOQUOTES)."</td>";
+			echo "<tr class='".$class."'>";
+			echo "<td>".$row['amendment_date']."</td>";
+			echo "<td>".text($row['AmendmentBy'])."</td>";
+			echo "<td>".attr($row['amendment_desc'])."</td>";
+			echo "<td>".attr($row['AmendmentStatus'])."</td>";
 			echo "</tr>";
   		}
 		echo "</table>";
   	}
 	else
 	{
-		echo htmlspecialchars( xl("No Results"),ENT_NOQUOTES);
+		echo xlt("No Results");
 	}
 ?>
