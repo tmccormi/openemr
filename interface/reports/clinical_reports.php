@@ -538,7 +538,6 @@ $sqlstmt = "select
 	array_push($sqlBindArray, '%'.$form_immunization.'%', '%'.$form_immunization.'%');
  }
 // order by
-  $odrstmt = $odrstmt."ORDER BY patient_id";
   if ($_POST['form_pt_name'] == true){
         $odrstmt=$odrstmt.",patient_name";
   }
@@ -561,13 +560,20 @@ $sqlstmt = "select
          $odrstmt=$odrstmt.",procedure_result_result";
   }
 
-
+  if($odrstmt == '') {
+	$odrstmt = " ORDER BY patient_id";
+  }  
+  else {
+	$odrstmt = " ORDER BY ".ltrim($odrstmt,",");
+  }
+  
   if($type == 'Medical History') {
       	$sqlstmt="select * from (".$sqlstmt." ".$whr_stmt." ".$odrstmt.",history_data_date desc) a group by patient_id";
   }
-  else
+  else {
 	$sqlstmt=$sqlstmt." ".$whr_stmt." ".$odrstmt;
-
+  }	
+	
 $result = sqlStatement($sqlstmt,$sqlBindArray);
 
 $row_id = 1.1;//given to each row to identify and toggle
