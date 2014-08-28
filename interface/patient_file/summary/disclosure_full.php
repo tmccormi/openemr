@@ -94,13 +94,19 @@ $N=15;
 $offset = $_REQUEST['offset'];
 if (!isset($offset)) $offset = 0;
 
-
-$r2= sqlStatement("select id,event,recipient,description,date from extended_log where patient_id=? AND event in (select option_id from list_options where list_id='disclosure_type') order by date desc ", array($pid) );
+$disclQry = " SELECT el.id, el.event, el.recipient, el.description, el.date, CONCAT(u.fname, ' ', u.lname) as user_fullname FROM extended_log el ".
+		   " LEFT JOIN users u ON u.username = el.user ".
+		   " WHERE el.patient_id=? AND el.event IN (SELECT option_id FROM list_options WHERE list_id='disclosure_type') ORDER BY el.date DESC ";
+$r2= sqlStatement($disclQry, array($pid) );
 $totalRecords=sqlNumRows($r2);
 
 //echo "select id,event,recipient,description,date from extended_log where patient_id=$pid AND event in (select option_id from list_options where list_id='disclosure_type') order by date desc limit $offset ,$N";
 //display all of the disclosures for the day, as well as others that are active from previous dates, up to a certain number, $N
-$r1= sqlStatement("select id,event,recipient,description,date from extended_log where patient_id=? AND event in (select option_id from list_options where list_id='disclosure_type') order by date desc limit $offset,$N", array($pid) );
+$disclInnerQry = " SELECT el.id, el.event, el.recipient, el.description, el.date, CONCAT(u.fname, ' ', u.lname) as user_fullname FROM extended_log el ".
+				" LEFT JOIN users u ON u.username = el.user ".
+				" WHERE patient_id=? AND event IN (SELECT option_id FROM list_options WHERE list_id='disclosure_type') ORDER BY date DESC LIMIT $offset,$N";
+
+$r1= sqlStatement($disclInnerQry, array($pid) );
 $n=sqlNumRows($r1);
 $noOfRecordsLeft=($totalRecords - $offset);
 if ($n>0){?>
@@ -113,9 +119,10 @@ if ($n>0){?>
 	<table border='0' cellpadding="1" width='80%'>
 		<tr class="showborder_head" align='left' height="22">
 			<th style='width: 120px';>&nbsp;</th>
-			<th style="border-style: 1px solid #000" width="140px"><?php echo htmlspecialchars(xl('Recipient Name'),ENT_NOQUOTES); ?></th>
-			<th style="border-style: 1px solid #000" width="140px"><?php echo htmlspecialchars(xl('Disclosure Type'),ENT_NOQUOTES); ?></th>
-			<th style="border-style: 1px solid #000"><?php echo htmlspecialchars(xl('Description'),ENT_NOQUOTES); ?></th>
+			<th style="border-style: 1px solid #000" width="140px"><?php echo xls('Recipient Name'); ?></th>
+			<th style="border-style: 1px solid #000" width="140px"><?php echo xls('Disclosure Type'); ?></th>
+			<th style="border-style: 1px solid #000"><?php echo xls('Description'); ?></th>
+			<th style="border-style: 1px solid #000"><?php echo xls('Provider'); ?></th>
 		</tr>
 	<?php
 	$result2 = array();
@@ -133,10 +140,11 @@ if ($n>0){?>
 			<td valign='top'><a href='record_disclosure.php?editlid=<?php echo htmlspecialchars($iter{id},ENT_QUOTES); ?>'
 			class='css_button_small iframe' onclick='top.restoreSession()'><span><?php echo htmlspecialchars(xl('Edit'),ENT_NOQUOTES);?></span></a>
 			<a href='#' class='deletenote css_button_small'
-			id='<?php echo htmlspecialchars($iter{id},ENT_QUOTES); ?>' onclick='top.restoreSession()'><span><?php echo htmlspecialchars(xl('Delete'),ENT_NOQUOTES);?></span></a></td>
-			<td class="text" valign='top'><?php echo htmlspecialchars($iter{recipient},ENT_NOQUOTES);?>&nbsp;</td>
-			<td class='text' valign='top'><?php if($event[1]=='healthcareoperations'){ echo htmlspecialchars(xl('health care operations'),ENT_NOQUOTES); } else echo htmlspecialchars($event[1],ENT_NOQUOTES); ?>&nbsp;</td>
-			<td class='text'><?php echo htmlspecialchars($iter{date},ENT_NOQUOTES)." ".$description;?>&nbsp;</td>
+			id='<?php echo text($iter{id}); ?>' onclick='top.restoreSession()'><span><?php echo xls('Delete');?></span></a></td>
+			<td class="text" valign='top'><?php echo text($iter{recipient});?>&nbsp;</td>
+			<td class='text' valign='top'><?php if($event[1]=='healthcareoperations'){ echo xls('health care operations'); } else echo text($event[1]); ?>&nbsp;</td>
+			<td class='text'><?php echo text($iter{date})." ".$description;?>&nbsp;</td>
+			<td class='text'><?php echo text($iter{user_fullname});?></td>
 		</tr>
 		<?php
 	}
