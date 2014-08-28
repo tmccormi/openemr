@@ -305,3 +305,68 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 #IfNotRow2D layout_options form_id HIS field_id dc_offspring
 	INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`, `fld_rows`, `list_backup_id`) VALUES ('HIS', 'dc_offspring', '2Family History', 'Diagnosis Code', 10, 15, 1, 0, 255, '', 1, 3, '', '', '', 0, '');
 #EndIf
+
+#IfNotRow2D list_options list_id lists option_id amendment_status
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) 
+	VALUES ('lists' ,'amendment_status','Amendment Status', 102, 0);
+
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES
+	('amendment_status' ,'approved','Approved', 10, 0),
+	('amendment_status' ,'rejected','Rejected', 20, 0);
+#EndIf
+
+#IfNotRow2D list_options list_id lists option_id amendment_from	
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) 
+	VALUES ('lists' ,'amendment_from','Amendment From', 102, 0);
+
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES
+	('amendment_from' ,'patient','Patient', 10, 0),
+	('amendment_from' ,'insurance','Insurance', 20, 0);
+#EndIf
+
+#IfNotTable amendments
+	CREATE TABLE `amendments` (
+		`amendment_id`	int(11)			NOT NULL AUTO_INCREMENT COMMENT 'Amendment ID',
+		`amendment_date` date			NOT NULL	COMMENT 'Amendement request date',
+		`amendment_by`	varchar(50)		NOT NULL	COMMENT 'Amendment requested from',
+		`amendment_status` varchar(50)	NULL		COMMENT 'Amendment status accepted/rejected/null',
+		`pid`			int(11)			NOT NULL	COMMENT 'Patient ID from patient_data',
+		`amendment_desc` text			NOT NULL	COMMENT 'Amendment Details',
+		`created_by`	int(11)			NOT NULL	COMMENT 'references users.id for session owner',
+		`modified_by`	int(11)			NULL		COMMENT 'references users.id for session owner',
+		`created_time`	timestamp		NOT NULL DEFAULT '0000-00-00 00:00:00'	COMMENT 'created time',
+		`modified_time`	timestamp		NULL		COMMENT 'modified time',
+		PRIMARY KEY amendments_id(`amendment_id`),
+		KEY amendment_pid(`pid`)
+	) ENGINE = MyISAM;
+#EndIf
+
+#IfNotTable amendments_history
+	CREATE TABLE `amendments_history` (
+		`amendment_id`	int(11)			NOT NULL AUTO_INCREMENT COMMENT 'Amendment ID',
+		`amendment_note` text			NOT NULL	COMMENT 'Amendment requested from',
+		`amendment_status` VARCHAR(50)  NULL 		COMMENT 'Amendment Request Status'
+		`created_by`	int(11)			NOT NULL	COMMENT 'references users.id for session owner',
+		`created_time`	timestamp		NOT NULL DEFAULT '0000-00-00 00:00:00'	COMMENT 'created time',
+		KEY amendment_history_id(`amendment_id`)
+	) ENGINE = MyISAM;
+#EndIf
+
+#IfNotTable log_comment_encrypt
+	CREATE TABLE `log_comment_encrypt` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `log_id` int(11) NOT NULL,
+	  `encrypt` enum('Yes','No') NOT NULL DEFAULT 'No',
+	  `checksum` longtext NOT NULL,
+	  PRIMARY KEY (`id`)
+	) ENGINE=InnoDB;
+#EndIf
+
+#IfNotRow clinical_rules id family_health_history
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, 
+	`amc_code`, `patient_reminder_flag` ) VALUES ('family_health_history', 0, 0, 0, 0, '', '', 1, '170.314(a)', 0);
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id family_health_history
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history', 'Family Health History', 3000, 0);
+#EndIf
