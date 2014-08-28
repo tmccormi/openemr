@@ -447,28 +447,28 @@ $sqlstmt = "select
 //where
       $whr_stmt="where 1=1";
       if(strlen($form_diagnosis) > 0 ) {
-	    $whr_stmt=$whr_stmt." AND li.date >= ? AND li.date < DATE_ADD(?, INTERVAL 1 DAY) AND li.date <= ?";
-	    array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d H:i:s"));
+	    $whr_stmt=$whr_stmt." AND li.date >= ? AND li.date < DATE_ADD(?, INTERVAL 1 DAY) AND DATE(li.date) <= ?";
+	    array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d"));
 	}
 	if(strlen($form_lab_results)!=0 ) {
-              $whr_stmt=$whr_stmt." AND pr.date >= ? AND pr.date < DATE_ADD(?, INTERVAL 1 DAY) AND pr.date <= ?";
-              array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d H:i:s"));
+              $whr_stmt=$whr_stmt." AND pr.date >= ? AND pr.date < DATE_ADD(?, INTERVAL 1 DAY) AND DATE(pr.date) <= ?";
+              array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d"));
  	}
         if(strlen($form_drug_name)!=0) {
-	      $whr_stmt=$whr_stmt." AND r.date_modified >= ? AND r.date_modified < DATE_ADD(?, INTERVAL 1 DAY) AND r.date_modified <= ?";
-              array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d H:i:s"));
+	      $whr_stmt=$whr_stmt." AND r.date_modified >= ? AND r.date_modified < DATE_ADD(?, INTERVAL 1 DAY) AND DATE(r.date_modified) <= ?";
+              array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d"));
 	}
 	if($type == 'Medical History') {
-	     $whr_stmt=$whr_stmt." AND hd.date >= ? AND hd.date < DATE_ADD(?, INTERVAL 1 DAY) AND hd.date <= ?";
-             array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d H:i:s"));
+	     $whr_stmt=$whr_stmt." AND hd.date >= ? AND hd.date < DATE_ADD(?, INTERVAL 1 DAY) AND DATE(hd.date) <= ?";
+             array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d"));
 	} 
 	if($type == 'Procedure') {       
-	     $whr_stmt=$whr_stmt." AND po.date_ordered >= ? AND po.date_ordered < DATE_ADD(?, INTERVAL 1 DAY) AND po.date_ordered <= ?";
-             array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d H:i:s"));
+	     $whr_stmt=$whr_stmt." AND po.date_ordered >= ? AND po.date_ordered < DATE_ADD(?, INTERVAL 1 DAY) AND DATE(po.date_ordered) <= ?";
+             array_push($sqlBindArray, substr($sql_date_from,0,10), substr($sql_date_to,0,10), date("Y-m-d"));
 	 }
 	if($type == "Service Codes") {
-             $whr_stmt=$whr_stmt." AND b.date >= ? AND b.date < DATE_ADD(?, INTERVAL 1 DAY) AND b.date <= ?";
-             array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d H:i:s"));
+             $whr_stmt=$whr_stmt." AND b.date >= ? AND b.date < DATE_ADD(?, INTERVAL 1 DAY) AND DATE(b.date) <= ?";
+             array_push($sqlBindArray, $sql_date_from, $sql_date_to, date("Y-m-d"));
 	}
         if(strlen($form_lab_results) != 0) {
             $whr_stmt= $whr_stmt." AND (pr.result LIKE ?) ";
@@ -581,6 +581,8 @@ $k=1.3;
 
 if(sqlNumRows($result) > 0)
 {
+   //Added on 6-jun-2k14(regarding displaying smoking code descriptions)  
+   $smoke_codes_arr = getSmokeCodes();
 ?>
 <br>
 	<div id = "report_results">
@@ -761,10 +763,15 @@ if(sqlNumRows($result) > 0)
 					$tmp_t = explode('|', $row['history_data_tobacco']);
 					$tmp_a = explode('|', $row['history_data_alcohol']);
 					$tmp_d = explode('|', $row['history_data_recreational_drugs']);
-					$his_tobac =  generate_display_field(array('data_type'=>'1','list_id'=>'smoking_status'), $tmp_t[3]) ;
+                                        $his_tobac =  generate_display_field(array('data_type'=>'1','list_id'=>'smoking_status'), $tmp_t[3]) ;
 				?>
 				<td> <?php echo htmlspecialchars(oeFormatShortDate($row['history_data_date']),ENT_NOQUOTES); ?>&nbsp;</td>
-                                <td> <?php echo htmlspecialchars($his_tobac,ENT_NOQUOTES); ?>&nbsp;</td>
+                                <td> <?php 
+                                //Added on 6-jun-2k14(regarding displaying smoking code descriptions)
+                                if(!empty($smoke_codes_arr[$tmp_t[3]])){
+                                    $his_tobac.= " ( ".$smoke_codes_arr[$tmp_t[3]]." )";
+                                }
+                                echo htmlspecialchars($his_tobac,ENT_NOQUOTES); ?>&nbsp;</td>
 				<?php 
 					if ($tmp_a[1] == "currentalcohol") $res = xl('Current Alcohol');
 					if ($tmp_a[1] == "quitalcohol") $res = xl('Quit Alcohol');

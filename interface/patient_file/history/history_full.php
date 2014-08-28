@@ -32,7 +32,7 @@ require_once("$srcdir/patient.inc");
 require_once("history.inc.php");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/options.inc.php");
-
+require_once("$srcdir/htmlspecialchars.inc.php");
 $CPR = 4; // cells per row
 
 // Check authorization.
@@ -68,7 +68,17 @@ if ( !acl_check('patients','med','',array('write','addonly') ))
 <script type="text/javascript" src="../../../library/js/common.js"></script>
 
 <script LANGUAGE="JavaScript">
-
+ //Added on 5-jun-2k14 (regarding 'Smoking Status - display SNOMED code description')
+ var code_options_js = Array();
+ 
+ <?php
+ $smoke_codes = getSmokeCodes();
+  
+ foreach ($smoke_codes as $val => $code) {
+            echo "code_options_js"."['" . attr($val) . "']='" . attr($code) . "';\n";
+      }
+ ?>
+     
 var mypcc = '<?php echo $GLOBALS['phone_country_code'] ?>';
 
 function divclick(cb, divid) {
@@ -135,6 +145,15 @@ function radioChange(rbutton)
      if(radList[i].checked) radList[i].checked = false;
      }
      }
+     //Added on 5-jun-2k14 (regarding 'Smoking Status - display SNOMED code description')
+     if(rbutton!=""){
+         if(code_options_js[rbutton]!="")
+            $("#smoke_code").html(" ( "+code_options_js[rbutton]+" )");
+         else
+             $("#smoke_code").html(""); 
+     }
+     else
+        $("#smoke_code").html(""); 
 }
 
 //function for selecting the smoking status in drop down list based on the selection in radio button.
@@ -186,6 +205,11 @@ function sel_related(e) {
 <script type="text/javascript">
 /// todo, move this to a common library
 $(document).ready(function(){
+    if($("#form_tobacco").val()!=""){
+        if(code_options_js[$("#form_tobacco").val()]!=""){
+            $("#smoke_code").html(" ( "+code_options_js[$("#form_tobacco").val()]+" )");
+        }
+    }
     tabbify();
 });
 </script>
