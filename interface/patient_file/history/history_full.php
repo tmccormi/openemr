@@ -157,6 +157,30 @@ function smoking_statusClicked(cb)
      document.getElementById('form_tobacco').selectedIndex = 6;
      }
 }
+
+// The ID of the input element to receive a found code.
+var current_sel_name = '';
+
+// This is for callback by the find-code popup.
+// Appends to or erases the current list of related codes.
+function set_related(codetype, code, selector, codedesc) {
+ var frc = document.forms[0][current_sel_name];
+ var s = frc.value;
+ if (code) {
+  if (s.length > 0) s += ';';
+  s += codetype + ':' + code;
+ } else {
+  s = '';
+ }
+ frc.value = s;
+}
+
+// This invokes the find-code popup.
+function sel_related(e) {
+ current_sel_name = e.name;
+ dlgopen('../encounter/find_code_popup.php<?php if ($GLOBALS['ippf_specific']) echo '?codetype=REF' ?>', '_blank', 500, 400);
+}
+
 </script>
 
 <script type="text/javascript">
