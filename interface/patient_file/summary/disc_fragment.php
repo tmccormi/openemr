@@ -36,12 +36,10 @@ require_once("$srcdir/sql.inc");
  * @param $limit -  certain limit up to which the disclosures are to be displyed.
  */
 function getDisclosureByDate($pid,$limit)
-{
-	$discQry = " SELECT el.id, el.event, el.recipient, el.description, el.date, CONCAT(u.fname, ' ', u.lname) as user_fullname FROM extended_log el ".
+{	$discQry = " SELECT el.id, el.event, el.recipient, el.description, el.date, CONCAT(u.fname, ' ', u.lname) as user_fullname FROM extended_log el ".
 			   " LEFT JOIN users u ON u.username = el.user ".
 		       " WHERE el.patient_id=? AND el.event IN (SELECT option_id FROM list_options WHERE list_id='disclosure_type') ORDER BY el.date DESC LIMIT 0,$limit";
-
-	$r1=sqlStatement($discQry, array($pid) );
+	$r1=sqlStatement($discQry, array($pid));
 	$result2 = array();
 	for ($iter = 0;$frow = sqlFetchArray($r1);$iter++)
 		$result2[$iter] = $frow;
@@ -68,13 +66,13 @@ if ($result != null){
 	foreach ($result as $iter)
 	{
 		$has_disclosure = 1;
-		$app_event=$iter{"event"};
+		$app_event=$iter{event};
 		$event=split("-",$app_event);
-		$description=nl2br(text($iter{"description"});//for line breaks.
+		$description=nl2br(htmlspecialchars($iter{"description"},ENT_NOQUOTES));//for line breaks.
 		//listing the disclosures 
 		echo "<tr style='border-bottom:1px dashed' class='text'>";
 			echo "<td valign='top' class='text'>";
-			if($event[1]=='healthcareoperations'){ echo "<b>";echo xl('health care operations');echo "</b>"; } else echo "<b>".text($event[1])."</b>";
+			if($event[1]=='healthcareoperations'){ echo "<b>";echo htmlspecialchars(xl('health care operations'),ENT_NOQUOTES);echo "</b>"; } else echo "<b>".htmlspecialchars($event[1],ENT_NOQUOTES)."</b>";
 			echo "</td>";
 			echo "<td>".text($iter['user_fullname'])."</td>";
 			echo "<td  valign='top'class='text'>";
