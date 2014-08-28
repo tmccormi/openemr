@@ -75,17 +75,17 @@ deleteDisclosure($deletelid);
 </head>
 <body class="body_top">
 <div>
-	<span class="title"><?php echo htmlspecialchars(xl('Disclosures'),ENT_NOQUOTES); ?></span>
+	<span class="title"><?php echo xls('Disclosures'); ?></span>
 </div>
-<div style='float: left; margin-right: 10px'><?php echo htmlspecialchars(xl('for'),ENT_NOQUOTES); ?>&nbsp;
-	<span class="title"><a href="../summary/demographics.php" onclick="top.restoreSession()"><?php echo htmlspecialchars(getPatientName($pid),ENT_NOQUOTES); ?></a></span>
+<div style='float: left; margin-right: 10px'><?php echo xls('for'); ?>&nbsp;
+	<span class="title"><a href="../summary/demographics.php" onclick="top.restoreSession()"><?php $pname = getPatientName($pid); echo text($pname); ?></a></span>
 </div>
 <div>
-	<a href="record_disclosure.php" class="css_button iframe" onclick="top.restoreSession()"><span><?php echo htmlspecialchars(xl('Record'),ENT_NOQUOTES); ?></span></a>
+	<a href="record_disclosure.php" class="css_button iframe" onclick="top.restoreSession()"><span><?php echo xls('Record'); ?></span></a>
 </div>
 <div>
 	<a href="demographics.php" <?php if (!$GLOBALS['concurrent_layout']) echo "target='Main'"; ?>
-	class="css_button" onclick="top.restoreSession()"> <span><?php echo htmlspecialchars(xl('View Patient'),ENT_NOQUOTES); ?></span></a>
+	class="css_button" onclick="top.restoreSession()"> <span><?php echo xls('View Patient') ?></span></a>
 </div>
 <br>
 <br>
@@ -112,7 +112,7 @@ $noOfRecordsLeft=($totalRecords - $offset);
 if ($n>0){?>
 	<table border='0' class="text">
 		<tr>
-		<td colspan='5' style="padding: 5px;"><a href="disclosure_full.php" class="" id='Submit' onclick="top.restoreSession()"><span><?php echo htmlspecialchars(xl('Refresh'),ENT_NOQUOTES); ?></span></a></td>
+		<td colspan='5' style="padding: 5px;"><a href="disclosure_full.php" class="" id='Submit' onclick="top.restoreSession()"><span><?php echo xls('Refresh'); ?></span></a></td>
 		</tr>
 	</table>
 <div id='pnotes'>	
@@ -132,13 +132,13 @@ if ($n>0){?>
 	{
 		$app_event=$iter{event};
 		$event=split("-",$app_event);
-		$description =nl2br(htmlspecialchars($iter{description},ENT_NOQUOTES)); //for line break if there is any new lines in the input text area field.
+		$description =nl2br(text($iter{description})); //for line break if there is any new lines in the input text area field.
 		?>
 		<!-- List the recipient name, description, date and edit and delete options-->
 		<tr  class="noterow" height='25'>		
 			<!--buttons for edit and delete.-->
-			<td valign='top'><a href='record_disclosure.php?editlid=<?php echo htmlspecialchars($iter{id},ENT_QUOTES); ?>'
-			class='css_button_small iframe' onclick='top.restoreSession()'><span><?php echo htmlspecialchars(xl('Edit'),ENT_NOQUOTES);?></span></a>
+			<td valign='top'><a href='record_disclosure.php?editlid=<?php echo text($iter{id}); ?>'
+			class='css_button_small iframe' onclick='top.restoreSession()'><span><?php echo xls('Edit');?></span></a>
 			<a href='#' class='deletenote css_button_small'
 			id='<?php echo text($iter{id}); ?>' onclick='top.restoreSession()'><span><?php echo xls('Delete');?></span></a></td>
 			<td class="text" valign='top'><?php echo text($iter{recipient});?>&nbsp;</td>
@@ -153,7 +153,7 @@ else
 {?>
 	<br>
 	<!-- Display None, if there is no disclosure -->
-	<span class='text' colspan='3'><?php echo htmlspecialchars(xl('None'),ENT_NOQUOTES) ;?></span>
+	<span class='text' colspan='3'><?php echo xls('None');?></span>
 	<?php
 }
 ?>
@@ -165,7 +165,7 @@ else
 if ($offset > ($N-1) && $n!=0) {
   echo "   <a class='link' href='disclosure_full.php?active=" . $active .
     "&offset=" . ($offset-$N) . "' onclick='top.restoreSession()'>[" .
-    xl('Previous') . "]</a>\n";
+    xls('Previous') . "]</a>\n";
 }
 ?>
   
@@ -174,7 +174,7 @@ if ($offset > ($N-1) && $n!=0) {
 if ($n >= $N && $noOfRecordsLeft!=$N) {
   echo "&nbsp;&nbsp;   <a class='link' href='disclosure_full.php?active=" . $active. 
     "&offset=" . ($offset+$N)  ."&leftrecords=".$noOfRecordsLeft."' onclick='top.restoreSession()'>[" .
-    xl('Next') . "]</a>\n";
+    xls('Next') . "]</a>\n";
 }
 ?>
   </td>

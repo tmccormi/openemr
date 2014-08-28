@@ -70,11 +70,11 @@ if ($result != null){
 		$has_disclosure = 1;
 		$app_event=$iter{"event"};
 		$event=split("-",$app_event);
-		$description=nl2br(htmlspecialchars($iter{"description"},ENT_NOQUOTES));//for line breaks.
+		$description=nl2br(text($iter{"description"});//for line breaks.
 		//listing the disclosures 
 		echo "<tr style='border-bottom:1px dashed' class='text'>";
 			echo "<td valign='top' class='text'>";
-			if($event[1]=='healthcareoperations'){ echo "<b>";echo htmlspecialchars(xl('health care operations'),ENT_NOQUOTES);echo "</b>"; } else echo "<b>".htmlspecialchars($event[1],ENT_NOQUOTES)."</b>";
+			if($event[1]=='healthcareoperations'){ echo "<b>";echo xl('health care operations');echo "</b>"; } else echo "<b>".text($event[1])."</b>";
 			echo "</td>";
 			echo "<td>".text($iter['user_fullname'])."</td>";
 			echo "<td  valign='top'class='text'>";
