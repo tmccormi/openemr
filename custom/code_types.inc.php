@@ -77,7 +77,8 @@ while ($ctrow = sqlFetchArray($ctres)) {
     'claim' => $ctrow['ct_claim'],
     'proc' => $ctrow['ct_proc'],
     'term' => $ctrow['ct_term'],
-    'problem'=> $ctrow['ct_problem']
+    'problem'=> $ctrow['ct_problem'],
+    'drug'=> $ctrow['ct_drug']
   );
   if ($default_search_type === '') $default_search_type = $ctrow['ct_key'];
 }
@@ -300,6 +301,11 @@ function collect_codetypes($category,$return_format="array") {
   }
   else if ($category == "medical_problem") {
    if ($ct_arr['problem']) {
+    array_push($return,$ct_key);
+   }
+  }
+  else if ($category == "drug") {
+   if ($ct_arr['drug']) {
     array_push($return,$ct_key);
    }
   }
