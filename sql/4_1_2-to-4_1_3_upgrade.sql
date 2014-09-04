@@ -370,3 +370,7 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 #IfNotRow2D list_options list_id clinical_rules option_id family_health_history
 	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history', 'Family Health History', 3000, 0);
 #EndIf
+
+#IfNotColumnType immunizations amount_administered decimal(12,2)
+ALTER TABLE  `immunizations` CHANGE  `amount_administered`  `amount_administered` DECIMAL( 12, 2 ) NULL DEFAULT NULL;
+#EndIf
