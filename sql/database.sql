@@ -2302,7 +2302,7 @@ CREATE TABLE `immunizations` (
   `update_date` timestamp NOT NULL,
   `created_by` bigint(20) default NULL,
   `updated_by` bigint(20) default NULL,
-  `amount_administered` int(11) DEFAULT NULL,			
+  `amount_administered` decimal(12,2) DEFAULT NULL,			
   `amount_administered_unit` varchar(50) DEFAULT NULL,			
   `expiration_date` date DEFAULT NULL,			
   `route` varchar(100) DEFAULT NULL,			
@@ -4083,7 +4083,7 @@ INSERT INTO list_options (list_id, option_id, codes,title, seq) VALUES ('physici
 INSERT INTO list_options (list_id, option_id, codes,title, seq) VALUES ('physician_type','resident_physician_occupation','SNOMED-CT:405277009','Resident physician', '13');
 INSERT INTO list_options (list_id, option_id, codes,title, seq) VALUES ('physician_type','specialized_physician_occupation','SNOMED-CT:69280009','Specialized physician', '14');
 INSERT INTO list_options (list_id, option_id, codes,title, seq) VALUES ('physician_type','thoracic_physician_occupation','SNOMED-CT:309346003','Thoracic physician', '15');
->>>>>>> de8c1ca... Care Coordination module
+
 -- --------------------------------------------------------
 
 -- 
@@ -6257,7 +6257,7 @@ INSERT INTO list_options ( list_id, option_id, title, seq, is_default, codes ) V
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default, codes ) VALUES ('smoking_status', '16', 'Light tobacco smoker', 80, 0, 'SNOMED-CT:428061000124105');
 
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default ) VALUES ('lists'   ,'race','Race', 1,0);
-<<<<<<< HEAD
+
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('race', 'amer_ind_or_alaska_native', 'American Indian or Alaska Native', 10, 0, '1002-5');
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('race', 'Asian', 'Asian',20,0, '2028-9');
 INSERT INTO list_options ( list_id, option_id, title, seq, is_default, notes ) VALUES ('race', 'black_or_afri_amer', 'Black or African American',30,0, '2054-5');

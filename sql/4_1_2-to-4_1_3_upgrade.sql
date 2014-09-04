@@ -4248,3 +4248,6 @@ INSERT INTO code_types (ct_key, ct_id, ct_seq, ct_mod, ct_just, ct_fee, ct_rel, 
   ('RXCUI', (SELECT MAX(`id`) FROM `temp_table_one`), (SELECT MAX(`seq`) FROM `temp_table_one`), 0, '', 0, 0, 1, 0, 0, 'RXCUI Medication', 1);
 DROP TABLE `temp_table_one`;
 #EndIf
+#IfNotColumnType immunizations amount_administered decimal(12,2)
+ALTER TABLE  `immunizations` CHANGE  `amount_administered`  `amount_administered` DECIMAL( 12, 2 ) NULL DEFAULT NULL;
+#EndIf
