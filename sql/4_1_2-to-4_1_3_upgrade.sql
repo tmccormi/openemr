@@ -362,15 +362,35 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 	) ENGINE=InnoDB;
 #EndIf
 
+#IfNotColumnType clinical_rules amc_code varchar(20)
+	ALTER TABLE  `clinical_rules` CHANGE  `amc_code`  `amc_code` varchar(20) NOT NULL default '';
+#EndIf
+
 #IfNotRow clinical_rules id family_health_history
 	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, 
-	`amc_code`, `patient_reminder_flag` ) VALUES ('family_health_history', 0, 0, 0, 0, '', '', 1, '170.314(a)', 0);
+	`amc_code`, `patient_reminder_flag` ) VALUES ('family_health_history', 0, 0, 0, 0, '', '', 1, '170.314(a)(13)', 0);
 #EndIf
 
 #IfNotRow2D list_options list_id clinical_rules option_id family_health_history
-	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history', 'Family Health History', 3000, 0);
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history', 'Family Health History', 3200, 0);
 #EndIf
 
 #IfNotColumnType immunizations amount_administered decimal(12,2)
 ALTER TABLE  `immunizations` CHANGE  `amount_administered`  `amount_administered` DECIMAL( 12, 2 ) NULL DEFAULT NULL;
+#EndIf
+
+#IfNotRow clinical_rules id electronic_notes
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag` ) VALUES ('electronic_notes', 0, 0, 0, 0, '', '', 1, '170.314(a)(9)', 0);
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id electronic_notes
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'electronic_notes', 'Electronic Notes', 3000, 0);
+#EndIf
+
+#IfNotRow clinical_rules id image_results
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag` ) VALUES ('image_results', 0, 0, 0, 0, '', '', 1, '170.314(a)(12)', 0);
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id image_results
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'image_results', 'Image Results', 3100, 0);
 #EndIf
