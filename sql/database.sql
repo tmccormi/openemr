@@ -713,6 +713,9 @@ CREATE TABLE `documents` (
   `imported` TINYINT DEFAULT 0 NULL COMMENT 'Parsing status for CCR/CCD/CCDA importing',
   `audit_master_approval_status` TINYINT NOT NULL DEFAULT 1 COMMENT 'approval_status from audit_master table',
   `audit_master_id` int(11) default NULL,
+
+  `encounter_id` bigint(20) NULL DEFAULT '0' COMMENT 'Encounter id if tagged',
+  `encounter_check`	TINYINT(1) NULL DEFAULT 0 COMMENT 'If encounter is created while tagging',
   PRIMARY KEY  (`id`),
   KEY `revision` (`revision`),
   KEY `foreign_id` (`foreign_id`),
