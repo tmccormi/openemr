@@ -2062,7 +2062,7 @@ CREATE TABLE `history_data` (
   `userdate15` date DEFAULT NULL,
   `userarea11` text NOT NULL DEFAULT '',
   `userarea12` text NOT NULL DEFAULT '',
-  PRIMARY KEY  (`id`),
+ PRIMARY KEY  (`id`),
   KEY `pid` (`pid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 ;
 
@@ -2661,7 +2661,7 @@ INSERT INTO layout_options VALUES ('REF','reply_findings'  ,'2Counter-Referral',
 INSERT INTO layout_options VALUES ('REF','reply_services'  ,'2Counter-Referral','Services Provided'      ,16, 3,1,30,  0,''         ,1,1,'' ,'' ,'Service provided by specialist', 3, '');
 INSERT INTO layout_options VALUES ('REF','reply_recommend' ,'2Counter-Referral','Recommendations'        ,17, 3,1,30,  0,''         ,1,1,'' ,'' ,'Recommendations by specialist', 3, '');
 INSERT INTO layout_options VALUES ('REF','reply_rx_refer'  ,'2Counter-Referral','Prescriptions/Referrals',18, 3,1,30,  0,''         ,1,1,'' ,'' ,'Prescriptions and/or referrals by specialist', 3, '');
-
+	
 INSERT INTO layout_options VALUES ('HIS','usertext11','1General','Risk Factors',1,21,1,0,0,'riskfactors',1,1,'','' ,'Risk Factors', 0, '');
 INSERT INTO layout_options VALUES ('HIS','exams'     ,'1General','Exams/Tests' ,2,23,1,0,0,'exams'      ,1,1,'','' ,'Exam and test results', 0, '');
 INSERT INTO layout_options VALUES ('HIS','history_father'   ,'2Family History','Father'   		,1, 2,1,20,0,'',1,1,'','' ,'', 0, '');
@@ -4165,7 +4165,6 @@ CREATE TABLE `log` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 ;
 
-
 -- --------------------------------------------------------
 
 --
@@ -4271,6 +4270,18 @@ CREATE TABLE `modules_settings` (
   `path` VARCHAR(255) DEFAULT NULL
 ) ENGINE=InnoDB;
 
+-- 
+-- Table structure for table `log_comment_encrypt`
+--
+DROP TABLE IF EXISTS `log_comment_encrypt`;
+CREATE TABLE IF NOT EXISTS `log_comment_encrypt` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `log_id` int(11) NOT NULL,
+  `encrypt` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `checksum` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+	
 -- --------------------------------------------------------
 
 -- 
@@ -4922,8 +4933,8 @@ CREATE TABLE `prescriptions` (
   `patient_id` int(11) default NULL,
   `filled_by_id` int(11) default NULL,
   `pharmacy_id` int(11) default NULL,
-  `date_added` date default NULL,
-  `date_modified` date default NULL,
+  `date_added` datetime default NULL,
+  `date_modified` datetime default NULL,
   `provider_id` int(11) default NULL,
   `encounter` int(11) default NULL,
   `start_date` date default NULL,

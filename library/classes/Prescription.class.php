@@ -186,8 +186,8 @@ class Prescription extends ORDataObject {
         $this->provider = new Provider($_SESSION['authId']);
         $this->patient = new Patient();
         $this->start_date = date("Y-m-d");
-        $this->date_added = date("Y-m-d");
-        $this->date_modified = date("Y-m-d");
+        $this->date_added = date("Y-m-d H:i:s");
+        $this->date_modified = date("Y-m-d H:i:s");
         $this->per_refill = 0;
         $this->note = "";
         
@@ -202,8 +202,8 @@ class Prescription extends ORDataObject {
     }
     
     function persist() {
-        $this->date_modified = date("Y-m-d");
-        if ($this->id == "") { $this->date_added = date("Y-m-d"); }
+        $this->date_modified = date("Y-m-d H:i:s");
+        if ($this->id == "") { $this->date_added = date("Y-m-d H:i:s"); }
         if (parent::persist()) { }
     }
 
