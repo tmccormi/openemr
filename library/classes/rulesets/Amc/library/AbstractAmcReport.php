@@ -79,7 +79,6 @@ abstract class AbstractAmcReport implements RsReportIF
         
         $numeratorObjects = 0;
         $denominatorObjects = 0;
-		$patChkDenomArr = array();
         foreach ( $this->_amcPopulation as $patient ) 
         {
             // If begin measurement is empty, then make the begin
@@ -98,14 +97,7 @@ abstract class AbstractAmcReport implements RsReportIF
                 if ( !$denominator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
                     continue;
                 }
-				
-				if($this->_ruleId=="electronic_notes" || $this->_ruleId=="family_health_history" || $this->_ruleId=="image_results"){
-					if( !in_array($patient,$patChkDenomArr) ){
-						$patChkDenomArr[] = $patient;
-					}
-				}
-				$denominatorObjects++;
-				
+                $denominatorObjects++;
             }
             else {
                 // Counting objects other than patients
@@ -125,30 +117,20 @@ abstract class AbstractAmcReport implements RsReportIF
 
             // Count Numerators
             if ($object_to_count == "patients") {
-				if($this->_ruleId=="electronic_notes" || $this->_ruleId=="family_health_history" || $this->_ruleId=="image_results"){
-					if(in_array($patient, $patChkDenomArr)){
-						// Counting patients
-						if ( !$numerator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
-							continue;
-						}
-						$numeratorObjects++;
-					}
-				}else{
-					// Counting patients
-					if ( !$numerator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
-						continue;
-					}
-					$numeratorObjects++;
-				}
+                // Counting patients
+                if ( !$numerator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
+                    continue;
+                }
+                $numeratorObjects++;
             }
             else {
                 // Counting objects other than patients
                 //   test each object that passed the above denominator testing
                 foreach ($objects_pass as $object) {
                     $patient->object=$object;
-					if ( $numerator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
-						$numeratorObjects++;
-					}
+                    if ( $numerator->test( $patient, $tempBeginMeasurement, $this->_endMeasurement ) ) {
+                        $numeratorObjects++;
+                    }
                 }
             }
 
