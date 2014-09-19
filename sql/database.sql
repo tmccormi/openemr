@@ -422,7 +422,11 @@ CREATE TABLE `clinical_rules` (
   `cqm_nqf_code` varchar(10) NOT NULL default '' COMMENT 'Clinical Quality Measure NQF identifier',
   `cqm_pqri_code` varchar(10) NOT NULL default '' COMMENT 'Clinical Quality Measure PQRI identifier',
   `amc_flag` tinyint(1) COMMENT 'Automated Measure Calculation flag (unable to customize per patient)',
+  `amc_2011_flag` TINYINT( 1 ) NULL,
+  `amc_2014_flag` TINYINT( 1 ) NULL,
   `amc_code` varchar(10) NOT NULL default '' COMMENT 'Automated Measure Calculation indentifier (MU rule)',
+  `amc_code_2011` VARCHAR( 30 ) NOT NULL,
+  `amc_code_2014` VARCHAR( 30 ) NOT NULL,
   `patient_reminder_flag` tinyint(1) COMMENT 'Clinical Reminder Module flag',
   PRIMARY KEY  (`id`,`pid`)
 ) ENGINE=MyISAM ;
@@ -542,7 +546,16 @@ INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_
 --
 -- Coumadin Management - INR Monitoring
 INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag` ) VALUES ('rule_inr_monitor', 0, 0, 1, 0, '', '', 0, '', 0);
-
+--
+-- 2014 Rules
+--
+-- 170.314(g)(1)/(2)-20 Imaging and Interpretation
+INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014` ) VALUES ('image_results_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)-20');
+-- 170.314(g)(1)/(2)-21 Family Health History
+INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, 
+	`amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014`) VALUES ('family_health_history_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)-21');
+-- 170.314(g)(1)/(2)-22 Electronic Notes
+INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014` ) VALUES ('electronic_notes_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)-22');
 -- --------------------------------------------------------
 
 -- 
@@ -3337,6 +3350,9 @@ INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default
 INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'rule_cs_prostate', 'Cancer Screening: Prostate Cancer Screening', 650, 0);
 INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'rule_inr_monitor', 'Coumadin Management - INR Monitoring', 1000, 0);
 INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'rule_appt_reminder', 'Appointment Reminder Rule', 2000, 0);
+INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'image_results_amc', 'Image Results', 3000, 0);
+INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history_amc', 'Family Health History', 3100, 0);
+INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'electronic_notes_amc', 'Electronic Notes', 3200, 0);
 
 -- Clinical Rule Target Methods
 INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('lists' ,'rule_targets', 'Clinical Rule Target Methods', 3, 0);

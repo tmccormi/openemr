@@ -448,11 +448,11 @@ function test_rules_clinic($provider='',$type='',$dateTarget='',$mode='',$patien
 
     // If using cqm or amc type, then use the hard-coded rules set.
     // Note these rules are only used in report mode.
-    if ($rowRule['cqm_flag'] || $rowRule['amc_flag']) {
+    if ($rowRule['cqm_flag'] || $rowRule['amc_flag'] || $rowRule['amc_2011_flag'] || $rowRule['amc_2014_flag']) {
 
       require_once( dirname(__FILE__)."/classes/rulesets/ReportManager.php");
       $manager = new ReportManager();
-      if ($rowRule['amc_flag']) {
+      if ($rowRule['amc_flag'] || $rowRule['amc_2011_flag'] || $rowRule['amc_2014_flag']) {
         // Send array of dates ('dateBegin' and 'dateTarget')
         $tempResults = $manager->runReport( $rowRule, $patientData, $dateArray, $options );
       }

@@ -362,15 +362,48 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 	) ENGINE=InnoDB;
 #EndIf
 
-#IfNotRow clinical_rules id family_health_history
-	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, 
-	`amc_code`, `patient_reminder_flag` ) VALUES ('family_health_history', 0, 0, 0, 0, '', '', 1, '170.314(a)', 0);
-#EndIf
-
-#IfNotRow2D list_options list_id clinical_rules option_id family_health_history
-	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history', 'Family Health History', 3000, 0);
-#EndIf
-
 #IfNotColumnType immunizations amount_administered decimal(12,2)
-ALTER TABLE  `immunizations` CHANGE  `amount_administered`  `amount_administered` DECIMAL( 12, 2 ) NULL DEFAULT NULL;
+	ALTER TABLE  `immunizations` CHANGE  `amount_administered`  `amount_administered` DECIMAL( 12, 2 ) NULL DEFAULT NULL;
+#EndIf
+
+
+#IfMissingColumn clinical_rules amc_2011_flag
+	ALTER TABLE `clinical_rules` ADD `amc_2011_flag` TINYINT( 1 ) NULL;
+#EndIf
+
+#IfMissingColumn clinical_rules amc_2014_flag
+	ALTER TABLE `clinical_rules` ADD `amc_2014_flag` TINYINT( 1 ) NULL;
+#EndIf
+
+#IfMissingColumn clinical_rules amc_code_2011
+	ALTER TABLE `clinical_rules` ADD `amc_code_2011` VARCHAR( 30 ) NOT NULL;
+#EndIf
+
+#IfMissingColumn clinical_rules amc_code_2014
+	ALTER TABLE `clinical_rules` ADD `amc_code_2014` VARCHAR( 30 ) NOT NULL;
+#EndIf
+
+#IfNotRow clinical_rules id image_results_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014` ) VALUES ('image_results_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)–20');
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id image_results_amc
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'image_results_amc', 'Image Results', 3000, 0);
+#EndIf
+
+#IfNotRow clinical_rules id family_health_history_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, 
+	`amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014`) VALUES ('family_health_history_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)–21');
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id family_health_history_amc
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'family_health_history_amc', 'Family Health History', 3100, 0);
+#EndIf
+
+#IfNotRow clinical_rules id electronic_notes_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014` ) VALUES ('electronic_notes_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)–22');
+#EndIf
+
+#IfNotRow2D list_options list_id clinical_rules option_id electronic_notes_amc
+	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'electronic_notes_amc', 'Electronic Notes', 3200, 0);
 #EndIf

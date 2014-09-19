@@ -53,6 +53,9 @@ class ReportTypes
         "provide_rec_pat_amc" => array( ReportTypes::AMC, "AMC_304f" ),
         "timely_access_amc" => array( ReportTypes::AMC, "AMC_304g" ),
     	"provide_sum_pat_amc" => array( ReportTypes::AMC, "AMC_304h" ),
-        "send_sum_amc" => array( ReportTypes::AMC, "AMC_304i" )
+        "send_sum_amc" => array( ReportTypes::AMC, "AMC_304i" ),
+		"image_results_amc" => array( ReportTypes::AMC, "AMC_314g_1_2_20" ),
+		"family_health_history_amc" => array( ReportTypes::AMC, "AMC_314g_1_2_21" ),
+		"electronic_notes_amc" => array( ReportTypes::AMC, "AMC_314g_1_2_22" )
     );
 }
