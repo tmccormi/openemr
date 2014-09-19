@@ -407,3 +407,11 @@ ADD COLUMN `direction` char(1) NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Re
 #IfNotRow2D list_options list_id clinical_rules option_id electronic_notes_amc
 	INSERT INTO `list_options` ( `list_id`, `option_id`, `title`, `seq`, `is_default` ) VALUES ('clinical_rules', 'electronic_notes_amc', 'Electronic Notes', 3200, 0);
 #EndIf
+
+#IfMissingColumn documents encounter_id
+  ALTER TABLE `documents` ADD `encounter_id` bigint(20) NULL DEFAULT '0';
+#EndIf
+
+#IfMissingColumn documents encounter_check
+	ALTER TABLE `documents` ADD `encounter_check` TINYINT(1) NULL DEFAULT 0;
+#EndIf
