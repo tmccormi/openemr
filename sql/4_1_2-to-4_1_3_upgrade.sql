@@ -467,6 +467,9 @@ CREATE TABLE ccda_table_mapping (
   timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;
+
+#IfNotRow clinical_rules id image_results_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014` ) VALUES ('image_results_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)-20');
 #EndIf
 
 #IfNotTable ccda_field_mapping
@@ -495,6 +498,10 @@ CREATE TABLE ccda (
   PRIMARY KEY (id),
   UNIQUE KEY unique_key (pid,encounter,time)
 ) ENGINE=InnoDB;
+
+#IfNotRow clinical_rules id family_health_history_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, 
+	`amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014`) VALUES ('family_health_history_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)-21');
 #EndIf
 
 #IfNotRow list_options list_id religious_affiliation
@@ -625,6 +632,9 @@ INSERT INTO list_options (list_id, option_id, title, notes) VALUES ('personal_re
 INSERT INTO list_options (list_id, option_id, title, notes) VALUES ('personal_relationship','STPSIB','Step Sibling','STPSIB');
 INSERT INTO list_options (list_id, option_id, title, notes) VALUES ('personal_relationship','UNCLE','Uncle','UNCLE');
 INSERT INTO list_options (list_id, option_id, title, notes) VALUES ('personal_relationship','FRND','Unrelated Friend','FRND');
+
+#IfNotRow clinical_rules id electronic_notes_amc
+	INSERT INTO `clinical_rules` ( `id`, `pid`, `active_alert_flag`, `passive_alert_flag`, `cqm_flag`, `cqm_nqf_code`, `cqm_pqri_code`, `amc_flag`, `amc_code`, `patient_reminder_flag`,  `amc_2011_flag`,  `amc_2014_flag`,  `amc_code_2011`, `amc_code_2014` ) VALUES ('electronic_notes_amc', 0, 0, 0, 0, '', '', 0, '', 0, 0, 1, '', '170.314(g)(1)/(2)-22');
 #EndIf
 
 #IfNotRow2D list_options list_id race option_id abenaki
