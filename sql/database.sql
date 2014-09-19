@@ -2071,7 +2071,7 @@ CREATE TABLE `history_data` (
   `userdate15` date DEFAULT NULL,
   `userarea11` text NOT NULL DEFAULT '',
   `userarea12` text NOT NULL DEFAULT '',
-  PRIMARY KEY  (`id`),
+ PRIMARY KEY  (`id`),
   KEY `pid` (`pid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 ;
 
@@ -2611,7 +2611,6 @@ INSERT INTO `layout_options` VALUES ('DEM', 'allow_imm_reg_use', '3Choices', 'Al
 INSERT INTO `layout_options` VALUES ('DEM', 'allow_imm_info_share', '3Choices', 'Allow Immunization Info Sharing', 11, 1, 1, 0, 0, 'yesno', 1, 1, '', '', '', 0, '');
 INSERT INTO `layout_options` VALUES ('DEM', 'allow_health_info_ex', '3Choices', 'Allow Health Information Exchange', 12, 1, 1, 0, 0, 'yesno', 1, 1, '', '', '', 0, '');
 INSERT INTO `layout_options` VALUES ('DEM', 'allow_patient_portal', '3Choices', 'Allow Patient Portal', 13, 1, 1, 0, 0, 'yesno', 1, 1, '', '', '', 0, '');
-INSERT INTO `layout_options` VALUES ('DEM', 'cmsportal_login', '3Choices', 'CMS Portal Login', 15, 2, 1, 30, 60, '', 1, 1, '', '', 'CMS Portal Login ID', 0, '');
 INSERT INTO `layout_options` VALUES ('DEM', 'occupation', '4Employer', 'Occupation', 1, 2, 1, 20, 63, '', 1, 1, '', 'C', 'Occupation', 0, '');
 INSERT INTO `layout_options` VALUES ('DEM', 'em_name', '4Employer', 'Employer Name', 2, 2, 1, 20, 63, '', 1, 1, '', 'C', 'Employer Name', 0, '');
 INSERT INTO `layout_options` VALUES ('DEM', 'em_street', '4Employer', 'Employer Address', 3, 2, 1, 25, 63, '', 1, 1, '', 'C', 'Street and Number', 0, '');
@@ -2669,7 +2668,7 @@ INSERT INTO layout_options VALUES ('REF','reply_findings'  ,'2Counter-Referral',
 INSERT INTO layout_options VALUES ('REF','reply_services'  ,'2Counter-Referral','Services Provided'      ,16, 3,1,30,  0,''         ,1,1,'' ,'' ,'Service provided by specialist', 3, '');
 INSERT INTO layout_options VALUES ('REF','reply_recommend' ,'2Counter-Referral','Recommendations'        ,17, 3,1,30,  0,''         ,1,1,'' ,'' ,'Recommendations by specialist', 3, '');
 INSERT INTO layout_options VALUES ('REF','reply_rx_refer'  ,'2Counter-Referral','Prescriptions/Referrals',18, 3,1,30,  0,''         ,1,1,'' ,'' ,'Prescriptions and/or referrals by specialist', 3, '');
-
+	
 INSERT INTO layout_options VALUES ('HIS','usertext11','1General','Risk Factors',1,21,1,0,0,'riskfactors',1,1,'','' ,'Risk Factors', 0, '');
 INSERT INTO layout_options VALUES ('HIS','exams'     ,'1General','Exams/Tests' ,2,23,1,0,0,'exams'      ,1,1,'','' ,'Exam and test results', 0, '');
 INSERT INTO layout_options VALUES ('HIS','history_father'   ,'2Family History','Father'   		,1, 2,1,20,0,'',1,1,'','' ,'', 0, '');
@@ -3849,112 +3848,21 @@ CREATE TABLE `log` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 ;
 
-
 -- --------------------------------------------------------
 
---
--- Table structure for table `modules`
---
-CREATE TABLE `modules` (
-  `mod_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `mod_name` VARCHAR(64) NOT NULL DEFAULT '0',
-  `mod_directory` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_parent` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_type` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_active` INT(1) UNSIGNED NOT NULL DEFAULT '0',
-  `mod_ui_name` VARCHAR(20) NOT NULL DEFAULT '''',
-  `mod_relative_link` VARCHAR(64) NOT NULL DEFAULT '',
-  `mod_ui_order` TINYINT(3) NOT NULL DEFAULT '0',
-  `mod_ui_active` INT(1) UNSIGNED NOT NULL DEFAULT '0',
-  `mod_description` VARCHAR(255) NOT NULL DEFAULT '',
-  `mod_nick_name` VARCHAR(25) NOT NULL DEFAULT '',
-  `mod_enc_menu` VARCHAR(10) NOT NULL DEFAULT 'no',
-  `permissions_item_table` CHAR(100) DEFAULT NULL,
-  `directory` VARCHAR(255) NOT NULL,
-  `date` DATETIME NOT NULL,
-  `sql_run` TINYINT(4) DEFAULT '0',
-  `type` TINYINT(4) DEFAULT '0',
-  PRIMARY KEY (`mod_id`,`mod_directory`)
-) ENGINE=InnoDB;
+-- 
+-- Table structure for table `log_comment_encrypt`
+-- 
 
--- --------------------------------------------------------
-
---
--- Table structure for table `module_acl_group_settings`
---
-CREATE TABLE `module_acl_group_settings` (
-  `module_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  `section_id` int(11) NOT NULL,
-  `allowed` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`module_id`,`group_id`,`section_id`)
-) ENGINE=InnoDB;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `module_acl_sections`
---
-CREATE TABLE `module_acl_sections` (
-  `section_id` int(11) DEFAULT NULL,
-  `section_name` varchar(255) DEFAULT NULL,
-  `parent_section` int(11) DEFAULT NULL,
-  `section_identifier` varchar(50) DEFAULT NULL,
-  `module_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `module_acl_user_settings`
---
-CREATE TABLE `module_acl_user_settings` (
-  `module_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `section_id` int(11) NOT NULL,
-  `allowed` int(1) DEFAULT NULL,
-  PRIMARY KEY (`module_id`,`user_id`,`section_id`)
-) ENGINE=InnoDB;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `module_configuration`
---
-CREATE TABLE `module_configuration` (
-  `module_config_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `module_id` int(10) unsigned NOT NULL,
-  `field_name` varchar(45) NOT NULL,
-  `field_value` varchar(255) NOT NULL,
-  PRIMARY KEY (`module_config_id`)
-) ENGINE=InnoDB;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `modules_hooks_settings`
---
-CREATE TABLE `modules_hooks_settings` (
+DROP TABLE IF EXISTS `log_comment_encrypt`;
+CREATE TABLE IF NOT EXISTS `log_comment_encrypt` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `mod_id` int(11) DEFAULT NULL,
-  `enabled_hooks` varchar(255) DEFAULT NULL,
-  `attached_to` varchar(45) DEFAULT NULL,
+  `log_id` int(11) NOT NULL,
+  `encrypt` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `checksum` longtext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `modules_settings`
---
-CREATE TABLE `modules_settings` (
-  `mod_id` INT(11) DEFAULT NULL,
-  `fld_type` SMALLINT(6) DEFAULT NULL COMMENT '1=>ACL,2=>preferences,3=>hooks',
-  `obj_name` VARCHAR(255) DEFAULT NULL,
-  `menu_name` VARCHAR(255) DEFAULT NULL,
-  `path` VARCHAR(255) DEFAULT NULL
-) ENGINE=InnoDB;
-
+	
 -- --------------------------------------------------------
 
 -- 
@@ -4324,7 +4232,6 @@ CREATE TABLE `patient_data` (
   `deceased_date` datetime default NULL,
   `deceased_reason` varchar(255) NOT NULL default '',
   `soap_import_status` TINYINT(4) DEFAULT NULL COMMENT '1-Prescription Press 2-Prescription Import 3-Allergy Press 4-Allergy Import',
-  `cmsportal_login` varchar(60) NOT NULL default '',
   UNIQUE KEY `pid` (`pid`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 ;
@@ -4605,8 +4512,8 @@ CREATE TABLE `prescriptions` (
   `patient_id` int(11) default NULL,
   `filled_by_id` int(11) default NULL,
   `pharmacy_id` int(11) default NULL,
-  `date_added` date default NULL,
-  `date_modified` date default NULL,
+  `date_added` datetime default NULL,
+  `date_modified` datetime default NULL,
   `provider_id` int(11) default NULL,
   `encounter` int(11) default NULL,
   `start_date` date default NULL,
@@ -5750,7 +5657,6 @@ CREATE TABLE `procedure_providers` (
   `recv_app_id`  varchar(255) NOT NULL DEFAULT ''  COMMENT 'Receiving application ID (MSH-5.1)',
   `recv_fac_id`  varchar(255) NOT NULL DEFAULT ''  COMMENT 'Receiving facility ID (MSH-6.1)',
   `DorP`         char(1)      NOT NULL DEFAULT 'D' COMMENT 'Debugging or Production (MSH-11)',
-  `direction`    char(1)      NOT NULL DEFAULT 'B' COMMENT 'Bidirectional or Results-only',
   `protocol`     varchar(15)  NOT NULL DEFAULT 'DL',
   `remote_host`  varchar(255) NOT NULL DEFAULT '',
   `login`        varchar(255) NOT NULL DEFAULT '',
@@ -5810,7 +5716,7 @@ CREATE TABLE `procedure_order` (
   `order_status`           varchar(31)  NOT NULL DEFAULT '' COMMENT 'pending,routed,complete,canceled',
   `patient_instructions`   text         NOT NULL DEFAULT '',
   `activity`               tinyint(1)   NOT NULL DEFAULT 1  COMMENT '0 if deleted',
-  `control_id`             varchar(255) NOT NULL DEFAULT '' COMMENT 'This is the CONTROL ID that is sent back from lab',
+  `control_id`             bigint(20)   NOT NULL            COMMENT 'This is the CONTROL ID that is sent back from lab',
   `lab_id`                 bigint(20)   NOT NULL DEFAULT 0  COMMENT 'references procedure_providers.ppid',
   `specimen_type`          varchar(31)  NOT NULL DEFAULT '' COMMENT 'from the Specimen_Type list',
   `specimen_location`      varchar(31)  NOT NULL DEFAULT '' COMMENT 'from the Specimen_Location list',
@@ -6065,16 +5971,3 @@ CREATE TABLE `esign_signatures` (
   KEY `tid` (`tid`),
   KEY `table` (`table`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 ;
-
--- 
--- Table structure for table `log_comment_encrypt`
--- 
-
-DROP TABLE IF EXISTS `log_comment_encrypt`;
-CREATE TABLE IF NOT EXISTS `log_comment_encrypt` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `log_id` int(11) NOT NULL,
-  `encrypt` enum('Yes','No') NOT NULL DEFAULT 'No',
-  `checksum` longtext NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
