@@ -251,15 +251,15 @@ class Claim {
       "forms.deleted = 0 AND " .
       "forms.formdir = 'misc_billing_options' " .
       "ORDER BY forms.date";
-    $this->billing_options = sqlQuery($sql);
-
-    $referrer_id = (empty($GLOBALS['MedicareReferrerIsRenderer']) ||
-      $this->insurance_numbers['provider_number_type'] != '1C') ?
+    $this->billing_options = sqlQuery($sql); 
+    
+    // modified so flag applies to non-medicare as well
+    $referrer_id = (empty($GLOBALS['MedicareReferrerIsRenderer'])) ?
       $this->patient_data['ref_providerID'] : $provider_id;
     $sql = "SELECT * FROM users WHERE id = '$referrer_id'";
     $this->referrer = sqlQuery($sql);
     if (!$this->referrer) $this->referrer = array();
-
+      
     $supervisor_id = $this->encounter['supervisor_id'];
     $sql = "SELECT * FROM users WHERE id = '$supervisor_id'";
     $this->supervisor = sqlQuery($sql);
