@@ -68,3 +68,11 @@
 #IfNotColumnType prescriptions size varchar(16)
 ALTER TABLE `prescriptions` CHANGE `size` `size` varchar(16) DEFAULT NULL;
 #EndIf
+
+#IfNotRow2D layout_options form_id DEM field_id billing_note
+-INSERT INTO `layout_options` (`form_id`, `field_id`, `group_name`, `title`, `seq`, `data_type`, `uor`, `fld_length`, `max_length`, `list_id`, `titlecols`, `datacols`, `default_value`, `edit_options`, `description`, `fld_rows`, `list_backup_id`, `source`, `conditions`) VALUES
+('DEM', 'billing_note', '6Misc', 'Billing Note', 19, 2, 0, 60, 255, '', 1, 3, '', '', 'Patient Level Billing Note (Collections)', 0, '', 'F', '');
+#Endif
+
+
+
