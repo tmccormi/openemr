@@ -1458,7 +1458,7 @@ if (!empty($reg)) {
           <?php if (acl_check('admin', 'super'   )) genMiscLink('RTop','adm','0',xl('Native Data Loads'),'../interface/super/load_codes.php'); ?>
           <?php if (acl_check('admin', 'super'   )) genMiscLink('RTop','adm','0',xl('External Data Loads'),'../interface/code_systems/dataloads_ajax.php'); ?>
           <?php if (acl_check('admin', 'super'   )) genMiscLink('RTop','adm','0',xl('Merge Patients'),'patient_file/merge_patients.php'); ?>
-		  <?php if ($GLOBALS['enable_auditlog_encryption']) genMiscLink('RTop','rep','0',xl('Audit Log Tamper'),'reports/audit_log_tamper_report.php'); ?>
+          <?php if ($GLOBALS['enable_auditlog_encryption']) genMiscLink('RTop','rep','0',xl('Audit Log Tamper'),'reports/audit_log_tamper_report.php'); ?>
         </ul>
       </li>
     </ul>
@@ -1528,6 +1528,8 @@ if (!empty($reg)) {
           <?php if (!$GLOBALS['disable_calendar']) genMiscLink('RTop','rep','0',xl('Appt-Enc'),'reports/appt_encounter_report.php'); ?>
 <?php if (empty($GLOBALS['code_types']['IPPF'])) { ?>
           <?php genMiscLink('RTop','rep','0',xl('Superbill'),'reports/custom_report_range.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Billed/Unbilled'),'reports/form_bill.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Pat Ledger'),'reports/pat_ledger.php'); ?>
 <?php } ?>
 	  <?php  genMiscLink('RTop','rep','0',xl('Eligibility'),'reports/edi_270.php'); ?>
 	  <?php  genMiscLink('RTop','rep','0',xl('Eligibility Response'),'reports/edi_271.php'); ?>
@@ -1547,6 +1549,11 @@ if (!empty($reg)) {
           <?php genMiscLink('RTop','rep','0',xl('Front Rec'), 'reports/front_receipts_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Pmt Method'), 'reports/receipts_by_method_report.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Collections'), 'reports/collections_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Pat Ledger'),'reports/pat_ledger.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Chgs by Dt/User'),'reports/charges_by_date_user.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Pmts by Dt/User'),'reports/payments_by_date_user.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Aging Days Averages'), 'reports/aging_report.php'); ?>
+          <?php genMiscLink('RTop','rep','0',xl('Pre-billing Issues'), 'reports/pre_billing_issues.php'); ?>
           <?php genMiscLink('RTop','rep','0',xl('Financial Summary by Service Code'),'reports/svc_code_financial_report.php'); ?>
         </ul>
       </li>
