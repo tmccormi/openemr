@@ -77,9 +77,13 @@ function authNewSession ($user, $pass, $provider)
 {
     // check to see if the user belongs to *any* OpenEMR groups in phpGACL -- JRM
     global $phpgacl_location;
+	
+	// Ram: Commented out temporarily
+	/*
     if (isset ($phpgacl_location)) {
         if (acl_get_group_titles($user) == 0) return false;
     }
+	*/
 
     // adldap_options defined in adLDAP_conf.inc
     global $adldap_options;

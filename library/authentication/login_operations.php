@@ -17,6 +17,7 @@
  *
  * @package OpenEMR
  * @author  Kevin Yeh <kevin.y@integralemr.com>
+ * Certain parts © EnSoftek, Inc – drcloudemr@ensoftek.com
  * @link    http://www.open-emr.org
  */
 
@@ -33,15 +34,42 @@ require_once("$srcdir/authentication/common_operations.php");
  */
 function validate_user_password($username,&$password,$provider)
 {
+    // Ensoftek: If SSO logon, don't validate password.
+	global $sqlconf;
+	
     $ip=$_SERVER['REMOTE_ADDR'];
     
     $valid=false;
-    $getUserSecureSQL= " SELECT " . implode(",",array(COL_ID,COL_PWD,COL_SALT))
+	$sso_signon = false;
+	
+	// Ensoftek: 2014-11-05: Don't validate password on SSO sigin-on. Only validate user name
+    if ( $sqlconf["sso"] == 'true' )
+	{
+		// Compare the AD user to the login screen entered user to make sure they're same.
+		// This is to avoid, logging in as another user when specific user is logged in from AD.
+		$adlogin = explode('\\', $_SERVER['REMOTE_USER']);
+		if ( isset($adlogin[1]) )
+		{
+			$aduser = $adlogin[1];
+		}
+		else
+		{
+			$aduser = $_SERVER['REMOTE_USER'];
+		}
+		
+		if ( strtolower($aduser) == strtolower($username) )
+		{
+			$sso_signon = true;
+			$valid = true;
+		}
+	}
+	
+    $getUserSecureSQL= " SELECT " . implode(",",array(COL_ID,COL_UNM,COL_PWD,COL_SALT)) // Ensoftek: Get user name for SSO validation
                        ." FROM ".TBL_USERS_SECURE
                        ." WHERE BINARY ".COL_UNM."=?";
                        // Use binary keyword to require case sensitive username match
     $userSecure=privQuery($getUserSecureSQL,array($username));
-    if(is_array($userSecure))
+    if(is_array($userSecure) && !$sso_signon)
     {
         $phash=oemr_password_hash($password,$userSecure[COL_SALT]);
         if($phash!=$userSecure[COL_PWD])
@@ -53,7 +81,7 @@ function validate_user_password($username,&$password,$provider)
     }
     else
     {  
-        if((!isset($GLOBALS['password_compatibility'])||$GLOBALS['password_compatibility']))           // use old password scheme if allowed.
+        if((!isset($GLOBALS['password_compatibility'])||$GLOBALS['password_compatibility']) && !$sso_signon)           // use old password scheme if allowed.
         {
             $getUserSQL="select username,id, password from users where BINARY username = ?";
             $userInfo = privQuery($getUserSQL,array($username));
@@ -104,7 +132,10 @@ function validate_user_password($username,&$password,$provider)
         if ($authGroup = privQuery("select * from groups where user=? and name=?",array($username,$provider)))
         {
             $_SESSION['authUser'] = $username;
-            $_SESSION['authPass'] = $phash;
+			if ( !$sso_signon ) // Ensoftek: If SSO logon, don't validate password.
+			{
+				$_SESSION['authPass'] = $phash;
+			}
             $_SESSION['authGroup'] = $authGroup['name'];
             $_SESSION['authUserID'] = $userInfo['id'];
             $_SESSION['authProvider'] = $provider;

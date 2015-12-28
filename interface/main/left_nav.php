@@ -1224,6 +1224,7 @@ if ($GLOBALS['athletic_team']) {
   <li><a class="collapsed" id="admimg" ><span><?php xl('Administration','e') ?></span></a>
     <ul>
       <?php if (acl_check('admin', 'super'    )) genMiscLink('RTop','adm','0',xl('Globals'),'super/edit_globals.php'); ?>
+      <?php if (acl_check('admin', 'super'    )) genMiscLink('RTop','adm','0',xl('Active Directory Sync'),'../library/adldap/adldap_configure.php'); // Ensoftek: 2014-11-05: Tool to setup/ran active dir sync ?>
       <?php if (acl_check('admin', 'users'    )) genMiscLink('RTop','adm','0',xl('Facilities'),'usergroup/facilities.php'); ?>
       <?php if (acl_check('admin', 'users'    )) genMiscLink('RTop','adm','0',xl('Users'),'usergroup/usergroup_admin.php'); ?>
       <?php genTreeLink('RTop','pwd','Users Password Change'); ?>
@@ -1430,6 +1431,7 @@ if (!empty($reg)) {
   <li><a class="collapsed" id="admimg" ><span><?php xl('Administration','e') ?></span></a>
     <ul>
       <?php if (acl_check('admin', 'super'    )) genMiscLink('RTop','adm','0',xl('Globals'),'super/edit_globals.php'); ?>
+      <?php if (acl_check('admin', 'super'    )) genMiscLink('RTop','adm','0',xl('Active Directory Sync'),'../library/adldap/adldap_configure.php');   // Ensoftek: 2014-11-05: Tool to setup/ran active dir sync?>
       <?php if (acl_check('admin', 'users'    )) genMiscLink('RTop','adm','0',xl('Facilities'),'usergroup/facilities.php'); ?>
       <?php if (acl_check('admin', 'users'    )) genMiscLink('RTop','adm','0',xl('Users'),'usergroup/usergroup_admin.php'); ?>
       <?php if (acl_check('admin', 'practice' )) genTreeLink('RTop','adb',xl('Addr Book')); ?>

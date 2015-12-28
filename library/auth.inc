@@ -19,6 +19,7 @@
  * @author  Kevin Yeh <kevin.y@integralemr.com>
  * @author  ViCarePlus <visolve_emr@visolve.com>
  * @author  cfapress
+ * Certain parts © EnSoftek, Inc – drcloudemr@ensoftek.com
  * @link    http://www.open-emr.org
  */
 
@@ -116,7 +117,29 @@ if (!isset($_SESSION["last_update"])) {
 
 function authCheckSession ()
 {
-    if (isset($_SESSION['authId'])) {
+	global $sqlconf;
+    if (isset($_SESSION['authId'])) 
+	{
+	    // Ensoftek: 2014-11-05: If SSO sign-on, don't validate password.
+	    if ( $sqlconf["sso"] == 'true' )
+		{
+			$authDB = privQuery("select ".implode(",",array(TBL_USERS.".".COL_ID,
+															TBL_USERS.".".COL_UNM)) 
+					. " FROM ". TBL_USERS 
+					. " WHERE ". TBL_USERS.".".COL_ID." = ? "
+					. " AND ". TBL_USERS.".".COL_ACTIVE . "=1" 
+					,array($_SESSION['authId']));
+			if ($_SESSION['authUser'] == $authDB['username'])
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}		
+		}
+	
+		
         $authDB = privQuery("select ".implode(",",array(TBL_USERS.".".COL_ID,
                                                         TBL_USERS.".".COL_UNM,
                                                         TBL_USERS_SECURE.".".COL_PWD,
@@ -145,11 +168,21 @@ function authCloseSession ()
   // Before destroying the session, save its site_id so that the next
   // login will default to that same site.
   global $incoming_site_id;
+  global $sqlconf;
+
   $incoming_site_id = $_SESSION['site_id'];
   ob_start();
   session_unset();
   session_destroy();
   unset($_COOKIE[session_name()]);
+  
+   // Ensoftek: 2014-11-05: If SSO sign-on, don't prompt the login screen again. Bail out.
+  if ( $sqlconf["sso"] == 'true' )
+  {
+	echo xl('Your session has ended. You have been successfully logged out. ');
+	exit;
+  }
+
 }
 
 function authLoginScreen()
