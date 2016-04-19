@@ -113,7 +113,8 @@ $USER_SPECIFIC_GLOBALS = array('default_top_pane',
                                'pat_trkr_timer',
                                'checkout_roll_off',
                                'ptkr_pt_list_new_window',                               
-                               'erx_import_status_message');
+                               'erx_import_status_message',
+                               'floating_message_alerts' );
 
 $GLOBALS_METADATA = array(
 
@@ -325,7 +326,14 @@ $GLOBALS_METADATA = array(
       '4',                              // default
       xl('Show Insurance Address Information in the Insurance Panel of Demographics.')
     
-  ),
+    ),
+
+    'floating_message_alerts' => array(
+        xl('Show floating alerts for user messages'),
+        'bool',                           // data type
+        '0',                              // default = false
+        xl('Show timed floating message notices for any unread messages addressed to the user when in the demographics summary.')
+    ),
 
   ),
 

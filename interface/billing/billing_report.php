@@ -47,7 +47,7 @@ if (isset($_POST['mode'])) {
   if ($_POST['mode'] == 'export') {
     $sql = ReturnOFXSql();
     $db = get_db();
-    $results = $db->Execute($sql);
+    $results = $db->Execute($sql)
     $billings = array();
     if ($results->RecordCount() == 0) {
       echo xlt("No Bills Found to Include in OFX Export")."<br>";
