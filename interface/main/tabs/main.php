@@ -227,5 +227,8 @@ if (isset($_SESSION['app1'])) {
         });
     });
 </script>
+
+<?php do_action( 'after_main_box' ); ?>
+
 </body>
 </html>

@@ -71,38 +71,45 @@ if (isset($_GET['sSearch']) && $_GET['sSearch'] !== "") {
 
 // Column-specific filtering.
 //
+$having = "";
 for ($i = 0; $i < count($aColumns); ++$i) {
-    $colname = $aColumns[$i];
-    if (isset($_GET["bSearchable_$i"]) && $_GET["bSearchable_$i"] == "true" && $_GET["sSearch_$i"] != '') {
-        $where .= $where ? ' AND' : 'WHERE';
-        $sSearch = add_escape_custom($_GET["sSearch_$i"]);
-        if ($colname == 'name') {
-            $where .= " ( " .
-            "lname LIKE '$sSearch%' OR " .
-            "fname LIKE '$sSearch%' OR " .
-            "mname LIKE '$sSearch%' )";
-        } else {
-            $where .= " `" . escape_sql_column_name($colname, array('patient_data')) . "` LIKE '$sSearch%'";
-        }
+  $colname = $aColumns[$i];
+  if (isset($_GET["bSearchable_$i"]) && $_GET["bSearchable_$i"] == "true" && $_GET["sSearch_$i"] != '') {
+
+    $sSearch = add_escape_custom($_GET["sSearch_$i"]);
+    if ($colname == 'name') {
+      $where .= $where ? ' AND' : 'WHERE';
+      $where .= " ( " .
+        "lname LIKE '$sSearch%' OR " .
+        "fname LIKE '$sSearch%' OR " .
+        "mname LIKE '$sSearch%' )";
+    } else if ( $colname == 'tags' ) {
+        $having .=  $having ? " AND " : " HAVING ";
+        $having .= " `tags` LIKE '$sSearch%'";
+    } else {
+      $where .= $where ? ' AND' : 'WHERE';
+      $where .= " `" . escape_sql_column_name($colname,array('patient_data')) . "` LIKE '$sSearch%'";
     }
+  }
 }
 
 // Compute list of column names for SELECT clause.
 // Always includes pid because we need it for row identification.
 //
-$sellist = 'pid';
+$sellist = 'patient_data.pid';
 foreach ($aColumns as $colname) {
-    if ($colname == 'pid') {
-        continue;
-    }
-
-    $sellist .= ", ";
-    if ($colname == 'name') {
-        $sellist .= "lname, fname, mname";
-    } else {
-        $sellist .= "`" . escape_sql_column_name($colname, array('patient_data')) . "`";
-    }
+  if ($colname == 'pid') continue;
+  $sellist .= ", ";
+  if ($colname == 'name') {
+    $sellist .= "lname, fname, mname";
+  } else if ( $colname == 'tags' ) {
+      $sellist .= " COALESCE(`tf_tags`.`tag_name`, NULL  ) as `tags` ";
+  }
+  else {
+    $sellist .= "`" . escape_sql_column_name($colname,array('patient_data')) . "`";
+  }
 }
+
 
 // Get total number of rows in the table.
 //
@@ -111,7 +118,7 @@ $iTotal = $row['count'];
 
 // Get total number of rows in the table after filtering.
 //
-$row = sqlQuery("SELECT COUNT(id) AS count FROM patient_data $where");
+$row = sqlQuery("SELECT $sellist, COUNT(patient_data.id) AS count FROM patient_data LEFT JOIN (`tf_tags`,`tf_patients_tags`) ON ( `tf_tags`.`id` =  `tf_patients_tags`.`tag_id` AND `tf_patients_tags`.`pid` = `patient_data`.`pid` ) $where $having");
 $iFilteredTotal = $row['count'];
 
 // Build the output data array.
@@ -122,41 +129,26 @@ $out = array(
   "iTotalDisplayRecords" => $iFilteredTotal,
   "aaData"               => array()
 );
-
-// save into variable data about fields of 'patient_data' from 'layout_options'
-$fieldsInfo = array();
-$quoteSellist = preg_replace('/(\w+)/i', '"${1}"', str_replace('`', '', $sellist));
-$res = sqlStatement('SELECT data_type, field_id, list_id FROM layout_options WHERE form_id = "DEM" AND field_id IN(' . $quoteSellist . ')');
-while ($row = sqlFetchArray($res)) {
-    $fieldsInfo[$row['field_id']] = $row;
-}
-
-$query = "SELECT $sellist FROM patient_data $where $orderby $limit";
+$query = "SELECT $sellist FROM patient_data LEFT JOIN (`tf_tags`,`tf_patients_tags`) ON ( `tf_tags`.`id` =  `tf_patients_tags`.`tag_id` AND `tf_patients_tags`.`pid` = `patient_data`.`pid` ) $where $having $orderby $limit";
 $res = sqlStatement($query);
 while ($row = sqlFetchArray($res)) {
-  // Each <tr> will have an ID identifying the patient.
+    // Each <tr> will have an ID identifying the patient.
     $arow = array('DT_RowId' => 'pid_' . $row['pid']);
     foreach ($aColumns as $colname) {
         if ($colname == 'name') {
             $name = $row['lname'];
-            if ($name && $row['fname']) {
-                $name .= ', ';
-            }
-
-            if ($row['fname']) {
-                $name .= $row['fname'];
-            }
-
-            if ($row['mname']) {
-                $name .= ' ' . $row['mname'];
-            }
-
-            $arow[] = attr($name);
-        } else {
-            $arow[] = isset($fieldsInfo[$colname]) ? attr(generate_plaintext_field($fieldsInfo[$colname], $row[$colname])) : attr($row[$colname]);
+            if ($name && $row['fname']) $name .= ', ';
+            if ($row['fname']) $name .= $row['fname'];
+            if ($row['mname']) $name .= ' ' . $row['mname'];
+            $arow[] = $name;
+        }
+        else if ($colname == 'DOB' || $colname == 'regdate' || $colname == 'ad_reviewed' || $colname == 'userdate1') {
+            $arow[] = oeFormatShortDate($row[$colname]);
+        }
+        else {
+            $arow[] = $row[$colname];
         }
     }
-
     $out['aaData'][] = $arow;
 }
 

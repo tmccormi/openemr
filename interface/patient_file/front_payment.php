@@ -1012,7 +1012,7 @@ $facilityService = new FacilityService();
                                 </td>
                                 <td colspan='2'>
                                     <div id="ajax_div_patient" style="display:none;"></div>
-                                    <input class="input-sm" type='text' id="check_number" name='form_source'
+                                    <input class="input-sm" type='text' id="check_number" disabled name='form_source'
                                        style="width:120px"
                                        value='<?php echo htmlspecialchars($payrow['source'], ENT_QUOTES); ?>'>
                                 </td>
@@ -1330,7 +1330,14 @@ $facilityService = new FacilityService();
     </span>
                 </form>
                 <script language="JavaScript">
-                    calctotal();
+
+                    $(document).ready( function() {
+                        calctotal();
+                        $("#radio_type_of_coverage1").click();
+                    });
+
+
+
                 </script>
             </div>
         </div>

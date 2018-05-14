@@ -776,6 +776,41 @@
           "practice"
         ]
       },
+
+      {
+        "label": "Tags",
+        "menu_id": "tags0",
+        "target": "tags",
+        "url": "/interface/tags_filters/index.php?action=tags",
+        "children": [],
+        "requirement": 0,
+        "acl_req": [
+          "admin"
+        ]
+      },
+      {
+        "label": "Patients/Tags",
+        "menu_id": "tags1",
+        "target": "tags",
+        "url": "/interface/tags_filters/index.php?action=patients",
+        "children": [],
+        "requirement": 0,
+        "acl_req": [
+          "admin"
+        ]
+      },
+      {
+        "label": "Filters",
+        "menu_id": "tags2",
+        "target": "tags",
+        "url": "/interface/tags_filters/index.php?action=filters",
+        "children": [],
+        "requirement": 0,
+        "acl_req": [
+          "admin"
+        ]
+      },
+
       {
         "label": "Practice",
         "menu_id": "adm0",

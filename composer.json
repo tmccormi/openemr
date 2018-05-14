@@ -77,12 +77,21 @@
             "OpenEMR\\Billing\\" : "library/billing/src",
             "OpenEMR\\Pdf\\" : "library/pdf/src",
             "OpenEMR\\Tabs\\" : "library/tabs/src",
-            "OpenEMR\\Rx\\Weno\\" : "library/weno/src"
+            "OpenEMR\\Rx\\Weno\\" : "library/weno/src",
+            "PluginSystem\\": "library/pluginsystem/",
+            "Framework\\": "vendor/libreehr/Framework/"
         }
     },
     "config" : {
         "preferred-install" : {
             "doctrine/couchdb" : "dist"
         }
-    }
+    },
+    "plugin-dirs" : [
+        "interface/plugins/"
+    ],
+    "plugins" : [
+        "interface/tags_filters",
+        "interface/casa"
+    ]
 }

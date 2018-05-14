@@ -84,6 +84,7 @@ if (($_POST['setting_bootstrap_submenu']) ||
         }
 
     </style>
+</head>
 <?php
 if (($GLOBALS['medex_enable'] == '1') && (empty($_REQUEST['nomenu']))) {
     $MedEx->display->navigation($logged_in);
@@ -551,97 +552,123 @@ if (!empty($_REQUEST['go'])) { ?>
                     $prevlink = "<<";
                 }
 
+    if($next < $total) {
+        $nextlink = "<a href=\"messages.php?show_all=".attr($showall)."&sortby=".attr($sortby)."&sortorder=".attr($sortorder)."&begin=".attr($next)."&$activity_string_html\" onclick=\"top.restoreSession()\">>></a>";
+    }
+    else {
+        $nextlink = ">>";
+    }
+    // Display the Messages table header.
+    echo "
+    <table width=100%><tr><td><table border=0 cellpadding=1 cellspacing=0 width=90%  style=\"border-left: 1px #000000 solid; border-right: 1px #000000 solid; border-top: 1px #000000 solid;\">
+    <form name=MessageList action=\"messages.php?showall=".attr($showall)."&sortby=".attr($sortby)."&sortorder=".attr($sortorder)."&begin=".attr($begin)."&$activity_string_html\" method=post>
+    <input type=hidden name=task value=delete>
+        <tr height=\"24\" style=\"background:lightgrey\">
+            <td align=\"center\" width=\"25\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><input type=checkbox id=\"checkAll\" onclick=\"selectAll()\"></td>
+            <td width=\"20%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+             htmlspecialchars( xl('To'), ENT_NOQUOTES) . "</b></td>
+            <td width=\"20%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+              htmlspecialchars( xl('From'), ENT_NOQUOTES) . "</b> $sortlink[0]</td>
+            <td width=\"20%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+              htmlspecialchars( xl('Patient'), ENT_NOQUOTES) . "</b> $sortlink[1]</td>
+            <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+              htmlspecialchars( xl('Type'), ENT_NOQUOTES) . "</b> $sortlink[2]</td>
+            <td width=\"15%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
+              htmlspecialchars( xl('Date'), ENT_NOQUOTES) . "</b> $sortlink[3]</td>
+            <td width=\"15%\" style=\"border-bottom: 1px #000000 solid; \" class=bold>&nbsp;<b>" .
+              htmlspecialchars( xl('Status'), ENT_NOQUOTES) . "</b> $sortlink[4]</td>
+        </tr>";
+        // Display the Messages table body.
+        $count = 0;
+        $result = getPnotesByUser($active,$show_all,$_SESSION['authUser'],false,$sortby,$sortorder,$begin,$listnumber);
+        while ($myrow = sqlFetchArray($result)) {
+            $name = $myrow['user'];
+            $name = $myrow['users_lname'];
+            if ($myrow['users_fname']) {
+                $name .= ", " . $myrow['users_fname'];
+            }
+            $patient = $myrow['pid'];
+            if ($patient>0) {
+                $patient = $myrow['patient_data_lname'];
+                if ($myrow['patient_data_fname']) {
+                    $patient .= ", " . $myrow['patient_data_fname'];
+                }
+            } else {
+                $patient = "* Patient must be set manually *";
+            }
+            $assigned_to_name = $myrow['assigned_fname'].' '.$myrow['assigned_lname'];
+            $rowClass = '';
+            if ( $myrow['assigned_to'] == 'apprentice_group' ) {
+                $rowClass = "intern-message-row";
+            }
+            $count++;
+            echo "
+            <tr class='message-row $rowClass' id=\"row$count\">
+                <td align=\"center\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><input type=checkbox id=\"check$count\" name=\"delete_id[]\" value=\"" .
+	          attr( $myrow['id']) . "\" onclick=\"if(this.checked==true){ selectRow('row$count'); }else{ deselectRow('row$count'); }\"></td>
+                <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
+                text( $assigned_to_name ) . "</td><td width=5></td></tr></table></td>
+                <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
+	          text( $name) . "</td><td width=5></td></tr></table></td>
+                <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\"><a href=\"messages.php?showall=".attr($showall)."&sortby=".attr($sortby)."&sortorder=".attr($sortorder)."&begin=".attr($begin)."&task=edit&noteid=" .
+	          attr( $myrow['id']) . "&$activity_string_html\" onclick=\"top.restoreSession()\">" .
+                text( $patient) . "</a></td><td width=5></td></tr></table></td>
+                <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
+	          xlt( $myrow['title']) . "</td><td width=5></td></tr></table></td>
+                <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
+	          text( oeFormatShortDate(substr($myrow['date'], 0, strpos($myrow['date'], " ")))) . "</td><td width=5></td></tr></table></td>
+                <td style=\"border-bottom: 1px #000000 solid;\"><table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
+	          xlt( $myrow['message_status']) . "</td><td width=5></td></tr></table></td>
+            </tr>";
+        }
+    // Display the Messages table footer.
+    echo "
+    </form></table>
+    <table border=0 cellpadding=5 cellspacing=0 width=90%>
+        <tr>
+            <td class=\"text\"><a href=\"messages.php?showall=".attr($showall)."&sortby=".attr($sortby)."&sortorder=".attr($sortorder)."&begin=".attr($begin)."&task=addnew&$activity_string_html\" onclick=\"top.restoreSession()\">" .
+              htmlspecialchars( xl('Add New'), ENT_NOQUOTES) . "</a> &nbsp; <a href=\"javascript:confirmDeleteSelected()\" onclick=\"top.restoreSession()\">" .
+              htmlspecialchars( xl('Delete'), ENT_NOQUOTES) . "</a></td>
+            <td align=right class=\"text amount-msg\">$prevlink &nbsp; $end of $total &nbsp; $nextlink</td>
+        </tr>
+    </table></td></tr></table><br>";
+?>
+<script language="javascript">
+// This is to confirm delete action.
+function confirmDeleteSelected() {
+    if(confirm("<?php echo htmlspecialchars( xl('Do you really want to delete the selection?'), ENT_QUOTES); ?>")) {
+        document.MessageList.submit();
+    }
+}
+// This is to allow selection of all items in Messages table for deletion.
+function selectAll() {
+    if(document.getElementById("checkAll").checked==true) {
+        document.getElementById("checkAll").checked=true;<?php
+        for($i = 1; $i <= $count; $i++) {
+            echo "document.getElementById(\"check$i\").checked=true; document.getElementById(\"row$i\").style.background='#E7E7E7';  ";
+        } ?>
+    }
+    else {
+        document.getElementById("checkAll").checked=false;<?php
+        for($i = 1; $i <= $count; $i++) {
+            echo "document.getElementById(\"check$i\").checked=false; document.getElementById(\"row$i\").style.background='#F7F7F7';  ";
+        } ?>
+    }
+}
+// The two functions below are for managing row styles in Messages table.
+function selectRow(row) {
+    document.getElementById(row).style.background = "#E7E7E7";
+}
+function deselectRow(row) {
+    document.getElementById(row).style.background = "#F7F7F7";
+}
+</script><?php
+}
                 if ($next < $total) {
                     $nextlink = "<a href=\"messages.php?show_all=" . attr($showall) . "&sortby=" . attr($sortby) . "&sortorder=" . attr($sortorder) . "&begin=" . attr($next) . "&$activity_string_html\" onclick=\"top.restoreSession()\">>></a>";
                 } else {
                     $nextlink = ">>";
                 }
-            // Display the Messages table header.
-                echo "
-                    <table width=100%>
-                        <tr>
-                            <td>
-                                <form name='MessageList' id='MessageList' action=\"messages.php?showall=" . attr($showall) . "&sortby=" . attr($sortby) . "&sortorder=" . attr($sortorder) . "&begin=" . attr($begin) . "&$activity_string_html\" method=post>
-                                    <table border=0 cellpadding=1 cellspacing=0 width=90%  style=\"border-left: 1px #000000 solid; border-right: 1px #000000 solid; border-top: 1px #000000 solid;\">
-                                        <input type=hidden name=task value=delete>
-                                        <tr height=\"24\" style=\"background:lightgrey\">
-                                        <td align=\"center\" width=\"25\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\"><input type=checkbox id=\"checkAll\" onclick=\"selectAll()\"></td>
-                                        <td width=\"20%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
-                xlt('From') . "</b> $sortlink[0]</td>
-                                        <td width=\"20%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
-                xlt('Patient') . "</b> $sortlink[1]</td>
-                                        <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
-                xlt('Type') . "</b> $sortlink[2]</td>
-                                        <td width=\"15%\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\" class=bold>&nbsp;<b>" .
-                xlt('Date') . "</b> $sortlink[3]</td>
-                                        <td width=\"15%\" style=\"border-bottom: 1px #000000 solid; \" class=bold>&nbsp;<b>" .
-                xlt('Status') . "</b> $sortlink[4]</td>
-                                        </tr>";
-            // Display the Messages table body.
-                $count = 0;
-                $result = getPnotesByUser($active, $show_all, $_SESSION['authUser'], false, $sortby, $sortorder, $begin, $listnumber);
-                while ($myrow = sqlFetchArray($result)) {
-                    $name = $myrow['user'];
-                    $name = $myrow['users_lname'];
-                    if ($myrow['users_fname']) {
-                        $name .= ", " . $myrow['users_fname'];
-                    }
-                    $patient = $myrow['pid'];
-                    if ($patient > 0) {
-                        $patient = $myrow['patient_data_lname'];
-                        if ($myrow['patient_data_fname']) {
-                            $patient .= ", " . $myrow['patient_data_fname'];
-                        }
-                    } else {
-                        $patient = "* " . xlt('Patient must be set manually') . " *";
-                    }
-                    $count++;
-                    echo "
-                        <tr id=\"row$count\" style=\"background:white\" height=\"24\">
-                            <td align=\"center\" style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\">
-                                <input type=checkbox id=\"check$count\" name=\"delete_id[]\" value=\"" .
-                    attr($myrow['id']) . "\" onclick=\"if(this.checked==true){ selectRow('row$count'); }else{ deselectRow('row$count'); }\"></td>
-                            <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\">
-                                <table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
-                    text($name) . "</td><td width=5></td></tr>
-                                </table></td>
-                            <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\">
-                                <table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\"><a href=\"messages.php?showall=" . attr($showall) . "&sortby=" . attr($sortby) . "&sortorder=" . attr($sortorder) . "&begin=" . attr($begin) . "&task=edit&noteid=" .
-                    attr($myrow['id']) . "&$activity_string_html\" onclick=\"top.restoreSession()\">" .
-                    text($patient) . "</a></td><td width=5></td></tr>
-                                </table></td>
-                            <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\">
-                                <table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
-                    xlt($myrow['title']) . "</td><td width=5></td></tr>
-                                </table></td>
-                            <td style=\"border-bottom: 1px #000000 solid; border-right: 1px #000000 solid;\">
-                                <table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
-                    text(oeFormatShortDate(substr($myrow['date'], 0, strpos($myrow['date'], " ")))) . "</td><td width=5></td></tr>
-                                </table>
-                            </td>
-                            <td style=\"border-bottom: 1px #000000 solid;\">
-                                <table cellspacing=0 cellpadding=0 width=100%><tr><td width=5></td><td class=\"text\">" .
-                    xlt($myrow['message_status']) . "</td><td width=5></td></tr>
-                                </table>
-                            </td>
-                        </tr>";
-                }
-            // Display the Messages table footer.
-
-                echo "            </table>
-                                </form>
-                                <table class='table'>
-                                    <tr>
-                                    <td class=\"text\"><a href=\"messages.php?showall=" . attr($showall) . "&sortby=" . attr($sortby) . "&sortorder=" . attr($sortorder) . "&begin=" . attr($begin) . "&task=addnew&$activity_string_html\" onclick=\"top.restoreSession()\">" .
-                xlt('Add New') . "</a> &nbsp; <a href=\"javascript:confirmDeleteSelected()\" onclick=\"top.restoreSession()\">" .
-                xlt('Delete') . "</a></td>
-                                    <td align=right class=\"text amount-msg\">$prevlink &nbsp; $end of $total &nbsp; $nextlink</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>";
             ?>
 
                 <script language="javascript">
@@ -847,8 +874,6 @@ if (!empty($_REQUEST['go'])) { ?>
             }
         }
     </script>
-    <?php
-} ?>
 
 </body>
 </html>

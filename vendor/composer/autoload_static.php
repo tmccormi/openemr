@@ -90,11 +90,11 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
             'Zend\\Barcode\\' => 13,
             'Zend\\Authentication\\' => 20,
         ),
-        'W' => 
+        'W' =>
         array (
             'Webmozart\\Assert\\' => 17,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php55\\' => 23,
             'Symfony\\Polyfill\\Php54\\' => 23,
@@ -110,7 +110,7 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
             'Symfony\\Component\\Config\\' => 25,
             'Stripe\\' => 7,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
@@ -118,7 +118,7 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
             'Psr\\Container\\' => 14,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
         ),
-        'O' => 
+        'O' =>
         array (
             'OpenEMR\\Tabs\\' => 13,
             'OpenEMR\\Services\\' => 17,
@@ -136,17 +136,33 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
             'OpenEMR\\Billing\\' => 16,
             'OpenEMR\\Admin\\' => 14,
         ),
-        'K' => 
+        'K' =>
         array (
             'Knp\\Snappy\\' => 11,
         ),
-        'I' => 
+        'I' =>
         array (
             'Interop\\Container\\' => 18,
             'Illuminate\\Support\\' => 19,
             'Illuminate\\Contracts\\' => 21,
         ),
-        'D' => 
+        'S' =>
+        array (
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Component\\Debug\\' => 24,
+            'Symfony\\Component\\Console\\' => 26,
+        ),
+        'P' =>
+        array (
+            'PluginSystem\\' => 13,
+            'Psr\\Log\\' => 8,
+        ),
+        'I' =>
+        array (
+            'Illuminate\\Support\\' => 19,
+            'Illuminate\\Contracts\\' => 21,
+        ),
+        'D' =>
         array (
             'Dotenv\\' => 7,
             'Dompdf\\' => 7,
@@ -155,9 +171,13 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
             'Doctrine\\Common\\Annotations\\' => 28,
             'DeepCopy\\' => 9,
         ),
-        'A' => 
+        'A' =>
         array (
             'Adldap\\' => 7,
+        ),
+        'F' =>
+        array (
+            'Framework\\' => 10,
         ),
     );
 
@@ -166,373 +186,373 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
         array (
             0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
         ),
-        'phpDocumentor\\Reflection\\' => 
+        'phpDocumentor\\Reflection\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
         ),
-        'Zend\\XmlRpc\\' => 
+        'Zend\\XmlRpc\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-xmlrpc/src',
         ),
-        'Zend\\View\\' => 
+        'Zend\\View\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-view/src',
         ),
-        'Zend\\Version\\' => 
+        'Zend\\Version\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-version/src',
         ),
-        'Zend\\Validator\\' => 
+        'Zend\\Validator\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-validator/src',
         ),
-        'Zend\\Uri\\' => 
+        'Zend\\Uri\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-uri/src',
         ),
-        'Zend\\Text\\' => 
+        'Zend\\Text\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-text/src',
         ),
-        'Zend\\Test\\' => 
+        'Zend\\Test\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-test/src',
         ),
-        'Zend\\Tag\\' => 
+        'Zend\\Tag\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-tag/src',
         ),
-        'Zend\\Stdlib\\' => 
+        'Zend\\Stdlib\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
         ),
-        'Zend\\Soap\\' => 
+        'Zend\\Soap\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-soap/src',
         ),
-        'Zend\\Session\\' => 
+        'Zend\\Session\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-session/src',
         ),
-        'Zend\\ServiceManager\\' => 
+        'Zend\\ServiceManager\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-servicemanager/src',
         ),
-        'Zend\\Server\\' => 
+        'Zend\\Server\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-server/src',
         ),
-        'Zend\\Serializer\\' => 
+        'Zend\\Serializer\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-serializer/src',
         ),
-        'Zend\\Psr7Bridge\\' => 
+        'Zend\\Psr7Bridge\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-psr7bridge/src',
         ),
-        'Zend\\ProgressBar\\' => 
+        'Zend\\ProgressBar\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-progressbar/src',
         ),
-        'Zend\\Permissions\\Rbac\\' => 
+        'Zend\\Permissions\\Rbac\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-permissions-rbac/src',
         ),
-        'Zend\\Permissions\\Acl\\' => 
+        'Zend\\Permissions\\Acl\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-permissions-acl/src',
         ),
-        'Zend\\Paginator\\' => 
+        'Zend\\Paginator\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-paginator/src',
         ),
-        'Zend\\Navigation\\' => 
+        'Zend\\Navigation\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-navigation/src',
         ),
-        'Zend\\Mvc\\' => 
+        'Zend\\Mvc\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-mvc/src',
         ),
-        'Zend\\ModuleManager\\' => 
+        'Zend\\ModuleManager\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-modulemanager/src',
         ),
-        'Zend\\Mime\\' => 
+        'Zend\\Mime\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-mime/src',
         ),
-        'Zend\\Memory\\' => 
+        'Zend\\Memory\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-memory/src',
         ),
-        'Zend\\Math\\' => 
+        'Zend\\Math\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-math/src',
         ),
-        'Zend\\Mail\\' => 
+        'Zend\\Mail\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-mail/src',
         ),
-        'Zend\\Log\\' => 
+        'Zend\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-log/src',
         ),
-        'Zend\\Loader\\' => 
+        'Zend\\Loader\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-loader/src',
         ),
-        'Zend\\Json\\' => 
+        'Zend\\Json\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-json/src',
         ),
-        'Zend\\InputFilter\\' => 
+        'Zend\\InputFilter\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-inputfilter/src',
         ),
-        'Zend\\I18n\\' => 
+        'Zend\\I18n\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-i18n/src',
         ),
-        'Zend\\Hydrator\\' => 
+        'Zend\\Hydrator\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-hydrator/src',
         ),
-        'Zend\\Http\\' => 
+        'Zend\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-http/src',
         ),
-        'Zend\\Form\\' => 
+        'Zend\\Form\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-form/src',
         ),
-        'Zend\\Filter\\' => 
+        'Zend\\Filter\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-filter/src',
         ),
-        'Zend\\File\\' => 
+        'Zend\\File\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-file/src',
         ),
-        'Zend\\Feed\\' => 
+        'Zend\\Feed\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-feed/src',
         ),
-        'Zend\\EventManager\\' => 
+        'Zend\\EventManager\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-eventmanager/src',
         ),
-        'Zend\\Escaper\\' => 
+        'Zend\\Escaper\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
         ),
-        'Zend\\Dom\\' => 
+        'Zend\\Dom\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-dom/src',
         ),
-        'Zend\\Diactoros\\' => 
+        'Zend\\Diactoros\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-diactoros/src',
         ),
-        'Zend\\Di\\' => 
+        'Zend\\Di\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-di/src',
         ),
-        'Zend\\Debug\\' => 
+        'Zend\\Debug\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-debug/src',
         ),
-        'Zend\\Db\\' => 
+        'Zend\\Db\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-db/src',
         ),
-        'Zend\\Crypt\\' => 
+        'Zend\\Crypt\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-crypt/src',
         ),
-        'Zend\\Console\\' => 
+        'Zend\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-console/src',
         ),
-        'Zend\\Config\\' => 
+        'Zend\\Config\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-config/src',
         ),
-        'Zend\\Code\\' => 
+        'Zend\\Code\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-code/src',
         ),
-        'Zend\\Captcha\\' => 
+        'Zend\\Captcha\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-captcha/src',
         ),
-        'Zend\\Cache\\' => 
+        'Zend\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-cache/src',
         ),
-        'Zend\\Barcode\\' => 
+        'Zend\\Barcode\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-barcode/src',
         ),
-        'Zend\\Authentication\\' => 
+        'Zend\\Authentication\\' =>
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-authentication/src',
         ),
-        'Webmozart\\Assert\\' => 
+        'Webmozart\\Assert\\' =>
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
-        'Symfony\\Polyfill\\Php55\\' => 
+        'Symfony\\Polyfill\\Php55\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php55',
         ),
-        'Symfony\\Polyfill\\Php54\\' => 
+        'Symfony\\Polyfill\\Php54\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php54',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Component\\Yaml\\' => 
+        'Symfony\\Component\\Yaml\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
         ),
-        'Symfony\\Component\\Process\\' => 
+        'Symfony\\Component\\Process\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
-        'Symfony\\Component\\HttpFoundation\\' => 
+        'Symfony\\Component\\HttpFoundation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
-        'Symfony\\Component\\Filesystem\\' => 
+        'Symfony\\Component\\Filesystem\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/filesystem',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Symfony\\Component\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'Symfony\\Component\\DependencyInjection\\' => 
+        'Symfony\\Component\\DependencyInjection\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/dependency-injection',
         ),
-        'Symfony\\Component\\Debug\\' => 
+        'Symfony\\Component\\Debug\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/debug',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Symfony\\Component\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'Symfony\\Component\\Config\\' => 
+        'Symfony\\Component\\Config\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/config',
         ),
-        'Stripe\\' => 
+        'Stripe\\' =>
         array (
             0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
-        'Psr\\SimpleCache\\' => 
+        'Psr\\SimpleCache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'PhpOffice\\PhpSpreadsheet\\' => 
+        'PhpOffice\\PhpSpreadsheet\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
-        'OpenEMR\\Tabs\\' => 
+        'OpenEMR\\Tabs\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/tabs/src',
         ),
-        'OpenEMR\\Services\\' => 
+        'OpenEMR\\Services\\' =>
         array (
             0 => __DIR__ . '/../..' . '/services',
         ),
-        'OpenEMR\\Sample\\' => 
+        'OpenEMR\\Sample\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/sample/src',
         ),
-        'OpenEMR\\Rx\\Weno\\' => 
+        'OpenEMR\\Rx\\Weno\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/weno/src',
         ),
-        'OpenEMR\\Repositories\\' => 
+        'OpenEMR\\Repositories\\' =>
         array (
             0 => __DIR__ . '/../..' . '/repositories',
         ),
-        'OpenEMR\\Reminder\\' => 
+        'OpenEMR\\Reminder\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/reminder/src',
         ),
-        'OpenEMR\\Pdf\\' => 
+        'OpenEMR\\Pdf\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/pdf/src',
         ),
-        'OpenEMR\\Menu\\' => 
+        'OpenEMR\\Menu\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/menu/src',
         ),
-        'OpenEMR\\Entities\\' => 
+        'OpenEMR\\Entities\\' =>
         array (
             0 => __DIR__ . '/../..' . '/entities',
         ),
-        'OpenEMR\\Encounter\\Services\\' => 
+        'OpenEMR\\Encounter\\Services\\' =>
         array (
             0 => __DIR__ . '/../..' . '/interface/patient_file/encounter/Services',
         ),
-        'OpenEMR\\Core\\' => 
+        'OpenEMR\\Core\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/core/src',
         ),
-        'OpenEMR\\Common\\' => 
+        'OpenEMR\\Common\\' =>
         array (
             0 => __DIR__ . '/../..' . '/common',
         ),
-        'OpenEMR\\Calendar\\' => 
+        'OpenEMR\\Calendar\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/calendar/src',
         ),
-        'OpenEMR\\Billing\\' => 
+        'OpenEMR\\Billing\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/billing/src',
         ),
-        'OpenEMR\\Admin\\' => 
+        'OpenEMR\\Admin\\' =>
         array (
             0 => __DIR__ . '/../..' . '/library/admin/src',
         ),
-        'Knp\\Snappy\\' => 
+        'Knp\\Snappy\\' =>
         array (
             0 => __DIR__ . '/..' . '/knplabs/knp-snappy/src/Knp/Snappy',
         ),
-        'Interop\\Container\\' => 
+        'Interop\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
         ),
-        'Illuminate\\Support\\' => 
+        'Illuminate\\Support\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/support',
         ),
-        'Illuminate\\Contracts\\' => 
+        'Illuminate\\Contracts\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/contracts',
         ),
-        'Dotenv\\' => 
+        'Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
@@ -540,23 +560,35 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
         array (
             0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
-        'Doctrine\\Instantiator\\' => 
+        'Doctrine\\Instantiator\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
         ),
-        'Doctrine\\Common\\Cache\\' => 
+        'Doctrine\\Common\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
         ),
-        'Doctrine\\Common\\Annotations\\' => 
+        'Doctrine\\Common\\Annotations\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
         ),
-        'DeepCopy\\' => 
+        'Adldap\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/adldap2/adldap2/src',
+        ),
+        'PluginSystem\\' =>
+            array (
+                0 => __DIR__ . '/../..' . '/library/pluginsystem',
+            ),
+        'Framework\\' =>
+            array (
+                0 => __DIR__ . '/..' . '/libreehr/Framework',
+            ),
+        'DeepCopy\\' =>
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
-        'Adldap\\' => 
+        'Adldap\\' =>
         array (
             0 => __DIR__ . '/..' . '/adldap2/adldap2/src',
         ),
@@ -570,35 +602,35 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
                 0 => __DIR__ . '/..' . '/zendframework/zendxml/library',
             ),
         ),
-        'T' => 
+        'T' =>
         array (
-            'Twig_' => 
+            'Twig_' =>
             array (
                 0 => __DIR__ . '/..' . '/twig/twig/lib',
             ),
         ),
-        'S' => 
+        'S' =>
         array (
             'Svg\\' => 
             array (
                 0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src',
             ),
         ),
-        'P' => 
+        'P' =>
         array (
-            'Prophecy\\' => 
+            'Prophecy\\' =>
             array (
                 0 => __DIR__ . '/..' . '/phpspec/prophecy/src',
             ),
         ),
-        'H' => 
+        'H' =>
         array (
-            'HTMLPurifier' => 
+            'HTMLPurifier' =>
             array (
                 0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
             ),
         ),
-        'F' => 
+        'F' =>
         array (
             'FontLib\\' => 
             array (
@@ -607,15 +639,15 @@ class ComposerStaticInit22ddb69348c7ed922c96325249cef3d0
         ),
         'D' => 
         array (
-            'Doctrine\\ORM\\' => 
+            'Doctrine\\ORM\\' =>
             array (
                 0 => __DIR__ . '/..' . '/doctrine/orm/lib',
             ),
-            'Doctrine\\DBAL\\' => 
+            'Doctrine\\DBAL\\' =>
             array (
                 0 => __DIR__ . '/..' . '/doctrine/dbal/lib',
             ),
-            'Doctrine\\CouchDB' => 
+            'Doctrine\\CouchDB' =>
             array (
                 0 => __DIR__ . '/..' . '/doctrine/couchdb/lib',
             ),

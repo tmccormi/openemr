@@ -206,8 +206,8 @@ if ($result3['provider']) {   // Use provider in case there is an ins record w/ 
  }
 
  function newEvt() {
-     let title = '<?php echo xla('Appointments'); ?>';
-     let url = '../../main/calendar/add_edit_event.php?patientid=<?php echo htmlspecialchars($pid, ENT_QUOTES); ?>';
+     var title = '<?php echo xla('Appointments'); ?>';
+     var url = '../../main/calendar/add_edit_event.php?patientid=<?php echo htmlspecialchars($pid, ENT_QUOTES); ?>';
      dlgopen(url, '_blank', 725, 500, '', title);
      return false;
  }
@@ -794,7 +794,8 @@ $menu_restrictions = $menuPatient->getMenu();
                 <div style='float:left; margin-right:20px'>
 
                     <table cellspacing=0 cellpadding=0>
-                    <?php if (!$GLOBALS['hide_billing_widget']) { ?>
+                    <?php do_action( 'demographics_before_first_table_row' ); ?>
+                    <?php if (!$GLOBALS['hide_billing_widget'])  { ?>
                         <tr>
                             <td>
                                 <?php
@@ -1953,4 +1954,5 @@ checkSkipConditions();
 </script>
 
 </body>
+<?php do_action( 'demographics_before_html_end', $args = [ 'pid' => $pid ] ); ?>
 </html>

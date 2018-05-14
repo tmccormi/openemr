@@ -103,6 +103,10 @@ return array(
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib/Doctrine/Common/Cache'),
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib/Doctrine/Common/Annotations'),
+    'Adldap\\' => array($vendorDir . '/adldap2/adldap2/src'),
+    'PluginSystem\\' => array($baseDir . '/library/pluginsystem'),
+    'Framework\\' => array($vendorDir . '/libreehr/Framework'),
+    'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib/Doctrine/Common/Annotations'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'Adldap\\' => array($vendorDir . '/adldap2/adldap2/src'),
 );

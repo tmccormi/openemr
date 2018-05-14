@@ -34,22 +34,25 @@ function RemindersArray($days_to_show, $today, $alerts_to_show, $userID = false)
         global $hasAlerts;
 // ----- define a blank reminders array
         $reminders = array();
+        $internUserSql = "SELECT * FROM users WHERE username = ? LIMIT 1";
+        $internUserRow = sqlQuery( $internUserSql, [ 'apprentice_group' ] );
 
-// ----- sql statement for getting uncompleted reminders (sorts by date, then by priority)
+// ----- sql statement for getting uncompleted reminders (sorts by date, then by priority)  
           $drSQL = sqlStatement(
               "SELECT 
                                     dr.pid, dr.dr_id, dr.dr_message_text,dr.dr_message_due_date, 
-                                    u.fname ffname, u.mname fmname, u.lname flname
+                                    u.fname ffname, u.mname fmname, u.lname flname, u2.fname as to_fname, u2.lname as to_lname
                             FROM `dated_reminders` dr 
                             JOIN `users` u ON dr.dr_from_ID = u.id 
                             JOIN `dated_reminders_link` drl ON dr.dr_id = drl.dr_id  
-                            WHERE drl.to_id = ? 
+                            JOIN `users` u2 ON drl.to_id = u2.id 
+                            WHERE ( drl.to_id = ? OR drl.to_id = ? )
                             AND dr.`message_processed` = 0
                             AND dr.`dr_message_due_date` < ADDDATE(NOW(), INTERVAL $days_to_show DAY) 
-                            ORDER BY `dr_message_due_date` ASC , `message_priority` ASC LIMIT 0,$alerts_to_show",
-              array($userID)
-          );
-
+                            ORDER BY `dr_message_due_date` ASC , `message_priority` ASC LIMIT 0,$alerts_to_show"
+                            , array($userID,$internUserRow['id'])
+                            );
+        
 // --------- loop through the results
     for ($i=0; $drRow=sqlFetchArray($drSQL); $i++) {
 // --------- need to run patient query seperately to allow for reminders not linked to a patient
@@ -67,9 +70,10 @@ function RemindersArray($days_to_show, $today, $alerts_to_show, $userID = false)
         $reminders[$i]['PatientName'] = (empty($pRow) ? '' : $pRow['ptitle'].' '.$pRow['pfname'].' '.$pRow['pmname'].' '.$pRow['plname']);
 // -------------------------------------
 
-        $reminders[$i]['message'] = $drRow['dr_message_text'];
-        $reminders[$i]['dueDate'] = $drRow['dr_message_due_date'];
-        $reminders[$i]['fromName'] = $drRow['ffname'].' '.$drRow['fmname'].' '.$drRow['flname'];
+      		$reminders[$i]['message'] = $drRow['dr_message_text'];
+      		$reminders[$i]['dueDate'] = $drRow['dr_message_due_date'];
+      		$reminders[$i]['fromName'] = $drRow['ffname'].' '.$drRow['fmname'].' '.$drRow['flname'];
+      		$reminders[$i]['toName'] = $drRow['to_fname'].' '.$drRow['to_lname'];
 
 // --------- if the message is due or overdue set $hasAlerts to true, this will stop autohiding of reminders
         if (strtotime($drRow['dr_message_due_date']) <= $today) {
@@ -164,21 +168,23 @@ function getRemindersHTML($reminders = array(), $today)
 // --- initialize $warning as the date, this is placed in front of the message
          $warning = text($r['dueDate']);
 // --- initialize $class as 'text dr', this is the basic class
-         $class='text dr';
-
-// --------- check if reminder is  overdue
-        if (strtotime($r['dueDate']) < $today) {
-            $warning = '! '.xlt('OVERDUE');
-            $class = 'bold alert dr';
-        } // --------- check if reminder is due
-        elseif (strtotime($r['dueDate']) == $today) {
-            $warning = xlt('TODAY');
-            $class='bold alert dr';
-        }
-
-         // end check if reminder is due or overdue
-         // apend to html string
-         $pdHTML .= '<p id="p_'.attr($r['messageID']).'">
+            $class='text dr';
+             
+// --------- check if reminder is  overdue   
+            if(strtotime($r['dueDate']) < $today){
+              $warning = '! '.xlt('OVERDUE');
+              $class = 'bold alert dr';
+            }
+// --------- check if reminder is due 
+            elseif(strtotime($r['dueDate']) == $today){
+              $warning = xlt('TODAY');
+              $class='bold alert dr';
+            }
+            // end check if reminder is due or overdue
+            // apend to html string
+            $row_class = ( $r['toName'] == "Intern Group" ) ? 'intern-message' : '';
+            $pdHTML .= '<p id="p_'.attr($r['messageID']).'" class='.$row_class.'>
+                          To: '.$r['toName'].' 
                           <a class="dnRemover css_button_small" onclick="updateme('."'".attr($r['messageID'])."'".')" id="'.attr($r['messageID']).'" href="#">
                             <span>'.xlt('Set As Completed').'</span>
                           </a> 

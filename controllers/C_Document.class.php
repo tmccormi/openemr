@@ -313,7 +313,7 @@ class C_Document extends Controller
             $url = $temp_url;
             $pdetails = getPatientData($patient_id);
             $pname = $pdetails['fname']." ".$pdetails['lname'];
-            $this->document_send($_POST['provide_email'], $_POST['note'], $url, $pname);
+            $this->document_send($d, $_POST['provide_email'],$_POST['asign_note_to_user'], $_POST['note'],$url,$pname);
             if ($couch_docid && $couch_revid) {
       // remove the temporary couchdb file
                 unlink($temp_couchdb_url);
@@ -449,6 +449,18 @@ class C_Document extends Controller
 
         $activity = $this->fetch($GLOBALS['template_dir'] . "documents/" . $this->template_mod . "_view.html");
         $this->assign("activity", $activity);
+
+        $all_users_sql = "SELECT fname, lname, username FROM users WHERE active = '1' ORDER BY lname DESC";
+        $all_users = sqlStatement( $all_users_sql );
+        $all_users_array = array();
+        $user_select_options = "<option value=''> -- </option>";
+        while ( $all_user = sqlFetchArray( $all_users ) ) {
+            $full_name = $all_user['lname'].', '.$all_user['fname'];
+            $all_users_array[$full_name] = $all_user['username'];
+            $user_select_options .= "<option value='{$all_user['username']}'>$full_name</option>";
+        }
+
+        $this->assign( 'user_select_options', $user_select_options );
 
         return $this->list_action($patient_id);
     }
@@ -1227,33 +1239,42 @@ class C_Document extends Controller
         fclose($LOG);
     }
 
-    function document_send($email, $body, $attfile, $pname)
-    {
-        if (empty($email)) {
-            $this->assign("process_result", "Email could not be sent, the address supplied: '$email' was empty or invalid.");
-            return;
+    function document_send(Document $document, $email,$user_message,$body,$attfile,$pname) {
+
+        if (!empty($email)) {
+
+            $desc = "Please check the attached patient document.\n Content:" . attr( $body );
+            $mail = new MyMailer();
+            $from_name = $GLOBALS[ "practice_return_email_path" ];
+            $from = $GLOBALS[ "practice_return_email_path" ];
+            $mail->AddReplyTo( $from, $from_name );
+            $mail->SetFrom( $from, $from );
+            $to = $email;
+            $to_name = $email;
+            $mail->AddAddress( $to, $to_name );
+            $subject = "Patient documents";
+            $mail->Subject = $subject;
+            $mail->Body = $desc;
+            $mail->AddAttachment( $attfile );
+            if ( $mail->Send() ) {
+                $retstatus = "email_sent";
+            } else {
+                $email_status = $mail->ErrorInfo;
+                //echo "EMAIL ERROR: ".$email_status;
+                $retstatus = "email_fail";
+            }
         }
 
-          $desc = "Please check the attached patient document.\n Content:".$body;
-          $mail = new MyMailer();
-          $from_name = $GLOBALS["practice_return_email_path"];
-          $from =  $GLOBALS["practice_return_email_path"];
-          $mail->AddReplyTo($from, $from_name);
-          $mail->SetFrom($from, $from);
-          $to = $email ;
-        $to_name =$email;
-          $mail->AddAddress($to, $to_name);
-          $subject = "Patient documents";
-          $mail->Subject = $subject;
-          $mail->Body = $desc;
-          $mail->AddAttachment($attfile);
-        if ($mail->Send()) {
-            $retstatus = "email_sent";
-        } else {
-            $email_status = $mail->ErrorInfo;
-            //echo "EMAIL ERROR: ".$email_status;
-            $retstatus =  "email_fail";
+        if ( !empty($user_message)) {
+            global $pid;
+            $desc = "Please review linked document. \n Content:" . attr( $body );
+            $document->postPatientNote($user_message,"",$desc );
         }
+
+        if ( empty($user_message) && empty($email)) {
+            $this->assign("process_result","Message could not be sent, the address supplied: '$email' was empty or invalid.");
+        }
+
     }
 
 //place to hold optional code

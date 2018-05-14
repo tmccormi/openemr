@@ -616,3 +616,5 @@ if (version_compare(phpversion(), "5.2.1", ">=")) {
 
 // turn off PHP compatibility warnings
 ini_set("session.bug_compat_warn", "off");
+
+include_once __DIR__ . '/../library/pluginsystem/bootstrap.php';

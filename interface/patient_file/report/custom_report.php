@@ -720,7 +720,7 @@ foreach ($ar as $key => $val) {
 
             echo "<div class='text issue'>";
             echo "<span class='issue_title'>" . $irow['title'] . ":</span>";
-            echo "<span class='issue_comments'> " . $irow['comments'] . "</span>\n";
+            echo "<span class='issue_comments'> " . nl2br($irow['comments']) . "</span>\n";
             // Show issue's chief diagnosis and its description:
             if ($diagnosis) {
                 echo "<div class='text issue_diag'>";
