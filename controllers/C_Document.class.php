@@ -447,7 +447,7 @@ class C_Document extends Controller
 
         $this->assign("tree_html_listbox", $treeMenu_listbox->toHTML());
 
-        $all_users_sql = "SELECT fname, lname, username FROM users WHERE active = '1' ORDER BY lname DESC";
+        $all_users_sql = "SELECT fname, lname, username FROM users WHERE active = '1' ORDER BY lname ASC";
         $all_users = sqlStatement( $all_users_sql );
         $all_users_array = array();
         $user_select_options = "<option value=''> -- </option>";

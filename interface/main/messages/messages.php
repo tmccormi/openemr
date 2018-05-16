@@ -596,7 +596,7 @@ if (!empty($_REQUEST['go'])) { ?>
             } else {
                 $patient = "* Patient must be set manually *";
             }
-            $assigned_to_name = $myrow['assigned_fname'].' '.$myrow['assigned_lname'];
+            $assigned_to_name = $myrow['assigned_lname'].", ".$myrow['assigned_fname'];
             $rowClass = '';
             if ( $myrow['assigned_to'] == 'apprentice_group' ) {
                 $rowClass = "intern-message-row";
