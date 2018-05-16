@@ -455,14 +455,15 @@ class C_Document extends Controller
             $full_name = $all_user['lname'].', '.$all_user['fname'];
             $all_users_array[$full_name] = $all_user['username'];
             $value = attr($all_user['username']);
-            $user_select_options .= "<option value='$value'>text($full_name)</option>";
+            $label = text($full_name);
+            $user_select_options .= "<option value='$value'>$label</option>";
         }
 
         $this->assign( "USER_SELECT_OPTIONS", $user_select_options );
 
         $activity = $this->fetch($GLOBALS['template_dir'] . "documents/" . $this->template_mod . "_view.html");
         $this->assign("activity", $activity);
-        
+
         return $this->list_action($patient_id);
     }
 
