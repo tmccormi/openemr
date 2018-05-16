@@ -447,9 +447,6 @@ class C_Document extends Controller
 
         $this->assign("tree_html_listbox", $treeMenu_listbox->toHTML());
 
-        $activity = $this->fetch($GLOBALS['template_dir'] . "documents/" . $this->template_mod . "_view.html");
-        $this->assign("activity", $activity);
-
         $all_users_sql = "SELECT fname, lname, username FROM users WHERE active = '1' ORDER BY lname DESC";
         $all_users = sqlStatement( $all_users_sql );
         $all_users_array = array();
@@ -457,11 +454,15 @@ class C_Document extends Controller
         while ( $all_user = sqlFetchArray( $all_users ) ) {
             $full_name = $all_user['lname'].', '.$all_user['fname'];
             $all_users_array[$full_name] = $all_user['username'];
-            $user_select_options .= "<option value='{$all_user['username']}'>$full_name</option>";
+            $value = attr($all_user['username']);
+            $user_select_options .= "<option value='$value'>text($full_name)</option>";
         }
 
-        $this->assign( 'user_select_options', $user_select_options );
+        $this->assign( "USER_SELECT_OPTIONS", $user_select_options );
 
+        $activity = $this->fetch($GLOBALS['template_dir'] . "documents/" . $this->template_mod . "_view.html");
+        $this->assign("activity", $activity);
+        
         return $this->list_action($patient_id);
     }
 
