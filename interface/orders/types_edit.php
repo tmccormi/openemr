@@ -5,6 +5,14 @@
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
+/*
+ * Adapted for use with the dedicated laboratory interfaces developed
+ * for Williams Medical Technologies, Inc.
+ *
+ * @since		2014-06-15
+ * @author		Ron Criswell <ron.criswell@MDTechSvcs.com>
+ *
+ */
 
 require_once("../globals.php");
 require_once("$srcdir/acl.inc");
@@ -93,6 +101,8 @@ td { font-size:10pt; }
 
 .ordonly { }
 .resonly { }
+.profonly { }
+.detonly { }
 
 </style>
 
@@ -150,7 +160,11 @@ function proc_type_changed() {
  var ptpfx = ptval.substring(0, 3);
  $('.ordonly').hide();
  $('.resonly').hide();
+ $('.detonly').hide();
+ $('.profonly').hide();
  if (ptpfx == 'ord') $('.ordonly').show();
+ if (ptpfx == 'det' || ptpfx == 'aoe') $('.detonly').show();
+ if (ptpfx == 'pro') $('.profonly').show();
  if (ptpfx == 'res'|| ptpfx == 'rec') $('.resonly').show();
 }
 
@@ -174,6 +188,7 @@ if ($_POST['form_save']) {
     "procedure_type = " . invalue('form_procedure_type') . ", " .
     "body_site = "      . invalue('form_body_site')      . ", " .
     "specimen = "       . invalue('form_specimen')       . ", " .
+    "transport = "       . invalue('form_transport')       . ", " .
     "route_admin = "    . invalue('form_route_admin')    . ", " .
     "laterality = "     . invalue('form_laterality')     . ", " .
     "description = "    . invalue('form_description')    . ", " .
@@ -181,7 +196,8 @@ if ($_POST['form_save']) {
     "`range` = "        . invalue('form_range')          . ", " .
     "standard_code = "  . invalue('form_standard_code')  . ", " .
     "related_code = "   . invalue('form_related_code')   . ", " .
-    "seq = "            . invalue('form_seq');
+    "seq = "		    . invalue('form_seq')   . ", " .
+    "notes = "          . invalue('form_notes');
 
     if ($typeid) {
         sqlStatement("UPDATE procedure_type SET $sets WHERE procedure_type_id = '$typeid'");
@@ -252,7 +268,7 @@ echo generate_select_list(
   <td>
    <input type='text' size='40' name='form_name' maxlength='63'
     value='<?php echo htmlspecialchars($row['name'], ENT_QUOTES); ?>'
-    title='<?php echo xlt('Your name for this category, procedure or result'); ?>'
+    title='<?php echo xlt('Your name for this category, procedure, profile or result'); ?>'
     style='width:100%' class='inputtext' />
   </td>
  </tr>
@@ -262,8 +278,17 @@ echo generate_select_list(
   <td>
    <input type='text' size='40' name='form_description' maxlength='255'
     value='<?php echo htmlspecialchars($row['description'], ENT_QUOTES); ?>'
-    title='<?php echo xlt('Description of this procedure or result code'); ?>'
+    title='<?php echo xlt('Description of this profile, procedure or result code'); ?>'
     style='width:100%' class='inputtext' />
+  </td>
+ </tr>
+
+ <tr class='detonly'>
+  <td nowrap style='vertical-align:top'><b><?php echo xlt('Details'); ?>:</b></td>
+  <td>
+   <textarea size='40' rows='4' name='form_notes'
+    title='<?php echo xlt('Details regarding this profile, procedure or result code'); ?>'
+    style='width:100%' class='inputtext'><?php echo htmlspecialchars($row['notes'], ENT_QUOTES); ?></textarea>
   </td>
  </tr>
 
@@ -278,7 +303,7 @@ echo generate_select_list(
  </tr>
 
  <tr class='ordonly'>
-  <td width='1%' nowrap><b><?php echo xlt('Order From'); ?>:</b></td>
+  <td width='1%' nowrap><b><?php echo xlt('Laboratory'); ?>:</b></td>
   <td>
    <select name='form_lab_id' title='<?php echo xla('The entity performing this procedure'); ?>'>
     <?php
@@ -297,17 +322,17 @@ echo generate_select_list(
   </td>
  </tr>
 
- <tr class='ordonly resonly'>
+ <tr class='profonly ordonly resonly'>
   <td nowrap><b><?php echo xlt('Identifying Code'); ?>:</b></td>
   <td>
    <input type='text' size='40' name='form_procedure_code' maxlength='31'
     value='<?php echo htmlspecialchars($row['procedure_code'], ENT_QUOTES); ?>'
-    title='<?php echo xla('The vendor-specific code identifying this procedure or result'); ?>'
+    title='<?php echo xla('The vendor-specific code identifying this profile, procedure or result'); ?>'
     style='width:100%' class='inputtext' />
   </td>
  </tr>
 
- <tr class='ordonly'>
+ <tr class='profonly ordonly'>
   <td nowrap><b><?php echo xlt('Standard Code'); ?>:</b></td>
   <td>
    <!--
@@ -324,12 +349,25 @@ echo generate_select_list(
  </tr>
 
  <tr class='ordonly'>
-  <td width='1%' nowrap><b><?php echo xlt('Body Site'); ?>:</b></td>
+  <td width='1%' nowrap><b><?php echo xlt('Specimen Type'); ?>:</b></td>
   <td>
 <?php
-generate_form_field(array('data_type' => 1, 'field_id' => 'body_site',
-  'list_id' => 'proc_body_site',
-  'description' => xl('Body site, if applicable')), $row['body_site']);
+generate_form_field(array('data_type' => 1, 'field_id' => 'specimen',
+  'list_id' => 'proc_specimen',
+  'description' => xl('Specimen Type')),
+  $row['specimen']);
+?>
+  </td>
+ </tr>
+
+ <tr class='ordonly'>
+  <td width='1%' nowrap><b><?php echo xlt('Transport Type'); ?>:</b></td>
+  <td>
+<?php
+generate_form_field(array('data_type' => 1, 'field_id' => 'transport',
+  'list_id' => 'proc_transport',
+  'description' => xl('Transport Type')),
+  $row['transport']);
 ?>
   </td>
  </tr>
@@ -407,6 +445,16 @@ generate_form_field(
     value='<?php echo $row['related_code'] ?>' onclick='sel_related("form_related_code")'
     title='<?php echo xla('Click to select services to perform if this result is abnormal'); ?>'
     style='width:100%' readonly />
+  </td>
+ </tr>
+
+ <tr class='profonly'>
+  <td nowrap><b><?php echo xlt('Component Code(s)'); ?>:</b></td>
+  <td>
+   <input type='text' size='50' name='form_related_code' 
+    value='<?php echo htmlspecialchars($row['related_code'], ENT_QUOTES); ?>'
+    title='<?php echo xla('Procedure codes included in this profile (separated by ^)'); ?>'
+    style='width:100%' class='inputtext' />
   </td>
  </tr>
 

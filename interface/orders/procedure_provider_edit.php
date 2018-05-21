@@ -194,6 +194,7 @@ while ($org_row = sqlFetchArray($org_res)) {
 <?php
 foreach (array(
   'D' => xl('Debugging'),
+  'V' => xl('Validation'),
   'P' => xl('Production'),
   ) as $key => $value) {
     echo "    <option value='" . attr($key) . "'";
@@ -217,6 +218,7 @@ foreach (array(
   // Add to this list as more protocols are supported.
   'DL'   => xl('Download'),
   'SFTP' => xl('SFTP'),
+  'WS'   => xl('Web Service'),
   'FS'   => xl('Local Filesystem'),
   ) as $key => $value) {
     echo "    <option value='" . attr($key) . "'";
@@ -234,7 +236,8 @@ foreach (array(
 foreach (array(
   'B' => xl('Bidirectional'),
   'R' => xl('Results Only'),
-  ) as $key => $value) {
+  'Q' => xl('Quest Interface'),
+) as $key => $value) {
     echo "    <option value='" . attr($key) . "'";
     if ($key == $row['direction']) {
         echo " selected";

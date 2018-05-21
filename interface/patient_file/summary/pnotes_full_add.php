@@ -274,7 +274,7 @@ while ($urow = sqlFetchArray($ures)) {
 if ($noteid) {
     $body = $prow['body'];
     $body = preg_replace(array('/(\sto\s)-patient-(\))/', '/(:\d{2}\s\()' . $patient_id . '(\sto\s)/'), '${1}' . $patientname . '${2}', $body);
-    $body = nl2br(htmlspecialchars($body, ENT_NOQUOTES));
+    $body = nl2br($body, ENT_NOQUOTES);
     echo "<div class='text'>".$body."</div>";
 }
 ?>

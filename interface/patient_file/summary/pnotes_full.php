@@ -442,10 +442,10 @@ if ($result != "") {
 
         $body = $iter['body'];
         if (preg_match('/^\d\d\d\d-\d\d-\d\d \d\d\:\d\d /', $body)) {
-            $body = nl2br(htmlspecialchars(oeFormatPatientNote($body), ENT_NOQUOTES));
+            $body = nl2br(oeFormatPatientNote($body));
         } else {
             $body = htmlspecialchars(oeFormatSDFT(strtotime($iter['date'])).date(' H:i', strtotime($iter['date'])), ENT_NOQUOTES) .
-            ' (' . htmlspecialchars($iter['user'], ENT_NOQUOTES) . ') ' . nl2br(htmlspecialchars(oeFormatPatientNote($body), ENT_NOQUOTES));
+        ' (' . htmlspecialchars( $iter['user'], ENT_NOQUOTES) . ') ' . nl2br(oeFormatPatientNote($body));
         }
 
         $body = preg_replace('/(\sto\s)-patient-(\))/', '${1}'.$patientname.'${2}', $body);

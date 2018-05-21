@@ -20,12 +20,35 @@
 *
 * @package   OpenEMR
 * @author    Rod Roark <rod@sunsetsystems.com>
+ * 
+ * Adapted for use with the dedicated laboratory interfaces developed
+ * for Williams Medical Technologies, Inc.
+ * 
+ * @since		2014-06-15
+ * @author		Ron Criswell <ron.criswell@MDTechSvcs.com>
 */
 
 set_time_limit(0);
+ini_set('max_execution_time', 0);
+ini_set('post_max_size', '64M');
+ini_set('upload_max_filesize', '64M');
+ini_set('session.gc_maxlifetime', 7200);
 
 
+/* Turn off output buffering */
+ini_set('output_buffering', 'off');
+// Turn off PHP output compression
+ini_set('zlib.output_compression', false);
+// Implicitly flush the buffer(s)
+ini_set('implicit_flush', true);
+ob_implicit_flush(true);
+// Disable apache output buffering/compression
+if (function_exists('apache_setenv')) {
+	apache_setenv('no-gzip', '1');
+	apache_setenv('dont-vary', '1');
+}
 
+session_set_cookie_params(7200);
 
 require_once("../globals.php");
 require_once("$srcdir/acl.inc");
@@ -38,6 +61,8 @@ $lab_npi = array(
   '1235138868' => 'Diagnostic Pathology Medical Group',
   '1235186800' => 'Pathgroup Labs LLC',
   '1598760985' => 'Yosemite Pathology Medical Group',
+  'QUEST'      => 'Quest Diagnostics',
+		
 );
 
 /**
@@ -113,6 +138,7 @@ if ($form_step == 0) {
     echo "  <td nowrap>" . xlt('Action') . "</td>\n";
     echo "  <td><select name='action'>";
     echo "<option value='1'>" . xlt('Load Order Definitions') . "</option>";
+	echo "<option value='4'>" . xlt('Load Profile Definitions'    ) . "</option>";
     echo "<option value='2'>" . xlt('Load Order Entry Questions') . "</option>";
     echo "<option value='3'>" . xlt('Load OE Question Options') . "</option>";
     echo "</td>\n";
@@ -122,7 +148,7 @@ if ($form_step == 0) {
     echo "  <td nowrap>" . xlt('Container Group Name') . "</td>\n";
     echo "  <td><select name='group'>";
     $gres = sqlStatement("SELECT procedure_type_id, name FROM procedure_type " .
-    "WHERE procedure_type = 'grp' ORDER BY name, procedure_type_id");
+    "WHERE procedure_type = 'grp' AND parent = 0 ORDER BY name, procedure_type_id");
     while ($grow = sqlFetchArray($gres)) {
         echo "<option value='" . attr($grow['procedure_type_id']) . "'>" .
         text($grow['name']) . "</option>";
@@ -133,7 +159,7 @@ if ($form_step == 0) {
 
     echo " <tr>\n";
     echo "  <td nowrap>" . xlt('File to Upload') . "</td>\n";
-    echo "<td><input type='hidden' name='MAX_FILE_SIZE' value='4000000' />";
+    echo "<td><input type='hidden' name='MAX_FILE_SIZE' value='30000000' />";
     echo "<input type='file' name='userfile' /></td>\n";
     echo " </tr>\n";
 
@@ -144,7 +170,7 @@ if ($form_step == 0) {
 }
 
 echo " <tr>\n";
-echo "  <td colspan='2'>\n";
+echo "  <td colspan='2'><pre>\n";
 
 if ($form_step == 1) {
   // Process uploaded config file.
@@ -154,13 +180,19 @@ if ($form_step == 1) {
         $form_group  = intval($_POST['group']);
         $lab_id = getLabID($form_vendor);
 
-        $form_status .= xlt('Applying') . "...<br />";
+        $form_status .= xlt('Applying') . "...";
         echo nl2br(text($form_status));
 
         $fhcsv = fopen($_FILES['userfile']['tmp_name'], "r");
 
         if ($fhcsv) {
-            // Vendor = Pathgroup
+        	// Vendor = QUEST
+        	if ($form_vendor == 'QUEST') {
+				require_once('quest.inc.php');
+				fclose($fhcsv);
+        	}
+        	
+			// Vendor = Pathgroup
             //
             if ($form_vendor == '1235186800') {
                 if ($form_action == 1) { // load compendium
