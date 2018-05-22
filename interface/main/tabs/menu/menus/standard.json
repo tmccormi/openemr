@@ -674,7 +674,64 @@
         ]
       }
     ],
-    "requirement": 0
+    "requirement": 0,
+    "global_req_strict": "!wmt_lab_enable"
+  },
+  {
+    "label": "Laboratory",
+    "menu_id": "proimg",
+    "children": [
+      {
+        "label": "Processors",
+        "menu_id": "orl0",
+        "target": "pat",
+        "url": "/interface/orders/procedure_provider_list.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": [
+          "admin",
+          "super"
+        ]
+      },
+      {
+        "label": "Compendium",
+        "menu_id": "ort0",
+        "target": "pat",
+        "url": "/interface/orders/types.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": [
+          "admin",
+          "super"
+        ]
+      },
+      {
+        "label": "Load Compendium",
+        "menu_id": "orc0",
+        "target": "pat",
+        "url": "/interface/orders/load_compendium.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": [
+          "admin",
+          "super"
+        ]
+      },
+      {
+        "label": "Batch Process",
+        "menu_id": "orb0",
+        "target": "pat",
+        "url": "/interface/orders/batch_process.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": [
+          "admin",
+          "super"
+        ]
+      }
+    ],
+    "requirement": 0,
+    "global_req_strict": "wmt_lab_enable"
   },
   {
     "label": "New Crop",
@@ -1674,7 +1731,71 @@
             ]
           }
         ],
-        "requirement": 0
+        "requirement": 0,
+        "global_req": "!wmt_lab_enable"
+      },
+      {
+        "label": "Laboratory",
+        "icon": "fa-caret-right",
+        "children": [
+          {
+            "label": "Pending Orders",
+            "url": "/interface/reports/laboratory/lab_pending.php",
+            "target": "rep",
+            "children": [],
+            "requirement": 0,
+            "acl_req": [
+              "patients",
+              "lab"
+            ]
+          },
+          {
+            "label": "Orders Report",
+            "url": "/interface/reports/laboratory/lab_orders.php",
+            "target": "rep",
+            "children": [],
+            "requirement": 0,
+            "acl_req": [
+              "patients",
+              "lab"
+            ]
+          },
+          {
+            "label": "Results Report",
+            "url": "/interface/reports/laboratory/lab_results.php",
+            "target": "rep",
+            "children": [],
+            "requirement": 0,
+            "acl_req": [
+              "patients",
+              "lab"
+            ]
+          },
+          {
+            "label": "Orphan Report",
+            "url": "/interface/reports/laboratory/lab_orphans.php.php",
+            "target": "rep",
+            "children": [],
+            "requirement": 0,
+            "acl_req": [
+              "patients",
+              "lab"
+            ]
+          },
+          {
+            "label": "Results Analysis",
+            "url": "/interface/reports/laboratory/lab_analysis.php",
+            "target": "rep",
+            "children": [],
+            "requirement": 1,
+            "acl_req": [
+              "patients",
+              "lab"
+            ]
+          }
+        ],
+        "requirement": 0,
+        "global_req": "wmt_lab_enable"
       },
       {
         "label": "Insurance",
