@@ -802,7 +802,8 @@ while ($urow = sqlFetchArray($ures)) {
   discount = 0.01 * discount * computeDiscountedTotals(0, false);
 <?php } ?>
   var total = computeDiscountedTotals(discount, true);
-  f.form_amount.value = total.toFixed(<?php echo $currdecimals ?>);
+  f.form_display_amount.value = total.toFixed(<?php echo $currdecimals ?>);
+  f.form_amount = 0.00;
   return true;
  }
 
