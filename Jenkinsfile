@@ -3,12 +3,12 @@ pipeline {
   stages {
     stage('ShowLog'){
       steps {
-        sh 'git log --oneline origin..HEAD' 
+        git log --oneline --max-count=10 
       }
     }
     stage('Build') {
       steps { 
-        sh 'echo NO BUILD' 
+        sh 'echo BUILD-ME' 
       }
     }
   }
