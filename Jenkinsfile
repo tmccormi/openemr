@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('ShowLog'){
       steps {
-        git log --oneline --max-count=10 
+        sh 'git log --oneline --max-count=10' 
       }
     }
     stage('Build') {
