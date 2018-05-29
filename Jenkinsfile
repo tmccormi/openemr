@@ -1,14 +1,14 @@
 pipeline {
   agent any
   stages {
-    stage('myStage'){
+    stage('ShowLog'){
       steps {
-        sh 'ls -la' 
+        sh 'git log --oneline origin..HEAD' 
       }
     }
     stage('Build') {
       steps { 
-        sh 'ls' 
+        sh 'echo NO BUILD' 
       }
     }
   }
